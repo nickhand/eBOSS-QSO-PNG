@@ -25,5 +25,14 @@ old notation.
 ## NERSC Locations
 
 - **v1.8e-reg**: /global/project/projectdirs/eboss/qso_mocks_v1.8_wnoz_wcp/zevoEZmock_QSO_v1.8e_veto_ngc.tar.gz
-- **v1.8e-no**:  /global/project/projectdirs/eboss/QSO_v1.8_EZmock_fkp_corrected/zevoEZmock_?gc_nzfixed.tar.gz
+- **v1.8e-no**:  /global/project/projectdirs/eboss/QSO_v1.8_EZmock_fkp_corrected/zevoEZmock_ngc_nzfixed.tar.gz
 - **v1.8e-fph**:  /global/project/projectdirs/eboss/EZmocks_v1.8weightfocal/
+
+## File Format
+
+Data files:
+RA, dec, z, wfkp, comp, n(z), wfocal*wcp or (wnoz+wcp-1)
+
+Random files:
+
+RA, dec, z, wfkp, comp, n(z), veto
