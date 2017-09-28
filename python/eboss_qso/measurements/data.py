@@ -65,11 +65,9 @@ def save_data_spectra(r, sample, version, focal_weights, **kwargs):
     from .utils import make_hash
     from . import results_dir
 
-    if focal_weights:
-        version += '-focal'
-
     # output path
     output_dir =  os.path.join(results_dir, 'spectra', 'data', version)
+    if focal_weights: version += '-focal'
     filename = f"poles_eboss_{version}-QSO-{sample}"
 
     # save the extra meta-data
