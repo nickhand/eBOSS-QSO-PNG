@@ -5,14 +5,26 @@ import eboss_qso.measurements as eboss
 import os
 import argparse
 
+def select_subsample(insize, outsize):
+
+    index = numpy.zeros(insize, dtype=bool)
+    valid = numpy.random.choice(range(insize), replace=False, size=outsize)
+    index[valid] = True
+    return index
+
+
 def main(ns):
 
     # load the randoms
     randoms = eboss.read_randoms(ns.version, ns.sample)
 
-    # subsample?
-    if ns.subsample > 1:
-        randoms = randoms[::ns.subsample]
+    # set the seed
+    numpy.seed(42*(randoms.comm.rank+1000))
+
+    # select a subsample?
+    if ns.subsample is not None:
+        valid = select_subsample(randoms.size, int(ns.subsample//randoms.comm.size))
+        randoms = randoms[valid]
 
     # trim redshift range
     r = eboss.trim_redshift_range(randoms, zmin=ns.zmin, zmax=ns.zmax)
@@ -45,8 +57,8 @@ if __name__ == '__main__':
     h = 'the maximum redshift to include'
     group.add_argument('--zmax', type=float, help=h, required=True)
 
-    h = 'the subsample factor'
-    parser.add_argument('--subsample', type=int, default=1, help=h)
+    h = 'the desired collective size to subsample to'
+    parser.add_argument('--subsample', type=float, help=h)
 
     # and go!
     main(parser.parse_args())
