@@ -1,7 +1,7 @@
 
 from . import data_dir, DATA_VERSIONS, fidcosmo
 import os
-from nbodykit.transform import SkyToCartesion
+from nbodykit.lab import FITSCatalog
 
 def read_data(version, sample, focal_weights=False):
     """
