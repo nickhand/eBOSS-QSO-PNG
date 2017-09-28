@@ -40,8 +40,8 @@ def main(ns):
         eboss.save_data_spectra(r, ns.sample, ns.version, p=None, zmin=zmin, zmax=zmax, P0_FKP=ns.P0_FKP)
 
     # the bias weight for the first field
-    fkp['data/BiasWeight'] = d['FKPWeight'] * eboss.bias_weight(d['Z'], fidcosmo)
-    fkp['randoms/BiasWeight'] = r['FKPWeight'] * eboss.bias_weight(r['Z'], fidcosmo)
+    fkp['data/BiasWeight'] = d['FKPWeight'] * eboss.bias_weight(d['Z'], eboss.fidcosmo)
+    fkp['randoms/BiasWeight'] = r['FKPWeight'] * eboss.bias_weight(r['Z'], eboss.fidcosmo)
 
     # the fnl weight for the second field
     fkp['data/FnlWeight'] = d['FKPWeight'] * eboss.fnl_weight(d['Z'], p=ns.p)
