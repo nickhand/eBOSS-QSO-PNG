@@ -30,10 +30,10 @@ def finalize_source(s, cosmo, P0_FKP=None):
     Finalize the creation of a CatalogSource by adding 'Position', 'Weight',
     and 'FKPWeight'.
     """
-    from nbodykit.transform import SkyToCartesion
+    from nbodykit.transform import SkyToCartesian
 
     # add the Position column
-    s['Position'] = SkyToCartesion(s['RA'], s['DEC'], s['Z'], cosmo, degrees=True)
+    s['Position'] = SkyToCartesian(s['RA'], s['DEC'], s['Z'], cosmo, degrees=True)
 
     # add systematic weights
     if 'WEIGHT_NOZ' in s and 'WEIGHT_FOCAL' not in s:
