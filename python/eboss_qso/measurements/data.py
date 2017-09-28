@@ -79,4 +79,4 @@ def save_data_spectra(r, sample, version, **kwargs):
                 'poles', 'p', 'BoxPad', 'zmin', 'zmax', 'z-weighted']
 
     id_str = make_hash(r.attrs, usekeys=usekeys)
-    r.save(filename + '-' + id_str + '.json')
+    r.save(os.path.join(output_dir, filename + '-' + id_str + '.json'))
