@@ -50,9 +50,7 @@ def read_randoms(version, sample):
     assert version in DATA_VERSIONS
 
     # get the file path
-    filename = f'eboss_{version}-QSO-{sample}-eboss_{version}'
-    if focal_weights: filename += '-focal'
-    filename += '.dat.fits'
+    filename = f'eboss_{version}-QSO-{sample}-eboss_{version}.ran.fits'
     path = os.path.join(data_dir, 'data', version, filename)
 
     # load the source
