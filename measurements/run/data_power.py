@@ -53,7 +53,8 @@ def main(ns):
 
     # get power and save
     result = ConvolvedFFTPower(first=mesh1, second=mesh2, poles=[0,2], dk=0.005, kmin=0.)
-    eboss.save_data_spectra(result, ns.sample, ns.version, p=ns.p, zmin=zmin, zmax=zmax, P0_FKP=ns.P0_FKP)
+    eboss.save_data_spectra(result, ns.sample, ns.version, ns.focal_weights,
+                                p=ns.p, zmin=zmin, zmax=zmax, P0_FKP=ns.P0_FKP)
 
 
 if __name__ == '__main__':
