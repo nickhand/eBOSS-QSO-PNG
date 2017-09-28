@@ -36,8 +36,8 @@ def main(ns):
     # compute unweighted results
     if ns.do_unweighted:
         unweighted_mesh = fkp.to_mesh(nbar='NZ', fkp_weight='FKPWeight', comp_weight='Weight', **mesh_kwargs)
-        r = ConvolvedFFTPower(first=unweighted_mesh, poles=[0,2], dk=0.005, kmin=0.)
-        eboss.save_data_spectra(r, ns.sample, ns.version, p=None, zmin=zmin, zmax=zmax, P0_FKP=ns.P0_FKP)
+        result = ConvolvedFFTPower(first=unweighted_mesh, poles=[0,2], dk=0.005, kmin=0.)
+        eboss.save_data_spectra(result, ns.sample, ns.version, p=None, zmin=zmin, zmax=zmax, P0_FKP=ns.P0_FKP)
 
     # the bias weight for the first field
     fkp['data/BiasWeight'] = d['FKPWeight'] * eboss.bias_weight(d['Z'], eboss.fidcosmo)
@@ -52,8 +52,8 @@ def main(ns):
     mesh2 = fkp.to_mesh(nbar='NZ', fkp_weight='FnlWeight', comp_weight='Weight', **mesh_kwargs)
 
     # get power and save
-    r = ConvolvedFFTPower(first=mesh1, second=mesh2, poles=[0,2], dk=0.005, kmin=0.)
-    eboss.save_data_spectra(r, ns.sample, ns.version, p=ns.p, zmin=zmin, zmax=zmax, P0_FKP=ns.P0_FKP)
+    result = ConvolvedFFTPower(first=mesh1, second=mesh2, poles=[0,2], dk=0.005, kmin=0.)
+    eboss.save_data_spectra(result, ns.sample, ns.version, p=ns.p, zmin=zmin, zmax=zmax, P0_FKP=ns.P0_FKP)
 
 
 if __name__ == '__main__':
