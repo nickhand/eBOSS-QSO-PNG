@@ -14,7 +14,7 @@ def main(ns):
     data = eboss.read_data(ns.version, ns.sample, focal_weights=ns.focal_weights)
 
     # load the randoms
-    randoms = read_randoms(ns.version, ns.sample)
+    randoms = eboss_qso.read_randoms(ns.version, ns.sample)
 
     # compute for every redshift bin
     for (zmin, zmax) in ns.zbins:
