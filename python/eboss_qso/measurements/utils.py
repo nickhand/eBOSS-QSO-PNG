@@ -25,7 +25,7 @@ def trim_redshift_range(s, zmin=None, zmax=None):
 
     return s[(s['Z'] > zmin)&(s['Z'] < zmax)]
 
-def finalize_source(s, P0_FKP=None):
+def finalize_source(s, cosmo, P0_FKP=None):
     """
     Finalize the creation of a CatalogSource by adding 'Position', 'Weight',
     and 'FKPWeight'.
@@ -33,7 +33,7 @@ def finalize_source(s, P0_FKP=None):
     from nbodykit.transform import SkyToCartesion
 
     # add the Position column
-    s['Position'] = SkyToCartesion(s['RA'], s['DEC'], s['Z'], fidcosmo, degrees=True)
+    s['Position'] = SkyToCartesion(s['RA'], s['DEC'], s['Z'], cosmo, degrees=True)
 
     # add systematic weights
     if 'WEIGHT_NOZ' in s and 'WEIGHT_FOCAL' not in s:

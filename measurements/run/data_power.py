@@ -24,8 +24,8 @@ def main(ns):
         r = eboss.trim_redshift_range(randoms, zmin=zmin, zmax=zmax)
 
         # finalize columns
-        eboss.finalize_source(d, P0_FKP=ns.P0_FKP)
-        eboss.finalize_source(r, P0_FKP=ns.P0_FKP)
+        eboss.finalize_source(d, eboss.fidcosmo, P0_FKP=ns.P0_FKP)
+        eboss.finalize_source(r, eboss.fidcosmo, P0_FKP=ns.P0_FKP)
 
     # combine data and randoms into the FKP source
     fkp = FKPCatalog(data=d, randoms=r, BoxPad=0.1, use_cache=True)
