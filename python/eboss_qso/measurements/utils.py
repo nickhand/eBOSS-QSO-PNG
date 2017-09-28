@@ -4,7 +4,7 @@ from nbodykit.utils import JSONEncoder
 
 def redshift_range_type(s):
     try:
-        return tuple(map(float, s.split(','))
+        return tuple(map(float, s.split(',')))
     except:
         raise TypeError("redshift range must be zmin,zmax")
 
