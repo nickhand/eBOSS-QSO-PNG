@@ -40,10 +40,10 @@ if __name__ == '__main__':
     group.add_argument('--version', type=str, choices=eboss.DATA_VERSIONS, help=h, required=True)
 
     h = 'the minimum redshift to include'
-    group.add_argument('zmin', type=float, help=h, required=True)
+    group.add_argument('--zmin', type=float, help=h, required=True)
 
     h = 'the maximum redshift to include'
-    group.add_argument('zmax', type=float, help=h, required=True)
+    group.add_argument('--zmax', type=float, help=h, required=True)
 
     h = 'the subsample factor'
     parser.add_argument('--subsample', type=int, default=1, help=h)
