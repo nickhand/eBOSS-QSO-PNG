@@ -8,5 +8,10 @@ setup(
     packages=find_packages(),
     description=("Python code to analyze primordial non-Gaussianity "
                  "from the eBOSS QSO sample"),
-    install_requires=['numpy', 'scipy']
+    install_requires=['numpy', 'scipy'],
+    entry_points={
+        'console_scripts': [
+            'eboss-echo-hash = eboss_qso.measurements.utils:echo_hash',
+            ]
+    }
 )
