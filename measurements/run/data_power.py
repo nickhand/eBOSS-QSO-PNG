@@ -87,5 +87,5 @@ if __name__ == '__main__':
     h = 'whether to use focal plane weights'
     parser.add_argument('--focal-weights', action='store_true', help=h)
 
-    ns = parser.parse_args()
-    main(ns)
+    # and go!
+    main(parser.parse_args())
