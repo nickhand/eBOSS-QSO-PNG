@@ -14,6 +14,7 @@ _Ob0 = 0.022/_h**2
 _Ocdm0 = 0.31 - _Ob0
 fidcosmo = Cosmology(h=_h, Omega_b=_Ob0, Omega_cdm=_Ocdm0, m_ncdm=None, T_cmb=2.7255)
 
-from .data import read_data, read_randoms, save_data_spectra
+from .data import read_data, read_randoms
+from .results import save_data_spectra, save_RR_paircount
 from .utils import finalize_source, trim_redshift_range, redshift_range_type, get_hashkeys
 from .zweights import fnl_weight, bias_weight

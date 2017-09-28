@@ -56,29 +56,3 @@ def read_randoms(version, sample):
     # load the source
     usecols = ['RA', 'DEC', 'Z', 'NZ']
     return FITSCatalog(path, use_cache=True)[usecols]
-
-def save_data_spectra(r, sample, version, focal_weights, **kwargs):
-    """
-    Save the power spectrum result with a unique hash string based on the
-    meta-data of the result.
-    """
-    from .utils import make_hash
-    from . import results_dir
-
-    # output path
-    output_dir =  os.path.join(results_dir, 'spectra', 'data', version)
-    if focal_weights: version += '-focal'
-    filename = f"poles_eboss_{version}-QSO-{sample}"
-
-    # save the extra meta-data
-    for k in kwargs:
-        r.attrs[k] = kwargs[k]
-    r.attrs['z-weighted'] = r.attrs.get('p', None) is not None
-
-    # make the hash
-    usekeys = ['Nmesh', 'P0_FKP', 'dk', 'kmin', 'mesh.window', 'mesh.interlaced',
-                'poles', 'p', 'BoxPad', 'zmin', 'zmax', 'z-weighted']
-
-    r.attrs['hashkeys'] = usekeys
-    id_str = make_hash(r.attrs, usekeys=usekeys)
-    r.save(os.path.join(output_dir, filename + '-' + id_str + '.json'))
