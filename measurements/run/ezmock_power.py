@@ -41,12 +41,12 @@ def main(ns):
                 eboss.save_ezmock_spectra(result, box_num, ns.sample, ns.version, ns.subversion, **meta)
 
             # the bias weight for the first field
-            fkp['data/BiasWeight'] = d['FKPWeight'] * eboss.bias_weight(d['Z'], eboss.fidcosmo)
-            fkp['randoms/BiasWeight'] = r['FKPWeight'] * eboss.bias_weight(r['Z'], eboss.fidcosmo)
+            fkp['data/BiasWeight'] = data['FKPWeight'] * eboss.bias_weight(data['Z'], eboss.fidcosmo)
+            fkp['randoms/BiasWeight'] = randoms['FKPWeight'] * eboss.bias_weight(randoms['Z'], eboss.fidcosmo)
 
             # the fnl weight for the second field
-            fkp['data/FnlWeight'] = d['FKPWeight'] * eboss.fnl_weight(d['Z'], p=ns.p)
-            fkp['randoms/FnlWeight'] = r['FKPWeight'] * eboss.fnl_weight(r['Z'], p=ns.p)
+            fkp['data/FnlWeight'] = data['FKPWeight'] * eboss.fnl_weight(data['Z'], p=ns.p)
+            fkp['randoms/FnlWeight'] = randoms['FKPWeight'] * eboss.fnl_weight(randoms['Z'], p=ns.p)
 
             # convert to mesh
             mesh1 = fkp.to_mesh(nbar='NZ', fkp_weight='BiasWeight', comp_weight='Weight', **mesh_kwargs)
