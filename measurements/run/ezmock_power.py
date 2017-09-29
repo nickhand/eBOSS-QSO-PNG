@@ -8,58 +8,19 @@ import argparse
 
 setup_logging()
 
-def bias_weight(z):
-    """
-    Apply the bias weight
-    """
-    b = bias_model(z)
-    D = cosmo.scale_independent_growth_factor(z)
-    f = cosmo.scale_independent_growth_rate(z)
-
-    return D*(b+f/3.)
-
-
-def fnl_weight(z, p=1.6):
-    """
-    Apply the fnl weight
-    """
-    b = bias_model(z)
-    return (b-p)
-
-def bias_model(z):
-    """
-    Return the bias as a function of redshift
-    """
-    alpha = 0.278
-    beta = 2.393
-    return alpha * ( (1+z)**2 - 6.565 ) + beta
-
-
-def compute_power(mesh1, poles, tag, sample, mesh2=None):
-
-    # power
-    r = ConvolvedFFTPower(first=mesh1, poles=poles, dk=0.005, kmin=0., second=mesh2)
-
-    # and save!
-    output_dir =  "%s/Research/eBOSS/Results/poles" %CSCRATCH
-    sample = 'ngc' if sample == 'N' else 'sgc'
-    args = (sample, tag)
-    output = os.path.join(output_dir, "poles_zevoEZmock_QSO_v1.8_veto_%s_%s_fkp3e4_dk005_kmin0.json" % args)
-    r.save(output)
-
 def main(ns):
 
     # initialize the task manager
     with TaskManager(ns.cpus_per_task, use_all_cpus=True) as tm:
 
         # load the randoms
-        randoms = eboss.read_randoms(ns.sample, ns.version)
+        randoms = eboss.read_ezmock_randoms(ns.sample, ns.version)
         eboss.finalize_ezmock(randoms, eboss.fidcosmo, P0_FKP=ns.P0_FKP)
 
         for box_num in tm.iterate(range(ns.start, ns.stop, ns.step)):
 
             # load the data
-            data = eboss.read_data(box_num, ns.sample, ns.version, ns.subversion)
+            data = eboss.read_ezmock_data(box_num, ns.sample, ns.version, ns.subversion)
             eboss.finalize_ezmock(data, eboss.fidcosmo, P0_FKP=ns.P0_FKP)
 
             # combine data and randoms into the FKP source
