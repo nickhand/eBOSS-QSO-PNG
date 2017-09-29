@@ -13,8 +13,6 @@ def read_data(version, sample, focal_weights=False):
         the string specifying which version to load
     sample : 'N' or 'S'
         the sample to load
-    P0_FKP : float, optional
-        the FKP P0 value to use
     focal_weights : bool, optional
         whether we are using focal plane redshift error corrections
     """
@@ -42,10 +40,6 @@ def read_randoms(version, sample):
         the string specifying which version to load
     sample : 'N' or 'S'
         the sample to load
-    P0_FKP : float, optional
-        the FKP P0 value to use
-    focal_weights : bool, optional
-        whether we are using focal plane redshift error corrections
     """
     assert version in DATA_VERSIONS
 
@@ -56,3 +50,32 @@ def read_randoms(version, sample):
     # load the source
     usecols = ['RA', 'DEC', 'Z', 'NZ']
     return FITSCatalog(path, use_cache=True)[usecols]
+
+def finalize_data(s, cosmo, P0_FKP=None):
+    """
+    Finalize the creation of a CatalogSource from a data file by
+    adding 'Position', 'Weight', and 'FKPWeight'.
+
+    Parameters
+    ----------
+    s : CatalogSource
+        the catalog source object
+    cosmo : Cosmology
+        the cosmology parameters
+    P0_FKP : float, optional
+        the P0 value to use to for FKPWeights
+    """
+    from nbodykit.transform import SkyToCartesian
+
+    # add the Position column
+    s['Position'] = SkyToCartesian(s['RA'], s['DEC'], s['Z'], cosmo, degrees=True)
+
+    # add systematic weights
+    if 'WEIGHT_NOZ' in s and 'WEIGHT_FOCAL' not in s:
+        s['Weight'] = s['WEIGHT_SYSTOT'] * (s['WEIGHT_NOZ'] + s['WEIGHT_CP'] - 1.)
+    elif 'WEIGHT_FOCAL' in s:
+        s['Weight'] = s['WEIGHT_SYSTOT'] * s['WEIGHT_CP'] * s['WEIGHT_FOCAL']
+
+    # FKP WEIGHT
+    if P0_FKP is not None:
+        s['FKPWeight'] = 1. / (1 + s['NZ']*P0_FKP)
