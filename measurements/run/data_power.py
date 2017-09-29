@@ -11,10 +11,10 @@ setup_logging()
 def main(ns):
 
     # load the data first
-    data = eboss.read_data(ns.version, ns.sample, focal_weights=ns.focal_weights)
+    data = eboss.read_data(ns.sample, ns.version, focal_weights=ns.focal_weights)
 
     # load the randoms
-    randoms = eboss.read_randoms(ns.version, ns.sample)
+    randoms = eboss.read_randoms(ns.sample, ns.version)
 
     # compute for every redshift bin
     for (zmin, zmax) in ns.zbins:
@@ -36,9 +36,12 @@ def main(ns):
     # compute unweighted results
     if ns.do_unweighted:
         unweighted_mesh = fkp.to_mesh(nbar='NZ', fkp_weight='FKPWeight', comp_weight='Weight', **mesh_kwargs)
+
+        # run
         result = ConvolvedFFTPower(first=unweighted_mesh, poles=[0,2], dk=0.005, kmin=0.)
-        eboss.save_data_spectra(result, ns.sample, ns.version, ns.focal_weights,
-                                    p=None, zmin=zmin, zmax=zmax, P0_FKP=ns.P0_FKP)
+
+        meta = {'p':None, 'zmin':zmin, 'zmax':zmax, 'P0_FKP':ns.P0_FKP}
+        eboss.save_data_spectra(result, ns.sample, ns.version, ns.focal_weights, **meta)
 
     # the bias weight for the first field
     fkp['data/BiasWeight'] = d['FKPWeight'] * eboss.bias_weight(d['Z'], eboss.fidcosmo)
@@ -52,10 +55,12 @@ def main(ns):
     mesh1 = fkp.to_mesh(nbar='NZ', fkp_weight='BiasWeight', comp_weight='Weight', **mesh_kwargs)
     mesh2 = fkp.to_mesh(nbar='NZ', fkp_weight='FnlWeight', comp_weight='Weight', **mesh_kwargs)
 
-    # get power and save
+    # run
     result = ConvolvedFFTPower(first=mesh1, second=mesh2, poles=[0,2], dk=0.005, kmin=0.)
-    eboss.save_data_spectra(result, ns.sample, ns.version, ns.focal_weights,
-                                p=ns.p, zmin=zmin, zmax=zmax, P0_FKP=ns.P0_FKP)
+
+    # and save
+    meta = {'p':ns.p, 'zmin':zmin, 'zmax':zmax, 'P0_FKP':ns.P0_FKP}
+    eboss.save_data_spectra(result, ns.sample, ns.version, ns.focal_weights, **meta)
 
 
 if __name__ == '__main__':

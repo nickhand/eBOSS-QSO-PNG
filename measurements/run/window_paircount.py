@@ -16,7 +16,7 @@ def select_subsample(insize, outsize):
 def main(ns):
 
     # load the randoms
-    randoms = eboss.read_randoms(ns.version, ns.sample)
+    randoms = eboss.read_randoms(ns.sample, ns.version)
 
     # set the seed
     numpy.seed(42*(randoms.comm.rank+1000))

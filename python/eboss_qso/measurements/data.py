@@ -3,16 +3,16 @@ from . import data_dir, DATA_VERSIONS, fidcosmo
 import os
 from nbodykit.lab import FITSCatalog
 
-def read_data(version, sample, focal_weights=False):
+def read_data(sample, version, focal_weights=False):
     """
     Read a eBOSS QSO data file.
 
     Parameters
     ----------
-    version : str
-        the string specifying which version to load
     sample : 'N' or 'S'
         the sample to load
+    version : str
+        the string specifying which version to load
     focal_weights : bool, optional
         whether we are using focal plane redshift error corrections
     """
@@ -30,16 +30,16 @@ def read_data(version, sample, focal_weights=False):
     return FITSCatalog(path, use_cache=True)[usecols]
 
 
-def read_randoms(version, sample):
+def read_randoms(sample, version):
     """
     Read a eBOSS QSO randoms file.
 
     Parameters
     ----------
-    version : str
-        the string specifying which version to load
     sample : 'N' or 'S'
         the sample to load
+    version : str
+        the string specifying which version to load
     """
     assert version in DATA_VERSIONS
 
