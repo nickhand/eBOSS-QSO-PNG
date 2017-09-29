@@ -101,7 +101,7 @@ def save_ezmock_spectra(r, box, sample, version, subversion, **kwargs):
     version = '-'.join([version, subversion])
 
     # output path
-    output_dir =  os.path.join(results_dir, 'spectra', 'mocks', 'ezmock', _version)
+    output_dir =  os.path.join(results_dir, 'spectra', 'mocks', 'ezmock', version)
     filename = "poles_zevoEZmock_{version}_QSO-{sample}_{box:04d}"
 
     # save the extra meta-data
