@@ -3,7 +3,7 @@ from . import data_dir, EZMOCK_VERSIONS, EZMOCK_SUBVERSIONS, fidcosmo
 import os
 from nbodykit.lab import CSVCatalog
 
-def read_ezmock_data(box, version, subversion, sample):
+def read_ezmock_data(box, sample, version, subversion):
     """
     Read an eBOSS QSO EZ mock data file.
 
@@ -11,12 +11,12 @@ def read_ezmock_data(box, version, subversion, sample):
     ----------
     box : int
         the box number to load
+    sample : 'N' or 'S'
+        the sample to load
     version : str
         the string specifying which version to load
     subversion : str
         the EZmock sub version to load, i.e., one of 'reg', 'no', 'fph'
-    sample : 'N' or 'S'
-        the sample to load
     """
     assert version in EZMOCK_VERSIONS
     assert subversion in EZMOCK_SUBVERSIONS
@@ -32,16 +32,16 @@ def read_ezmock_data(box, version, subversion, sample):
     return CSVCatalog(path, names=names)
 
 
-def read_ezmock_randoms(version, sample):
+def read_ezmock_randoms(sample, version):
     """
     Read a eBOSS QSO EZ mock randoms file.
 
     Parameters
     ----------
-    version : str
-        the string specifying which version to load
     sample : 'N' or 'S'
         the sample to load
+    version : str
+        the string specifying which version to load
     """
     assert version in EZMOCK_VERSIONS
 
@@ -53,7 +53,12 @@ def read_ezmock_randoms(version, sample):
 
     # load the source
     names = ['RA', 'DEC', 'Z', 'WEIGHT_FKP', 'COMP', 'NZ', 'VETO']
-    return CSVCatalog(path, names=names)
+    s = CSVCatalog(path, names=names)
+
+    # re-normalize NZ
+    s['NZ'] /= 100.
+
+    return s
 
 
 def finalize_ezmock(s, cosmo, P0_FKP=None):
