@@ -56,7 +56,7 @@ def main(ns):
             result = ConvolvedFFTPower(first=mesh1, second=mesh2, poles=[0,2], dk=0.005, kmin=0.)
 
             # save
-            meta = {'p':ns.p, 'zmin':0.9, 'zmax':zmax, 'P0_FKP':ns.P0_FKP}
+            meta = {'p':ns.p, 'zmin':0.9, 'zmax':2.2, 'P0_FKP':ns.P0_FKP}
             eboss.save_ezmock_spectra(result, box_num, ns.sample, ns.version, ns.subversion, **meta)
 
 
