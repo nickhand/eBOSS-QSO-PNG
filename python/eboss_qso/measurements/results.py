@@ -1,5 +1,19 @@
 import os
 
+def info_from_filename(kind, filename):
+    """
+    Return a dictionary of information from a file name.
+    """
+    import re
+
+    assert kind in ['data', 'ezmock']
+
+    if kind == 'data':
+        pattern = r'poles\_eboss\_(?P<version>[\w\.]+)\-(?P<focal>[a-z]*)\-*QSO\-(?P<sample>[SN])\-(?P<hashstr>[\w+]{10})\.json'
+    elif kind == 'ezmock':
+        pattern = r'poles\_zevoEZmock\_(?P<version>[\w\.\-]+)_QSO\-(?P<sample>[SN])[\_0-9]*\-(?P<hashstr>[\w+]{10})\.json'
+    return re.match(pattern, filename).groupdict()
+
 def save_RR_paircount(r, sample, version, **kwargs):
     """
     Save the randoms paircount result with a unique hash string based on the
