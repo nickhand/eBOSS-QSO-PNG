@@ -27,40 +27,44 @@ def main(ns):
         eboss.finalize_data(d, eboss.fidcosmo, P0_FKP=ns.P0_FKP)
         eboss.finalize_data(r, eboss.fidcosmo, P0_FKP=ns.P0_FKP)
 
-    # combine data and randoms into the FKP source
-    fkp = FKPCatalog(data=d, randoms=r, BoxPad=0.1, use_cache=True)
+        # combine data and randoms into the FKP source
+        fkp = FKPCatalog(data=d, randoms=r, BoxPad=0.1, use_cache=True)
 
-    # the mesh kwargs to use
-    mesh_kwargs = {'Nmesh':1024, 'interlaced':True, 'window':'tsc', 'dtype':'f8'}
+        # the mesh kwargs to use
+        mesh_kwargs = {'Nmesh':1024, 'interlaced':True, 'window':'tsc', 'dtype':'f8'}
 
-    # compute unweighted results
-    if ns.do_unweighted:
-        unweighted_mesh = fkp.to_mesh(nbar='NZ', fkp_weight='FKPWeight', comp_weight='Weight', **mesh_kwargs)
+        # compute unweighted results
+        if ns.do_unweighted:
+            unweighted_mesh = fkp.to_mesh(nbar='NZ', fkp_weight='FKPWeight', comp_weight='Weight', **mesh_kwargs)
+
+            # run
+            result = ConvolvedFFTPower(first=unweighted_mesh, poles=[0,2], dk=0.005, kmin=0.)
+
+            meta = {'p':None, 'zmin':zmin, 'zmax':zmax, 'P0_FKP':ns.P0_FKP}
+            eboss.save_data_spectra(result, ns.sample, ns.version, ns.focal_weights, **meta)
+
+        # the bias weight for the first field
+        fkp['data/BiasWeight'] = d['FKPWeight'] * eboss.bias_weight(d['Z'], eboss.fidcosmo)
+        fkp['randoms/BiasWeight'] = r['FKPWeight'] * eboss.bias_weight(r['Z'], eboss.fidcosmo)
+
+        # the fnl weight for the second field
+        fkp['data/FnlWeight'] = d['FKPWeight'] * eboss.fnl_weight(d['Z'], p=ns.p)
+        fkp['randoms/FnlWeight'] = r['FKPWeight'] * eboss.fnl_weight(r['Z'], p=ns.p)
+
+        # convert to mesh
+        mesh1 = fkp.to_mesh(nbar='NZ', fkp_weight='BiasWeight', comp_weight='Weight', **mesh_kwargs)
+        mesh2 = fkp.to_mesh(nbar='NZ', fkp_weight='FnlWeight', comp_weight='Weight', **mesh_kwargs)
 
         # run
-        result = ConvolvedFFTPower(first=unweighted_mesh, poles=[0,2], dk=0.005, kmin=0.)
+        result = ConvolvedFFTPower(first=mesh1, second=mesh2, poles=[0,2], dk=0.005, kmin=0.)
 
-        meta = {'p':None, 'zmin':zmin, 'zmax':zmax, 'P0_FKP':ns.P0_FKP}
+        # add effective redshift and nbar from randoms
+        result.attrs['z_eff'] = eboss.compute_effective_redshift(r)
+        result.attrs['nbar_eff'] = eboss.compute_effective_nbar(r)
+
+        # and save
+        meta = {'p':ns.p, 'zmin':zmin, 'zmax':zmax, 'P0_FKP':ns.P0_FKP}
         eboss.save_data_spectra(result, ns.sample, ns.version, ns.focal_weights, **meta)
-
-    # the bias weight for the first field
-    fkp['data/BiasWeight'] = d['FKPWeight'] * eboss.bias_weight(d['Z'], eboss.fidcosmo)
-    fkp['randoms/BiasWeight'] = r['FKPWeight'] * eboss.bias_weight(r['Z'], eboss.fidcosmo)
-
-    # the fnl weight for the second field
-    fkp['data/FnlWeight'] = d['FKPWeight'] * eboss.fnl_weight(d['Z'], p=ns.p)
-    fkp['randoms/FnlWeight'] = r['FKPWeight'] * eboss.fnl_weight(r['Z'], p=ns.p)
-
-    # convert to mesh
-    mesh1 = fkp.to_mesh(nbar='NZ', fkp_weight='BiasWeight', comp_weight='Weight', **mesh_kwargs)
-    mesh2 = fkp.to_mesh(nbar='NZ', fkp_weight='FnlWeight', comp_weight='Weight', **mesh_kwargs)
-
-    # run
-    result = ConvolvedFFTPower(first=mesh1, second=mesh2, poles=[0,2], dk=0.005, kmin=0.)
-
-    # and save
-    meta = {'p':ns.p, 'zmin':zmin, 'zmax':zmax, 'P0_FKP':ns.P0_FKP}
-    eboss.save_data_spectra(result, ns.sample, ns.version, ns.focal_weights, **meta)
 
 
 if __name__ == '__main__':
