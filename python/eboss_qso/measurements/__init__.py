@@ -28,5 +28,6 @@ from .ezmock import read_ezmock_data, read_ezmock_randoms, finalize_ezmock
 from .results import save_data_spectra, save_ezmock_spectra, save_RR_paircount
 
 # utilities and weights
-from .utils import trim_redshift_range, redshift_range_type, get_hashkeys
+from .utils import trim_redshift_range, redshift_range_type, get_hashkeys,
+                    compute_effective_redshift, compute_effective_nbar
 from .zweights import fnl_weight, bias_weight
