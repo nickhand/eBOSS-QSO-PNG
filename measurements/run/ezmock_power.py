@@ -17,6 +17,10 @@ def main(ns):
         randoms = eboss.read_ezmock_randoms(ns.sample, ns.version)
         eboss.finalize_ezmock(randoms, eboss.fidcosmo, P0_FKP=ns.P0_FKP)
 
+        # add effective redshift and nbar from randoms
+        z_eff = eboss.compute_effective_redshift(r)
+        nbar_eff = eboss.compute_effective_nbar(r)
+
         for box_num in tm.iterate(range(ns.start, ns.stop, ns.step)):
 
             # load the data
@@ -54,6 +58,10 @@ def main(ns):
 
             # run
             result = ConvolvedFFTPower(first=mesh1, second=mesh2, poles=[0,2], dk=0.005, kmin=0.)
+
+            # add effective redshift and nbar from randoms
+            result.attrs['z_eff'] = z_eff
+            result.attrs['nbar_eff'] = nbar_eff
 
             # save
             meta = {'p':ns.p, 'zmin':0.9, 'zmax':2.2, 'P0_FKP':ns.P0_FKP}
