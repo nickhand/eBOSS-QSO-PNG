@@ -2,6 +2,31 @@ import hashlib
 import json
 from nbodykit.utils import JSONEncoder
 
+def compute_effective_redshift(cat):
+    """
+    Compute the effective redshift of a CatalogSource.
+    """
+    # the total weight
+    total_weight =  cat['Weight']*cat['FKPWeight']
+
+    # effective redshift
+    zeff = (total_weight*cat['Z']).sum() / total_weight.sum()
+
+    return cat.compute(zeff)
+
+def compute_effective_nbar(cat):
+    """
+    Compute the effective number density of a CatalogSource.
+    """
+    # the total weight
+    total_weight =  cat['Weight']*cat['FKPWeight']
+
+    # effective nbar
+    nbar = (total_weight*cat['NZ']).sum() / total_weight.sum()
+
+    return cat.compute(nbar)
+
+
 def redshift_range_type(s):
     """
     Allow input redshift ranges via the command line
