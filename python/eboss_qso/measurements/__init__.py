@@ -1,9 +1,14 @@
 import os
 from nbodykit.cosmology import Cosmology
+import socket
 
 # data and result directories
-data_dir = '/global/cscratch1/sd/nhand/eBOSS'
-results_dir = '/global/cscratch1/sd/nhand/Research/eBOSS/measurements'
+if socket.gethostname() == 'utley':
+    data_dir = os.path.join(os.environ['THESIS_DIR'], 'eBOSS-QSO-PNG')
+    results_dir = os.path.join(data_dir, 'measurements')
+else:
+    data_dir = '/global/cscratch1/sd/nhand/eBOSS'
+    results_dir = '/global/cscratch1/sd/nhand/Research/eBOSS/measurements'
 
 # allowed data versions
 DATA_VERSIONS = ['v1.6', 'v1.8', 'v1.9f']
@@ -28,6 +33,6 @@ from .ezmock import read_ezmock_data, read_ezmock_randoms, finalize_ezmock
 from .results import save_data_spectra, save_ezmock_spectra, save_RR_paircount
 
 # utilities and weights
-from .utils import trim_redshift_range, redshift_range_type, get_hashkeys,
+from .utils import trim_redshift_range, redshift_range_type, get_hashkeys, \
                     compute_effective_redshift, compute_effective_nbar
 from .zweights import fnl_weight, bias_weight
