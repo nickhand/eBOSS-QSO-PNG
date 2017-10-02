@@ -1,6 +1,7 @@
 import hashlib
 import json
 from nbodykit.utils import JSONEncoder
+import os
 
 def compute_effective_redshift(cat):
     """
@@ -115,6 +116,23 @@ def echo_hash():
 
     ns = parser.parse_args()
 
-    d = get_hashkeys(ns.filename, ns.cls)
+    # filename is a directory --> FIT result
+    if os.path.isdir(ns.filename):
+        filename = os.path.join(os.path.abspath(ns.filename), 'hashinfo.json')
+        assert os.path.exists(filename)
+        import json
+
+        # use json to load
+        d = {}
+        with open(filename, 'r') as ff:
+            d.update(json.load(ff))
+
+        # echo hash info for the spectra file too
+        spectra_file = d.pop('spectra_file')
+        d.update(get_hashkeys(spectra_file, 'ConvolvedFFTPower'))
+    else:
+        d = get_hashkeys(ns.filename, ns.cls)
+
+    # print
     for k in sorted(d.keys()):
         print("%-10s = %s" %(k, str(d[k])))
