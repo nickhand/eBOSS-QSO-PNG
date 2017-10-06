@@ -23,6 +23,10 @@ def main(ns):
         d = eboss.trim_redshift_range(data, zmin=zmin, zmax=zmax)
         r = eboss.trim_redshift_range(randoms, zmin=zmin, zmax=zmax)
 
+        # compute effective values
+        z_eff = eboss.compute_effective_redshift(r)
+        nbar_eff = eboss.compute_effective_nbar(r)
+
         # finalize columns
         eboss.finalize_data(d, eboss.fidcosmo, P0_FKP=ns.P0_FKP)
         eboss.finalize_data(r, eboss.fidcosmo, P0_FKP=ns.P0_FKP)
@@ -39,6 +43,10 @@ def main(ns):
 
             # run
             result = ConvolvedFFTPower(first=unweighted_mesh, poles=[0,2], dk=0.005, kmin=0.)
+
+            # add effective redshift and nbar from randoms
+            result.attrs['z_eff'] = z_eff
+            result.attrs['nbar_eff'] = nbar_eff
 
             meta = {'p':None, 'zmin':zmin, 'zmax':zmax, 'P0_FKP':ns.P0_FKP}
             eboss.save_data_spectra(result, ns.sample, ns.version, ns.focal_weights, **meta)
@@ -59,8 +67,8 @@ def main(ns):
         result = ConvolvedFFTPower(first=mesh1, second=mesh2, poles=[0,2], dk=0.005, kmin=0.)
 
         # add effective redshift and nbar from randoms
-        result.attrs['z_eff'] = eboss.compute_effective_redshift(r)
-        result.attrs['nbar_eff'] = eboss.compute_effective_nbar(r)
+        result.attrs['z_eff'] = z_eff
+        result.attrs['nbar_eff'] = nbar_eff
 
         # and save
         meta = {'p':ns.p, 'zmin':zmin, 'zmax':zmax, 'P0_FKP':ns.P0_FKP}

@@ -40,6 +40,10 @@ def main(ns):
                 # run
                 result = ConvolvedFFTPower(first=unweighted_mesh, poles=[0,2], dk=0.005, kmin=0.)
 
+                # add effective redshift and nbar from randoms
+                result.attrs['z_eff'] = z_eff
+                result.attrs['nbar_eff'] = nbar_eff
+
                 # save
                 meta = {'p':None, 'zmin':0.9, 'zmax':2.2, 'P0_FKP':ns.P0_FKP}
                 eboss.save_ezmock_spectra(result, box_num, ns.sample, ns.version, ns.subversion, **meta)
