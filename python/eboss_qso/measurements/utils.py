@@ -109,30 +109,33 @@ def echo_hash():
     parser = argparse.ArgumentParser(description=desc)
 
     h = 'the input file name'
-    parser.add_argument('filename', type=str, help=h)
+    parser.add_argument('filenames', type=str, nargs='+', help=h)
 
     h = 'the result class'
     parser.add_argument('--cls', type=str, default='ConvolvedFFTPower', help=h)
 
     ns = parser.parse_args()
 
-    # filename is a directory --> FIT result
-    if os.path.isdir(ns.filename):
-        filename = os.path.join(os.path.abspath(ns.filename), 'hashinfo.json')
-        assert os.path.exists(filename)
-        import json
+    for filename in ns.filenames:
+        print(f"{filename}" + '\n' + '-'*40)
 
-        # use json to load
-        d = {}
-        with open(filename, 'r') as ff:
-            d.update(json.load(ff))
+        # filename is a directory --> FIT result
+        if os.path.isdir(filename):
+            filename = os.path.join(os.path.abspath(filename), 'hashinfo.json')
+            assert os.path.exists(filename)
+            import json
 
-        # echo hash info for the spectra file too
-        spectra_file = d.pop('spectra_file')
-        d.update(get_hashkeys(spectra_file, 'ConvolvedFFTPower'))
-    else:
-        d = get_hashkeys(ns.filename, ns.cls)
+            # use json to load
+            d = {}
+            with open(filename, 'r') as ff:
+                d.update(json.load(ff))
 
-    # print
-    for k in sorted(d.keys()):
-        print("%-10s = %s" %(k, str(d[k])))
+            # echo hash info for the spectra file too
+            spectra_file = d.pop('spectra_file')
+            d.update(get_hashkeys(spectra_file, 'ConvolvedFFTPower'))
+        else:
+            d = get_hashkeys(filename, ns.cls)
+
+        # print
+        for k in sorted(d.keys()):
+            print("%-10s = %s" %(k, str(d[k])))

@@ -12,6 +12,7 @@ setup(
     entry_points={
         'console_scripts': [
             'eboss-echo-hash = eboss_qso.measurements.utils:echo_hash',
+            'eboss-qso-fit = eboss_qso.fits.driver:__main__',
             ]
     }
 )
