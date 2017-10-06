@@ -114,10 +114,19 @@ def echo_hash():
     h = 'the result class'
     parser.add_argument('--cls', type=str, default='ConvolvedFFTPower', help=h)
 
-    ns = parser.parse_args()
+    h = 'only show entries with this min z value'
+    parser.add_argument('--zmin', type=float, help=h)
+
+    h = 'only show entries with this max z value'
+    parser.add_argument('--zmax', type=float, help=h)
+
+    h = 'only show entries with this z-weighted values'
+    parser.add_argument('--z-weighted', choices=[0,1], type=int, help=h)
+
+    ns, unknown = parser.parse_known_args()
+
 
     for filename in ns.filenames:
-        print(f"{filename}" + '\n' + '-'*40)
 
         # filename is a directory --> FIT result
         if os.path.isdir(filename):
@@ -136,6 +145,15 @@ def echo_hash():
         else:
             d = get_hashkeys(filename, ns.cls)
 
+        # filter
+        if ns.zmin is not None and d.get('zmin', None) != ns.zmin:
+            continue
+        if ns.zmax is not None and d.get('zmax', None) != ns.zmax:
+            continue
+        if ns.z_weighted is not None and d.get('z-weighted', None) != bool(ns.z_weighted):
+            continue
+
         # print
+        print(f"{filename}" + '\n' + '-'*40)
         for k in sorted(d.keys()):
             print("%-10s = %s" %(k, str(d[k])))
