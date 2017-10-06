@@ -5,6 +5,8 @@ import eboss_qso.measurements as eboss
 import os
 import argparse
 
+setup_logging()
+
 def select_subsample(insize, outsize):
 
     index = numpy.zeros(insize, dtype=bool)
@@ -32,9 +34,10 @@ def main(ns):
     # do the pair count
     redges = numpy.logspace(0, 4, 500)
     result = SurveyDataPairCount('2d', r, redges, eboss.fidcosmo, Nmu=100, ra='RA', dec='DEC', redshift='Z')
-
+    result.attrs['N'] = r.csize
+    
     # and save!
-    kws = {'subsample':ns.subsample, 'zmin':zmin, 'zmax':zmax, 'N':r.csize, 'redges':'logspace(0,4,500)'}
+    kws = {'subsample':ns.subsample, 'zmin':ns.zmin, 'zmax':ns.zmax, 'redges':'logspace(0,4,500)'}
     eboss.save_RR_paircount(result, ns.sample, ns.version, **kws)
 
 if __name__ == '__main__':
