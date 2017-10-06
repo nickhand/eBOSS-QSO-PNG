@@ -18,8 +18,8 @@ def main(ns):
         eboss.finalize_ezmock(randoms, eboss.fidcosmo, P0_FKP=ns.P0_FKP)
 
         # add effective redshift and nbar from randoms
-        z_eff = eboss.compute_effective_redshift(r)
-        nbar_eff = eboss.compute_effective_nbar(r)
+        z_eff = eboss.compute_effective_redshift(randoms)
+        nbar_eff = eboss.compute_effective_nbar(randoms)
 
         for box_num in tm.iterate(range(ns.start, ns.stop, ns.step)):
 
