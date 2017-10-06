@@ -19,7 +19,7 @@ def main(ns):
     randoms = eboss.read_randoms(ns.sample, ns.version)
 
     # set the seed
-    numpy.seed(42*(randoms.comm.rank+1000))
+    numpy.random.seed(42*(randoms.comm.rank+1000))
 
     # select a subsample?
     if ns.subsample is not None and randoms.csize > ns.subsample:
