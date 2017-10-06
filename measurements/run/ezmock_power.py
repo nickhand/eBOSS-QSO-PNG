@@ -34,7 +34,7 @@ def main(ns):
             mesh_kwargs = {'Nmesh':1024, 'interlaced':True, 'window':'tsc', 'dtype':'f8'}
 
             # compute unweighted results
-            if ns.do_unweighted:
+            if ns.do_unweighted or ns.p is None:
                 unweighted_mesh = fkp.to_mesh(nbar='NZ', fkp_weight='FKPWeight', comp_weight='Weight', **mesh_kwargs)
 
                 # run
@@ -44,28 +44,29 @@ def main(ns):
                 meta = {'p':None, 'zmin':0.9, 'zmax':2.2, 'P0_FKP':ns.P0_FKP}
                 eboss.save_ezmock_spectra(result, box_num, ns.sample, ns.version, ns.subversion, **meta)
 
-            # the bias weight for the first field
-            fkp['data/BiasWeight'] = data['FKPWeight'] * eboss.bias_weight(data['Z'], eboss.fidcosmo)
-            fkp['randoms/BiasWeight'] = randoms['FKPWeight'] * eboss.bias_weight(randoms['Z'], eboss.fidcosmo)
+            if ns.p is not None:
+                # the bias weight for the first field
+                fkp['data/BiasWeight'] = data['FKPWeight'] * eboss.bias_weight(data['Z'], eboss.fidcosmo)
+                fkp['randoms/BiasWeight'] = randoms['FKPWeight'] * eboss.bias_weight(randoms['Z'], eboss.fidcosmo)
 
-            # the fnl weight for the second field
-            fkp['data/FnlWeight'] = data['FKPWeight'] * eboss.fnl_weight(data['Z'], p=ns.p)
-            fkp['randoms/FnlWeight'] = randoms['FKPWeight'] * eboss.fnl_weight(randoms['Z'], p=ns.p)
+                # the fnl weight for the second field
+                fkp['data/FnlWeight'] = data['FKPWeight'] * eboss.fnl_weight(data['Z'], p=ns.p)
+                fkp['randoms/FnlWeight'] = randoms['FKPWeight'] * eboss.fnl_weight(randoms['Z'], p=ns.p)
 
-            # convert to mesh
-            mesh1 = fkp.to_mesh(nbar='NZ', fkp_weight='BiasWeight', comp_weight='Weight', **mesh_kwargs)
-            mesh2 = fkp.to_mesh(nbar='NZ', fkp_weight='FnlWeight', comp_weight='Weight', **mesh_kwargs)
+                # convert to mesh
+                mesh1 = fkp.to_mesh(nbar='NZ', fkp_weight='BiasWeight', comp_weight='Weight', **mesh_kwargs)
+                mesh2 = fkp.to_mesh(nbar='NZ', fkp_weight='FnlWeight', comp_weight='Weight', **mesh_kwargs)
 
-            # run
-            result = ConvolvedFFTPower(first=mesh1, second=mesh2, poles=[0,2], dk=0.005, kmin=0.)
+                # run
+                result = ConvolvedFFTPower(first=mesh1, second=mesh2, poles=[0,2], dk=0.005, kmin=0.)
 
-            # add effective redshift and nbar from randoms
-            result.attrs['z_eff'] = z_eff
-            result.attrs['nbar_eff'] = nbar_eff
+                # add effective redshift and nbar from randoms
+                result.attrs['z_eff'] = z_eff
+                result.attrs['nbar_eff'] = nbar_eff
 
-            # save
-            meta = {'p':ns.p, 'zmin':0.9, 'zmax':2.2, 'P0_FKP':ns.P0_FKP}
-            eboss.save_ezmock_spectra(result, box_num, ns.sample, ns.version, ns.subversion, **meta)
+                # save
+                meta = {'p':ns.p, 'zmin':0.9, 'zmax':2.2, 'P0_FKP':ns.P0_FKP}
+                eboss.save_ezmock_spectra(result, box_num, ns.sample, ns.version, ns.subversion, **meta)
 
 
 if __name__ == '__main__':
@@ -89,7 +90,7 @@ if __name__ == '__main__':
     group.add_argument('--subversion', type=str, choices=eboss.EZMOCK_SUBVERSIONS, help=h, required=True)
 
     h = 'the value of p to use'
-    group.add_argument('--p', type=float, help=h, required=True)
+    group.add_argument('--p', type=float, help=h, required=False)
 
     h = 'the P0 FKP version to use'
     parser.add_argument('--P0_FKP', type=float, default=3e4, help=h)
