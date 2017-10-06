@@ -22,7 +22,7 @@ def main(ns):
     numpy.seed(42*(randoms.comm.rank+1000))
 
     # select a subsample?
-    if ns.subsample is not None:
+    if ns.subsample is not None and randoms.csize > ns.subsample:
         valid = select_subsample(randoms.size, int(ns.subsample//randoms.comm.size))
         randoms = randoms[valid]
 
