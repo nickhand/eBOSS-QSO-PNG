@@ -35,9 +35,9 @@ def main(ns):
     redges = numpy.logspace(0, 4, 500)
     result = SurveyDataPairCount('2d', r, redges, eboss.fidcosmo, Nmu=100, ra='RA', dec='DEC', redshift='Z')
     result.attrs['N'] = r.csize
-    
+
     # and save!
-    kws = {'subsample':ns.subsample, 'zmin':ns.zmin, 'zmax':ns.zmax, 'redges':'logspace(0,4,500)'}
+    kws = {'subsample':ns.subsample, 'zmin':ns.zmin, 'zmax':ns.zmax, 'redges_str':'logspace(0,4,500)'}
     eboss.save_RR_paircount(result, ns.sample, ns.version, **kws)
 
 if __name__ == '__main__':

@@ -42,7 +42,7 @@ def save_RR_paircount(r, sample, version, **kwargs):
         r.attrs[k] = kwargs[k]
 
     # make the hash
-    usekeys = ['redges', 'zmin', 'zmax', 'N', 'subsample']
+    usekeys = ['redges_str', 'zmin', 'zmax', 'N', 'subsample']
 
     r.attrs['hashkeys'] = usekeys
     id_str = make_hash(r.attrs, usekeys=usekeys)
