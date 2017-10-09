@@ -131,7 +131,8 @@ def echo_hash():
         # filename is a directory --> FIT result
         if os.path.isdir(filename):
             filename = os.path.join(os.path.abspath(filename), 'hashinfo.json')
-            assert os.path.exists(filename)
+            if not os.path.exists(filename):
+                continue
             import json
 
             # use json to load
