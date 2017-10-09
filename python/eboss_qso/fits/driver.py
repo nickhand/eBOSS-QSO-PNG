@@ -50,7 +50,7 @@ class QSOFitDriver(object):
 
         # keywords we are going to add to parameter file template
         kws = {}
-        kws['kmin'] = 0.00001
+        kws['kmin'] = 1e-6
         kws['kmax'] = 1.0
         kws['covariance_file'] = self.preparer.covariance_file
         kws['data_file'] = self.preparer.data_file
@@ -90,6 +90,9 @@ class QSOFitDriver(object):
             for par in ['f', 'sigma8_z']:
                 value = getattr(model, par)
                 theorypars[par].update(value=value, fiducial=value, lower=0.5*value, upper=1.5*value)
+
+            for par in ['alpha_par', 'alpha_perp']:
+                theorypars[par].update(lower=0.6, upper=1.4)
 
             # write to file
             theorypars.to_file(ff, mode='a')
