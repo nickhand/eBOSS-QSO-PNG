@@ -50,6 +50,8 @@ class QSOFitDriver(object):
 
         # keywords we are going to add to parameter file template
         kws = {}
+        kws['kmin'] = 0.00001
+        kws['kmax'] = 1.0
         kws['covariance_file'] = self.preparer.covariance_file
         kws['data_file'] = self.preparer.data_file
         kws['window_file'] = self.preparer.window_file
