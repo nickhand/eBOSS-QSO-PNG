@@ -13,11 +13,13 @@ class eBOSSConfig(object):
     version : str
         the version we are fitting
     """
-    def __init__(self, sample, version):
+    def __init__(self, sample, version, kind):
 
         assert sample in ['N', 'S']
         self.version = version
         self.sample = sample
+        self.kind = kind
+        self._kind_tag = kind if kind == 'data' else 'mocks/' + kind
 
     def _get_nbar_file(self):
         filename = f'nbar-eboss_{self.version}-QSO-{self.sample}-eboss_{self.version}.dat'
@@ -45,11 +47,11 @@ class eBOSSConfig(object):
 
     @property
     def fits_input_dir(self):
-        return os.path.join(os.environ['THESIS_DIR'], 'eBOSS-QSO-PNG', 'fits', 'input')
+        return os.path.join(os.environ['THESIS_DIR'], 'eBOSS-QSO-PNG', 'fits', 'input', self._kind_tag)
 
     @property
     def fits_covariance_dir(self):
-        return os.path.join(self.fits_input_dir, 'covariance', self.version)
+        return os.path.join(self.fits_input_dir, 'covariance' self.version)
 
     @property
     def fits_window_dir(self):
@@ -65,7 +67,7 @@ class eBOSSConfig(object):
 
     @property
     def fits_results_dir(self):
-        return os.path.join(os.environ['THESIS_DIR'], 'eBOSS-QSO-PNG', 'fits', 'results', self.version)
+        return os.path.join(os.environ['THESIS_DIR'], 'eBOSS-QSO-PNG', 'fits', 'results', self._kind_tag, self.version)
 
     @property
     def spectra_dir(self):

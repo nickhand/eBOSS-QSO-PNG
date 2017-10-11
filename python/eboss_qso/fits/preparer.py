@@ -39,8 +39,8 @@ class QSOFitPreparer(object):
         self.quiet = quiet
 
         # dictionary of info from the filename
-        kind = get_spectra_type(self.spectra_file)
-        info = info_from_filename(kind, os.path.basename(self.spectra_file))
+        self.kind = get_spectra_type(self.spectra_file)
+        info = info_from_filename(self.kind, os.path.basename(self.spectra_file))
 
         # make sure we have all of the keys
         assert 'version' in info
@@ -64,7 +64,7 @@ class QSOFitPreparer(object):
         assert all(k in self.hashinput for k in ['zmin', 'zmax'])
 
         # the configuration
-        self.config = eBOSSConfig(self.sample, self.version)
+        self.config = eBOSSConfig(self.sample, self.version, self.kind)
 
         # determine the statistic names
         tag = 'ngc' if self.config.sample == 'N' else 'sgc'

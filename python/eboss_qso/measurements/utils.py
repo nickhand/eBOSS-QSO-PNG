@@ -102,7 +102,7 @@ def get_hashkeys(filename, cls):
             d.update(json.load(ff))
 
         # echo hash info for the spectra file too
-        spectra_file = d.pop('spectra_file')
+        spectra_file = d.get('spectra_file')
         d.update(get_hashkeys(spectra_file, 'ConvolvedFFTPower'))
     else:
         # get the result class

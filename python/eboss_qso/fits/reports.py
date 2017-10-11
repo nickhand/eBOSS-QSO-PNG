@@ -67,7 +67,77 @@ def _load_fit(dirname, burnin=None):
     d.set_fit_results()
     return d
 
-def generate_html_report(dirname, output, burnin=None):
+def generate_redshift_summary(dirname, output, burnin=None):
+    """
+    For a given fit result directory, generate an HTML report.
+
+    Parameters
+    ----------
+    dirname : str
+        the name of the directory holding the fit results
+    output : str
+        the output file name
+    burnin : int, optional
+        the burn-in period
+    """
+    # get the template path/dir
+    template_dir = os.path.join(EBOSS_FITS, "html-templates")
+    template_file = os.path.join(template_dir, "report-template.html")
+
+    # load the driver and bestfit results
+    d = _load_fit(dirname, burnin=burnin)
+    if isinstance(d.results, EmceeResults):
+        bestfit = BestfitParameterSet.from_mcmc(d.results)
+    else:
+        bestfit = BestfitParameterSet.from_nlopt(d.results)
+    bestfit['tex_name'] = [tex_names.get(name, name) for name in bestfit.index]
+
+    # get the hashkeys
+    info = get_hashkeys(dirname, None)
+
+    # make the fit summary
+    fit_summary = "<ul class='list-group'>"
+    for s in _summarize_fit(info, d):
+        fit_summary += s + '\n'
+    fit_summary += "</ul>"
+
+    # get the table
+    table = bestfit.to_ipynb().to_html()
+    table = table.replace('<table border="1" class="dataframe">','<table class="table table-striped">')
+
+    # plot theory/data comparison
+    labels = []
+    for stat in info['stats']:
+        if stat == "P0_sysfree":
+            labels.append(r"$P_0 + 2/5 P_2$")
+        else:
+            labels.append(r"$%s_%s$" %(stat[0], stat[1]))
+
+    fig = plot_fit_comparison(d, labels=labels)
+    div1 = py.plot(fig, output_type='div', include_plotlyjs=False)
+
+    # plot the triangle
+    div2 = ""
+    if isinstance(d.results, EmceeResults):
+        N = len(d.results.free_names)
+        width = 250*N; height = 250*N
+        fig = plot_triangle(d.results, params=d.results.free_names, thin=5, width=width, height=height)
+        div2 = py.plot(fig, output_type='div', include_plotlyjs=False, image_width=width, image_height=height)
+
+    # plot the traces
+    fig = plot_traces(d.results, *d.results.free_names, burnin=0, max_walkers=20)
+    div3 = py.plot(fig, output_type='div', include_plotlyjs=False)
+
+    # render and save!
+    jinja_env = Environment(loader=FileSystemLoader(template_dir))
+    tpl = jinja_env.get_template(os.path.basename(template_file))
+    html_file = tpl.render(fit_summary=fit_summary, summary_table=table, summary_plot=div1, histogram=div2, traces=div3)
+
+    with open(output, 'w') as ff:
+        ff.write(html_file)
+
+
+def generate_fit_report(dirname, output, burnin=None):
     """
     For a given fit result directory, generate an HTML report.
 
@@ -155,17 +225,23 @@ def _get_params_from_model_string(model):
 
     return "[" + ", ".join(out) + "]"
 
-def generate_report_toc():
+def generate_toc(kind):
     """
     Generate the table of contents for the reports, using the structure of
     the HTML reports directory tree.
     """
+    # either REPORT_DIR/data or REPORT_DIR/mocks/ezmock
+    if kind == 'data':
+        subpath = kind
+    else:
+        subpath = os.path.join('mocks', kind)
+
     # get the template path/dir
     template_dir = os.path.join(EBOSS_FITS, "html-templates")
     template_file = os.path.join(template_dir, "index-template.html")
 
     # where we start looking for reports
-    home_dir = os.path.join(EBOSS_FITS, 'reports')
+    home_dir = os.path.join(EBOSS_FITS, 'reports', subpath)
     versions = sorted(glob(os.path.join(home_dir, '*')), reverse=True)
 
     out = ""
@@ -218,12 +294,16 @@ def generate_report_toc():
         ff.write(html_file)
 
 
-def generate_all(*dirpaths, overwrite=False):
+def generate_all(kind, dirpaths=[], overwrite=False):
     """
     Generate the HTML reports, optionally overwriting existing reports.
     """
-    results_dir = os.path.join(EBOSS_FITS, 'results')
-    reports_dir = os.path.join(EBOSS_FITS, 'reports')
+    if kind == 'data':
+        subpath = kind
+    else:
+        subpath = os.path.join('mocks', kind)
+    results_dir = os.path.join(EBOSS_FITS, 'results', subpath)
+    reports_dir = os.path.join(EBOSS_FITS, 'reports', subpath)
 
     def _generate(dirpath):
         # find the results file
@@ -243,7 +323,7 @@ def generate_all(*dirpaths, overwrite=False):
         if not os.path.isdir(this_report_dir):
             mkdir_p(this_report_dir)
         print("generating report for %s..." % relpath)
-        generate_html_report(dirpath, r)
+        generate_fit_report(dirpath, r)
 
     # do specific reports
     if len(dirpaths):
@@ -269,8 +349,11 @@ def _generate_all():
     desc = 'generate HTML reports for eBOSS QSO fits'
     parser = argparse.ArgumentParser(description=desc)
 
+    h = 'the kind of fits, i.e., data, ezmock, etc'
+    parser.add_argument('kind', choices=['data', 'ezmock'], type=str, help=h)
+
     h = 'directories to generate reports for'
-    parser.add_argument('dirpaths', nargs='*', default=[], type=str, help=h)
+    parser.add_argument('--dirpaths', nargs='*', default=[], type=str, help=h)
 
     h = 'whether to overwrite any existing reports'
     parser.add_argument('--overwrite', action='store_true', help=h)
@@ -278,7 +361,7 @@ def _generate_all():
     ns = parser.parse_args()
 
     # generate all reports
-    generate_all(*ns.dirpaths, overwrite=ns.overwrite)
+    generate_all(ns.kind, dirpaths=ns.dirpaths, overwrite=ns.overwrite)
 
     # generate the new TOC
-    generate_report_toc()
+    generate_toc(ns.kind)
