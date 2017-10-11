@@ -51,7 +51,7 @@ class eBOSSConfig(object):
 
     @property
     def fits_covariance_dir(self):
-        return os.path.join(self.fits_input_dir, 'covariance' self.version)
+        return os.path.join(self.fits_input_dir, 'covariance', self.version)
 
     @property
     def fits_window_dir(self):
