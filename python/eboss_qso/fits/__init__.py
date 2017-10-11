@@ -59,7 +59,7 @@ class eBOSSConfig(object):
 
     @property
     def fits_data_dir(self):
-        return os.path.join(self.fits_input_dir, 'data', self.version)
+        return os.path.join(self.fits_input_dir, 'spectra', self.version)
 
     @property
     def fits_params_dir(self):
