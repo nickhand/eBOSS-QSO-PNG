@@ -289,7 +289,7 @@ def generate_toc(kind):
     html_file = tpl.render(index=out)
 
     output = os.path.join(home_dir, 'index.html')
-    print('saving new TOC: %s...' %output)
+    print('saving new TOC: %s' %output)
     with open(output, 'w') as ff:
         ff.write(html_file)
 
@@ -306,6 +306,7 @@ def generate_all(kind, dirpaths=[], overwrite=False):
     reports_dir = os.path.join(EBOSS_FITS, 'reports', subpath)
 
     def _generate(dirpath):
+
         # find the results file
         pattern = os.path.join(dirpath, '*npz')
         result_file = sorted(glob(pattern), key=os.path.getmtime, reverse=True)[0]
@@ -317,18 +318,20 @@ def generate_all(kind, dirpaths=[], overwrite=False):
         r = os.path.join(this_report_dir, 'report.html')
         if os.path.isdir(this_report_dir) and os.path.isfile(r):
             if os.path.getmtime(r) >= mtime and not overwrite:
-                return
+                return 0
 
         # need to make the report
         if not os.path.isdir(this_report_dir):
             mkdir_p(this_report_dir)
         print("generating report for %s..." % relpath)
         generate_fit_report(dirpath, r)
+        return 1
 
     # do specific reports
+    N = 0
     if len(dirpaths):
         for dirpath in dirpaths:
-            _generate(os.path.abspath(dirpath))
+            N += _generate(os.path.abspath(dirpath))
     # do all out-of-date reports
     else:
         # walk the full directory path
@@ -337,7 +340,9 @@ def generate_all(kind, dirpaths=[], overwrite=False):
             # this is a fit result directory
             if all(f in filenames for f in ['params.dat', 'hashinfo.json']):
                 if any(f.endswith('.npz') for f in filenames):
-                    _generate(dirpath)
+                    N += _generate(dirpath)
+
+    return N
 
 def _generate_all():
     """
@@ -361,7 +366,8 @@ def _generate_all():
     ns = parser.parse_args()
 
     # generate all reports
-    generate_all(ns.kind, dirpaths=ns.dirpaths, overwrite=ns.overwrite)
+    updated = generate_all(ns.kind, dirpaths=ns.dirpaths, overwrite=ns.overwrite)
 
     # generate the new TOC
-    generate_toc(ns.kind)
+    if updated:
+        generate_toc(ns.kind)
