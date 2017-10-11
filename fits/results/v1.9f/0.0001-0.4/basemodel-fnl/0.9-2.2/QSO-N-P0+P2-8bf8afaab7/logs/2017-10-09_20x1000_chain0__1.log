@@ -1,0 +1,609 @@
+rank #0: 2017-10-09 13:17:39,343 rsdfit.fitting_driver INFO     rank 0 on utley        using L-BFGS soler to find the maximum probability values to use as initialization
+rank #0: 2017-10-09 13:17:39,343 rsdfit.lbfgs_fitter INFO     running LBFGS minimizer with priors
+rank #0: 2017-10-09 13:17:39,343 root         INFO     Iter          b1        f_nl   sigma_fog   F(X)     
+rank #0: 2017-10-09 13:17:39,626 root         INFO     analytic derivative for parameter 'b1' not available; 'float' object has no attribute 'max'
+rank #0: 2017-10-09 13:17:39,629 root         INFO     analytic derivative for parameter 'f_nl' not available; 'float' object has no attribute 'max'
+rank #0: 2017-10-09 13:17:40,033 LBFGS        INFO     options = {'factr': 100000.0, 'gtol': 1e-05, 'test_convergence': False}
+rank #0: 2017-10-09 13:17:40,033 LBFGS        PARAM    0000          2.000000          0.000000          4.000000        262.129045
+rank #0: 2017-10-09 13:17:40,743 LBFGS        PARAM    0001          2.109177          0.031656          3.920441        169.399096
+rank #0: 2017-10-09 13:17:41,351 LBFGS        PARAM    0002          2.296606          0.135030          3.933660        118.473598
+rank #0: 2017-10-09 13:17:41,927 LBFGS        PARAM    0003          2.274840          0.133992          4.043972        114.008086
+rank #0: 2017-10-09 13:17:42,502 LBFGS        PARAM    0004          2.278644          0.155665          4.216345        111.112904
+rank #0: 2017-10-09 13:17:43,081 LBFGS        PARAM    0005          2.301634          0.195863          4.457834        109.083310
+rank #0: 2017-10-09 13:17:43,659 LBFGS        PARAM    0006          2.308327          0.193344          4.487082        109.014349
+rank #0: 2017-10-09 13:17:44,226 LBFGS        PARAM    0007          2.308360          0.190579          4.487355        109.014334
+rank #0: 2017-10-09 13:17:44,802 LBFGS        PARAM    0008          2.308436          0.169544          4.488031        109.014260
+rank #0: 2017-10-09 13:17:45,359 LBFGS        PARAM    0009          2.308470          0.127701          4.488260        109.014165
+rank #0: 2017-10-09 13:17:45,930 LBFGS        PARAM    0010          2.308401          0.101422          4.487539        109.014129
+rank #0: 2017-10-09 13:17:46,497 LBFGS        PARAM    0011          2.308390          0.100987          4.487521        109.014129
+rank #0: 2017-10-09 13:17:47,076 LBFGS        PARAM    0012          2.308390          0.101103          4.487516        109.014129
+rank #0: 2017-10-09 13:17:47,638 LBFGS        PARAM    0013          2.308390          0.101129          4.487515        109.014129
+rank #0: 2017-10-09 13:17:48,199 LBFGS        PARAM    0014          2.308390          0.101129          4.487515        109.014129
+rank #0: 2017-10-09 13:17:48,756 LBFGS        PARAM    0015          2.308390          0.101129          4.487515        109.014129
+rank #0: 2017-10-09 13:18:28,740 LBFGS        INFO     Linesearch failed in both LBFGS and gradient directions
+rank #0: 2017-10-09 13:18:28,741 LBFGS        PARAM    0015          2.308390          0.101129          4.487515        109.014129
+rank #0: 2017-10-09 13:18:28,741 rsdfit.lbfgs_fitter WARNING  ...LBFGS optimization finished. Time elapsed: 0:00:48.71
+rank #0: 2017-10-09 13:18:28,741 rsdfit.lbfgs_fitter ERROR    nonlinear fit with method L-BFGS-B failed: Linesearch failed in both LBFGS and gradient directions
+rank #0: 2017-10-09 13:18:28,742 rsdfit.fitting_driver INFO     rank 0 on utley        ...done compute maximum probability
+rank #0: 2017-10-09 13:18:28,742 rsdfit.fitting_driver INFO     rank 0 on utley        Calling the 'mcmc' solve function
+rank #0: 2017-10-09 13:18:28,743 rsdfit.emcee_fitter WARNING  EMCEE: initializing walkers in random ball around maximum probability parameters
+rank #0: 2017-10-09 13:18:28,744 rsdfit.emcee_fitter WARNING  EMCEE: initializing sampler with 20 walkers
+rank #0: 2017-10-09 13:18:28,751 rsdfit.emcee_fitter WARNING  EMCEE: running 1000 iterations with 3 free parameters...
+rank #0: 2017-10-09 13:18:33,073 rsdfit.emcee_fitter WARNING  EMCEE Iteration      0/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 0, walker 2)
+      acceptance_fraction (0.0->1.0 (median 1.0))
+  b1              = 2.30854 +/- 0.0011511    (best=2.30855)
+  f_nl            = 0.101505 +/- 0.00130214   (best=0.101919)
+  sigma_fog       = 4.48788 +/- 0.00105825   (best=4.48799)
+
+rank #0: 2017-10-09 13:18:35,280 rsdfit.emcee_fitter WARNING  EMCEE Iteration      1/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 0, walker 2)
+      acceptance_fraction (0.0->1.0 (median 1.0))
+  b1              = 2.30854 +/- 0.00149051   (best=2.30855) (autocorr: 2)
+  f_nl            = 0.101449 +/- 0.0015818    (best=0.101919) (autocorr: 2)
+  sigma_fog       = 4.48771 +/- 0.00124353   (best=4.48799) (autocorr: 2)
+
+rank #0: 2017-10-09 13:18:37,450 rsdfit.emcee_fitter WARNING  EMCEE Iteration      2/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 0, walker 2)
+      acceptance_fraction (0.0->1.0 (median 0.6666666666666666))
+  b1              = 2.30858 +/- 0.00191838   (best=2.30855) (autocorr: 3)
+  f_nl            = 0.101386 +/- 0.00192046   (best=0.101919) (autocorr: 3)
+  sigma_fog       = 4.48757 +/- 0.00145595   (best=4.48799) (autocorr: 3)
+
+rank #0: 2017-10-09 13:18:39,610 rsdfit.emcee_fitter WARNING  EMCEE Iteration      3/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.25->1.0 (median 0.75))
+  b1              = 2.3086 +/- 0.00230862   (best=2.30846) (autocorr: 3.99)
+  f_nl            = 0.101449 +/- 0.00233052   (best=0.0993906) (autocorr: 3.99)
+  sigma_fog       = 4.48755 +/- 0.00179812   (best=4.48776) (autocorr: 3.99)
+
+rank #0: 2017-10-09 13:18:41,965 rsdfit.emcee_fitter WARNING  EMCEE Iteration      4/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.4->1.0 (median 0.8))
+  b1              = 2.30857 +/- 0.00269723   (best=2.30846)
+  f_nl            = 0.101512 +/- 0.00267825   (best=0.0993906)
+  sigma_fog       = 4.48753 +/- 0.0021499    (best=4.48776)
+
+rank #0: 2017-10-09 13:18:44,282 rsdfit.emcee_fitter WARNING  EMCEE Iteration      5/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5->1.0 (median 0.8333333333333334))
+  b1              = 2.3086 +/- 0.00307715   (best=2.30846)
+  f_nl            = 0.101512 +/- 0.00304595   (best=0.0993906)
+  sigma_fog       = 4.4875 +/- 0.00261407   (best=4.48776)
+
+rank #0: 2017-10-09 13:18:46,510 rsdfit.emcee_fitter WARNING  EMCEE Iteration      6/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5714285714285714->1.0 (median 0.7142857142857143))
+  b1              = 2.30861 +/- 0.00412512   (best=2.30846)
+  f_nl            = 0.10143 +/- 0.00403097   (best=0.0993906)
+  sigma_fog       = 4.48749 +/- 0.0035912    (best=4.48776)
+
+rank #0: 2017-10-09 13:18:48,719 rsdfit.emcee_fitter WARNING  EMCEE Iteration      7/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.625->1.0 (median 0.75))
+  b1              = 2.30863 +/- 0.00472458   (best=2.30846)
+  f_nl            = 0.101386 +/- 0.00457483   (best=0.0993906)
+  sigma_fog       = 4.48748 +/- 0.00418595   (best=4.48776)
+
+rank #0: 2017-10-09 13:18:50,932 rsdfit.emcee_fitter WARNING  EMCEE Iteration      8/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5555555555555556->1.0 (median 0.7777777777777778))
+  b1              = 2.30867 +/- 0.00548609   (best=2.30846)
+  f_nl            = 0.101386 +/- 0.00558359   (best=0.0993906)
+  sigma_fog       = 4.48748 +/- 0.00503169   (best=4.48776)
+
+rank #0: 2017-10-09 13:18:53,160 rsdfit.emcee_fitter WARNING  EMCEE Iteration      9/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5->1.0 (median 0.8))
+  b1              = 2.30872 +/- 0.00630036   (best=2.30846)
+  f_nl            = 0.101386 +/- 0.00706542   (best=0.0993906)
+  sigma_fog       = 4.48748 +/- 0.00580959   (best=4.48776)
+
+rank #0: 2017-10-09 13:18:55,449 rsdfit.emcee_fitter WARNING  EMCEE Iteration     10/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5454545454545454->1.0 (median 0.8181818181818182))
+  b1              = 2.30892 +/- 0.00723208   (best=2.30846)
+  f_nl            = 0.101299 +/- 0.00841326   (best=0.0993906)
+  sigma_fog       = 4.48743 +/- 0.00667957   (best=4.48776)
+
+rank #0: 2017-10-09 13:19:00,266 rsdfit.emcee_fitter WARNING  EMCEE Iteration     12/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.6153846153846154->0.9230769230769231 (median 0.7692307692307693))
+  b1              = 2.30947 +/- 0.00975117   (best=2.30846)
+  f_nl            = 0.100987 +/- 0.0121242    (best=0.0993906)
+  sigma_fog       = 4.48733 +/- 0.00962895   (best=4.48776)
+
+rank #0: 2017-10-09 13:19:04,665 rsdfit.emcee_fitter WARNING  EMCEE Iteration     14/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5333333333333333->0.9333333333333333 (median 0.8))
+  b1              = 2.31018 +/- 0.0123074    (best=2.30846)
+  f_nl            = 0.0995257 +/- 0.015711     (best=0.0993906)
+  sigma_fog       = 4.48737 +/- 0.0171428    (best=4.48776)
+
+rank #0: 2017-10-09 13:19:09,019 rsdfit.emcee_fitter WARNING  EMCEE Iteration     16/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5294117647058824->0.9411764705882353 (median 0.7941176470588235))
+  b1              = 2.31202 +/- 0.0144431    (best=2.30846)
+  f_nl            = 0.0992677 +/- 0.0193596    (best=0.0993906)
+  sigma_fog       = 4.48758 +/- 0.0275252    (best=4.48776)
+
+rank #0: 2017-10-09 13:19:13,436 rsdfit.emcee_fitter WARNING  EMCEE Iteration     18/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5789473684210527->0.8947368421052632 (median 0.7894736842105263))
+  b1              = 2.31202 +/- 0.0164988    (best=2.30846)
+  f_nl            = 0.0994847 +/- 0.0240412    (best=0.0993906)
+  sigma_fog       = 4.48758 +/- 0.0371554    (best=4.48776)
+
+rank #0: 2017-10-09 13:19:18,051 rsdfit.emcee_fitter WARNING  EMCEE Iteration     20/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5714285714285714->0.9047619047619048 (median 0.8095238095238095))
+  b1              = 2.31167 +/- 0.0184782    (best=2.30846)
+  f_nl            = 0.101279 +/- 0.0296293    (best=0.0993906)
+  sigma_fog       = 4.48834 +/- 0.0513256    (best=4.48776)
+
+rank #0: 2017-10-09 13:19:22,428 rsdfit.emcee_fitter WARNING  EMCEE Iteration     22/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5652173913043478->0.8695652173913043 (median 0.8043478260869565))
+  b1              = 2.31121 +/- 0.0202126    (best=2.30846)
+  f_nl            = 0.101753 +/- 0.0381216    (best=0.0993906)
+  sigma_fog       = 4.48785 +/- 0.0674442    (best=4.48776)
+
+rank #0: 2017-10-09 13:19:26,792 rsdfit.emcee_fitter WARNING  EMCEE Iteration     24/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.56->0.88 (median 0.76))
+  b1              = 2.3094 +/- 0.0212815    (best=2.30846)
+  f_nl            = 0.103002 +/- 0.0463732    (best=0.0993906)
+  sigma_fog       = 4.48713 +/- 0.083399     (best=4.48776)
+
+rank #0: 2017-10-09 13:19:31,164 rsdfit.emcee_fitter WARNING  EMCEE Iteration     26/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5555555555555556->0.8888888888888888 (median 0.7592592592592593))
+  b1              = 2.30921 +/- 0.0225004    (best=2.30846)
+  f_nl            = 0.105011 +/- 0.0551309    (best=0.0993906)
+  sigma_fog       = 4.48401 +/- 0.102582     (best=4.48776)
+
+rank #0: 2017-10-09 13:19:35,512 rsdfit.emcee_fitter WARNING  EMCEE Iteration     28/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5172413793103449->0.8620689655172413 (median 0.7586206896551724))
+  b1              = 2.30958 +/- 0.0229519    (best=2.30846)
+  f_nl            = 0.105541 +/- 0.0656616    (best=0.0993906)
+  sigma_fog       = 4.48181 +/- 0.115076     (best=4.48776)
+
+rank #0: 2017-10-09 13:19:39,914 rsdfit.emcee_fitter WARNING  EMCEE Iteration     30/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.4838709677419355->0.8709677419354839 (median 0.7580645161290323))
+  b1              = 2.30622 +/- 0.0230968    (best=2.30846)
+  f_nl            = 0.109351 +/- 0.0754592    (best=0.0993906)
+  sigma_fog       = 4.47584 +/- 0.130467     (best=4.48776)
+
+rank #0: 2017-10-09 13:19:44,267 rsdfit.emcee_fitter WARNING  EMCEE Iteration     32/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.45454545454545453->0.8787878787878788 (median 0.7575757575757576))
+  b1              = 2.30544 +/- 0.0230658    (best=2.30846)
+  f_nl            = 0.113041 +/- 0.0858209    (best=0.0993906)
+  sigma_fog       = 4.47941 +/- 0.148292     (best=4.48776)
+
+rank #0: 2017-10-09 13:19:48,656 rsdfit.emcee_fitter WARNING  EMCEE Iteration     34/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.42857142857142855->0.8571428571428571 (median 0.7714285714285715))
+  b1              = 2.3028 +/- 0.0228205    (best=2.30846)
+  f_nl            = 0.116705 +/- 0.0913797    (best=0.0993906)
+  sigma_fog       = 4.47516 +/- 0.158483     (best=4.48776)
+
+rank #0: 2017-10-09 13:19:53,072 rsdfit.emcee_fitter WARNING  EMCEE Iteration     36/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.43243243243243246->0.8378378378378378 (median 0.7567567567567568))
+  b1              = 2.30291 +/- 0.0215687    (best=2.30846)
+  f_nl            = 0.12901 +/- 0.0939999    (best=0.0993906)
+  sigma_fog       = 4.48195 +/- 0.160524     (best=4.48776)
+
+rank #0: 2017-10-09 13:19:57,460 rsdfit.emcee_fitter WARNING  EMCEE Iteration     38/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.4358974358974359->0.8461538461538461 (median 0.7435897435897436))
+  b1              = 2.30265 +/- 0.0206249    (best=2.30846)
+  f_nl            = 0.136268 +/- 0.0947051    (best=0.0993906)
+  sigma_fog       = 4.48547 +/- 0.167075     (best=4.48776)
+
+rank #0: 2017-10-09 13:20:02,414 rsdfit.emcee_fitter WARNING  EMCEE Iteration     40/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.4634146341463415->0.8292682926829268 (median 0.7195121951219512))
+  b1              = 2.30185 +/- 0.0201115    (best=2.30846)
+  f_nl            = 0.137857 +/- 0.098816     (best=0.0993906)
+  sigma_fog       = 4.50027 +/- 0.167059     (best=4.48776)
+
+rank #0: 2017-10-09 13:20:06,858 rsdfit.emcee_fitter WARNING  EMCEE Iteration     42/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.46511627906976744->0.813953488372093 (median 0.7325581395348837))
+  b1              = 2.30257 +/- 0.0198488    (best=2.30846)
+  f_nl            = 0.140185 +/- 0.105462     (best=0.0993906)
+  sigma_fog       = 4.48547 +/- 0.1569       (best=4.48776)
+
+rank #0: 2017-10-09 13:20:11,271 rsdfit.emcee_fitter WARNING  EMCEE Iteration     44/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.4888888888888889->0.8222222222222222 (median 0.7333333333333334))
+  b1              = 2.30307 +/- 0.019165     (best=2.30846)
+  f_nl            = 0.138582 +/- 0.11548      (best=0.0993906)
+  sigma_fog       = 4.48049 +/- 0.149119     (best=4.48776)
+
+rank #0: 2017-10-09 13:20:15,653 rsdfit.emcee_fitter WARNING  EMCEE Iteration     46/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5106382978723404->0.8085106382978723 (median 0.7234042553191489))
+  b1              = 2.30307 +/- 0.0195855    (best=2.30846)
+  f_nl            = 0.134552 +/- 0.154612     (best=0.0993906)
+  sigma_fog       = 4.46848 +/- 0.143572     (best=4.48776)
+
+rank #0: 2017-10-09 13:20:20,057 rsdfit.emcee_fitter WARNING  EMCEE Iteration     48/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5102040816326531->0.8163265306122449 (median 0.7244897959183674))
+  b1              = 2.30307 +/- 0.0200734    (best=2.30846)
+  f_nl            = 0.131699 +/- 0.187482     (best=0.0993906)
+  sigma_fog       = 4.46039 +/- 0.137552     (best=4.48776)
+
+rank #0: 2017-10-09 13:20:24,628 rsdfit.emcee_fitter WARNING  EMCEE Iteration     50/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5098039215686274->0.8235294117647058 (median 0.7352941176470589))
+  b1              = 2.30373 +/- 0.0202673    (best=2.30846)
+  f_nl            = 0.127362 +/- 0.214409     (best=0.0993906)
+  sigma_fog       = 4.4549 +/- 0.137382     (best=4.48776)
+
+rank #0: 2017-10-09 13:20:47,092 rsdfit.emcee_fitter WARNING  EMCEE Iteration     60/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5409836065573771->0.8032786885245902 (median 0.7377049180327869))
+  b1              = 2.30834 +/- 0.0175977    (best=2.30846)
+  f_nl            = 0.13162 +/- 0.736586     (best=0.0993906)
+  sigma_fog       = 4.42896 +/- 0.171915     (best=4.48776)
+
+rank #0: 2017-10-09 13:21:09,661 rsdfit.emcee_fitter WARNING  EMCEE Iteration     70/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5774647887323944->0.8169014084507042 (median 0.7253521126760564))
+  b1              = 2.31014 +/- 0.016436     (best=2.30846)
+  f_nl            = -0.219283 +/- 2.53164      (best=0.0993906)
+  sigma_fog       = 4.47099 +/- 0.138768     (best=4.48776)
+
+rank #0: 2017-10-09 13:21:34,582 rsdfit.emcee_fitter WARNING  EMCEE Iteration     80/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5679012345679012->0.7901234567901234 (median 0.7222222222222222))
+  b1              = 2.31077 +/- 0.0183278    (best=2.30846)
+  f_nl            = -1.48205 +/- 3.81921      (best=0.0993906)
+  sigma_fog       = 4.50267 +/- 0.146538     (best=4.48776)
+
+rank #0: 2017-10-09 13:21:56,504 rsdfit.emcee_fitter WARNING  EMCEE Iteration     90/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5714285714285714->0.8131868131868132 (median 0.7032967032967034))
+  b1              = 2.31396 +/- 0.0181974    (best=2.30846)
+  f_nl            = -1.16803 +/- 4.35         (best=0.0993906)
+  sigma_fog       = 4.51225 +/- 0.159756     (best=4.48776)
+
+rank #0: 2017-10-09 13:22:18,029 rsdfit.emcee_fitter WARNING  EMCEE Iteration    100/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5841584158415841->0.7920792079207921 (median 0.693069306930693))
+  b1              = 2.31157 +/- 0.0169205    (best=2.30846)
+  f_nl            = -0.743057 +/- 3.79091      (best=0.0993906)
+  sigma_fog       = 4.5432 +/- 0.154921     (best=4.48776)
+
+rank #0: 2017-10-09 13:22:39,669 rsdfit.emcee_fitter WARNING  EMCEE Iteration    110/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5765765765765766->0.7747747747747747 (median 0.6891891891891893))
+  b1              = 2.30581 +/- 0.0160976    (best=2.30846)
+  f_nl            = -0.0337131 +/- 4.08981      (best=0.0993906)
+  sigma_fog       = 4.50227 +/- 0.139962     (best=4.48776)
+
+rank #0: 2017-10-09 13:23:04,367 rsdfit.emcee_fitter WARNING  EMCEE Iteration    120/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5702479338842975->0.7603305785123967 (median 0.6818181818181819))
+  b1              = 2.30661 +/- 0.0203661    (best=2.30846)
+  f_nl            = 0.147305 +/- 4.68533      (best=0.0993906)
+  sigma_fog       = 4.48947 +/- 0.149501     (best=4.48776)
+
+rank #0: 2017-10-09 13:23:27,140 rsdfit.emcee_fitter WARNING  EMCEE Iteration    130/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5725190839694656->0.7633587786259542 (median 0.6717557251908397))
+  b1              = 2.30914 +/- 0.0166748    (best=2.30846)
+  f_nl            = 0.237532 +/- 4.25335      (best=0.0993906)
+  sigma_fog       = 4.46133 +/- 0.10947      (best=4.48776)
+
+rank #0: 2017-10-09 13:23:50,665 rsdfit.emcee_fitter WARNING  EMCEE Iteration    140/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.574468085106383->0.7588652482269503 (median 0.6666666666666666))
+  b1              = 2.30898 +/- 0.014494     (best=2.30846)
+  f_nl            = -0.0524319 +/- 4.1145       (best=0.0993906)
+  sigma_fog       = 4.47424 +/- 0.121722     (best=4.48776)
+
+rank #0: 2017-10-09 13:24:13,500 rsdfit.emcee_fitter WARNING  EMCEE Iteration    150/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5827814569536424->0.7417218543046358 (median 0.6688741721854305))
+  b1              = 2.3133 +/- 0.0178654    (best=2.30846)
+  f_nl            = -0.748251 +/- 4.37332      (best=0.0993906)
+  sigma_fog       = 4.46824 +/- 0.114801     (best=4.48776)
+
+rank #0: 2017-10-09 13:24:36,264 rsdfit.emcee_fitter WARNING  EMCEE Iteration    160/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.577639751552795->0.7453416149068323 (median 0.6708074534161491))
+  b1              = 2.31601 +/- 0.019286     (best=2.30846)
+  f_nl            = -1.86019 +/- 3.2541       (best=0.0993906)
+  sigma_fog       = 4.47369 +/- 0.120134     (best=4.48776)
+
+rank #0: 2017-10-09 13:24:58,852 rsdfit.emcee_fitter WARNING  EMCEE Iteration    170/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5789473684210527->0.7485380116959064 (median 0.6783625730994152))
+  b1              = 2.31944 +/- 0.0148052    (best=2.30846)
+  f_nl            = -1.87847 +/- 3.67667      (best=0.0993906)
+  sigma_fog       = 4.51398 +/- 0.14289      (best=4.48776)
+
+rank #0: 2017-10-09 13:25:21,123 rsdfit.emcee_fitter WARNING  EMCEE Iteration    180/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5911602209944752->0.7458563535911602 (median 0.6685082872928176))
+  b1              = 2.31793 +/- 0.0162015    (best=2.30846)
+  f_nl            = -1.77119 +/- 4.13291      (best=0.0993906)
+  sigma_fog       = 4.5149 +/- 0.155031     (best=4.48776)
+
+rank #0: 2017-10-09 13:25:43,367 rsdfit.emcee_fitter WARNING  EMCEE Iteration    190/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5863874345549738->0.7486910994764397 (median 0.6649214659685865))
+  b1              = 2.31258 +/- 0.0175048    (best=2.30846)
+  f_nl            = -1.86511 +/- 3.84902      (best=0.0993906)
+  sigma_fog       = 4.44299 +/- 0.155139     (best=4.48776)
+
+rank #0: 2017-10-09 13:26:05,433 rsdfit.emcee_fitter WARNING  EMCEE Iteration    200/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5920398009950248->0.7412935323383084 (median 0.6616915422885572))
+  b1              = 2.3105 +/- 0.0180547    (best=2.30846)
+  f_nl            = -0.683029 +/- 4.09418      (best=0.0993906)
+  sigma_fog       = 4.45289 +/- 0.127552     (best=4.48776)
+
+rank #0: 2017-10-09 13:26:28,361 rsdfit.emcee_fitter WARNING  EMCEE Iteration    210/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5876777251184834->0.7298578199052133 (median 0.6611374407582938))
+  b1              = 2.31109 +/- 0.0194611    (best=2.30846)
+  f_nl            = -0.518631 +/- 3.4551       (best=0.0993906)
+  sigma_fog       = 4.47973 +/- 0.151884     (best=4.48776)
+
+rank #0: 2017-10-09 13:26:50,318 rsdfit.emcee_fitter WARNING  EMCEE Iteration    220/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.579185520361991->0.7330316742081447 (median 0.6583710407239819))
+  b1              = 2.30889 +/- 0.021396     (best=2.30846)
+  f_nl            = 0.344688 +/- 3.85237      (best=0.0993906)
+  sigma_fog       = 4.43126 +/- 0.164984     (best=4.48776)
+
+rank #0: 2017-10-09 13:27:12,658 rsdfit.emcee_fitter WARNING  EMCEE Iteration    230/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5714285714285714->0.7316017316017316 (median 0.6623376623376623))
+  b1              = 2.30892 +/- 0.0202672    (best=2.30846)
+  f_nl            = 0.170497 +/- 3.16252      (best=0.0993906)
+  sigma_fog       = 4.42223 +/- 0.153436     (best=4.48776)
+
+rank #0: 2017-10-09 13:27:34,166 rsdfit.emcee_fitter WARNING  EMCEE Iteration    240/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5726141078838174->0.7261410788381742 (median 0.6576763485477178))
+  b1              = 2.30702 +/- 0.0175571    (best=2.30846)
+  f_nl            = -0.983338 +/- 3.51823      (best=0.0993906)
+  sigma_fog       = 4.45472 +/- 0.160771     (best=4.48776)
+
+rank #0: 2017-10-09 13:27:57,122 rsdfit.emcee_fitter WARNING  EMCEE Iteration    250/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5856573705179283->0.7171314741035857 (median 0.6553784860557769))
+  b1              = 2.30695 +/- 0.0152556    (best=2.30846)
+  f_nl            = -0.373183 +/- 3.72053      (best=0.0993906)
+  sigma_fog       = 4.49817 +/- 0.147805     (best=4.48776)
+
+rank #0: 2017-10-09 13:28:19,868 rsdfit.emcee_fitter WARNING  EMCEE Iteration    260/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5862068965517241->0.7164750957854407 (median 0.6532567049808429))
+  b1              = 2.30972 +/- 0.0189204    (best=2.30846)
+  f_nl            = -1.56052 +/- 4.11944      (best=0.0993906)
+  sigma_fog       = 4.46916 +/- 0.152445     (best=4.48776)
+
+rank #0: 2017-10-09 13:28:42,228 rsdfit.emcee_fitter WARNING  EMCEE Iteration    270/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5867158671586716->0.7195571955719557 (median 0.6531365313653137))
+  b1              = 2.30535 +/- 0.0163061    (best=2.30846)
+  f_nl            = -2.28895 +/- 3.90346      (best=0.0993906)
+  sigma_fog       = 4.45797 +/- 0.163578     (best=4.48776)
+
+rank #0: 2017-10-09 13:29:03,894 rsdfit.emcee_fitter WARNING  EMCEE Iteration    280/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5871886120996441->0.7224199288256228 (median 0.6548042704626335))
+  b1              = 2.3062 +/- 0.0145889    (best=2.30846)
+  f_nl            = -1.92353 +/- 4.21096      (best=0.0993906)
+  sigma_fog       = 4.46633 +/- 0.11532      (best=4.48776)
+
+rank #0: 2017-10-09 13:29:25,608 rsdfit.emcee_fitter WARNING  EMCEE Iteration    290/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5910652920962199->0.7285223367697594 (median 0.6597938144329897))
+  b1              = 2.30614 +/- 0.0169422    (best=2.30846)
+  f_nl            = -1.60381 +/- 4.22784      (best=0.0993906)
+  sigma_fog       = 4.44972 +/- 0.114106     (best=4.48776)
+
+rank #0: 2017-10-09 13:29:47,497 rsdfit.emcee_fitter WARNING  EMCEE Iteration    300/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5880398671096345->0.7209302325581395 (median 0.6611295681063123))
+  b1              = 2.30836 +/- 0.0158842    (best=2.30846)
+  f_nl            = -1.62959 +/- 4.03203      (best=0.0993906)
+  sigma_fog       = 4.47019 +/- 0.123812     (best=4.48776)
+
+rank #0: 2017-10-09 13:30:09,973 rsdfit.emcee_fitter WARNING  EMCEE Iteration    310/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5916398713826366->0.7234726688102894 (median 0.657556270096463))
+  b1              = 2.30991 +/- 0.0150097    (best=2.30846)
+  f_nl            = -0.590116 +/- 4.85875      (best=0.0993906)
+  sigma_fog       = 4.50341 +/- 0.142338     (best=4.48776)
+
+rank #0: 2017-10-09 13:30:32,774 rsdfit.emcee_fitter WARNING  EMCEE Iteration    320/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5950155763239875->0.7133956386292835 (median 0.660436137071651))
+  b1              = 2.31125 +/- 0.0172537    (best=2.30846)
+  f_nl            = -0.304647 +/- 5.13628      (best=0.0993906)
+  sigma_fog       = 4.48998 +/- 0.12832      (best=4.48776)
+
+rank #0: 2017-10-09 13:30:55,877 rsdfit.emcee_fitter WARNING  EMCEE Iteration    330/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5861027190332326->0.7039274924471299 (median 0.6555891238670695))
+  b1              = 2.30676 +/- 0.0215196    (best=2.30846)
+  f_nl            = -1.04802 +/- 5.39183      (best=0.0993906)
+  sigma_fog       = 4.48649 +/- 0.131768     (best=4.48776)
+
+rank #0: 2017-10-09 13:31:19,004 rsdfit.emcee_fitter WARNING  EMCEE Iteration    340/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.592375366568915->0.7038123167155426 (median 0.656891495601173))
+  b1              = 2.30904 +/- 0.0210109    (best=2.30846)
+  f_nl            = 0.733407 +/- 4.73534      (best=0.0993906)
+  sigma_fog       = 4.47675 +/- 0.11806      (best=4.48776)
+
+rank #0: 2017-10-09 13:31:40,673 rsdfit.emcee_fitter WARNING  EMCEE Iteration    350/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5982905982905983->0.7065527065527065 (median 0.6538461538461539))
+  b1              = 2.31346 +/- 0.0230047    (best=2.30846)
+  f_nl            = 2.00345 +/- 4.35135      (best=0.0993906)
+  sigma_fog       = 4.54667 +/- 0.124786     (best=4.48776)
+
+rank #0: 2017-10-09 13:32:02,293 rsdfit.emcee_fitter WARNING  EMCEE Iteration    360/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.590027700831025->0.7008310249307479 (median 0.6592797783933518))
+  b1              = 2.31028 +/- 0.019949     (best=2.30846)
+  f_nl            = 1.81009 +/- 3.82039      (best=0.0993906)
+  sigma_fog       = 4.47559 +/- 0.118661     (best=4.48776)
+
+rank #0: 2017-10-09 13:32:23,898 rsdfit.emcee_fitter WARNING  EMCEE Iteration    370/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5902964959568733->0.6954177897574124 (median 0.6590296495956873))
+  b1              = 2.31313 +/- 0.0181705    (best=2.30846)
+  f_nl            = 1.04664 +/- 3.89703      (best=0.0993906)
+  sigma_fog       = 4.47997 +/- 0.133016     (best=4.48776)
+
+rank #0: 2017-10-09 13:32:45,633 rsdfit.emcee_fitter WARNING  EMCEE Iteration    380/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.5984251968503937->0.6955380577427821 (median 0.6574803149606299))
+  b1              = 2.31173 +/- 0.015544     (best=2.30846)
+  f_nl            = 0.343997 +/- 4.46088      (best=0.0993906)
+  sigma_fog       = 4.48166 +/- 0.127087     (best=4.48776)
+
+rank #0: 2017-10-09 13:33:07,279 rsdfit.emcee_fitter WARNING  EMCEE Iteration    390/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.59846547314578->0.6956521739130435 (median 0.6572890025575447))
+  b1              = 2.31484 +/- 0.0132785    (best=2.30846)
+  f_nl            = -0.0759704 +/- 4.45398      (best=0.0993906)
+  sigma_fog       = 4.48102 +/- 0.134681     (best=4.48776)
+
+rank #0: 2017-10-09 13:33:28,861 rsdfit.emcee_fitter WARNING  EMCEE Iteration    400/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.6059850374064838->0.7007481296758105 (median 0.6546134663341646))
+  b1              = 2.31354 +/- 0.012917     (best=2.30846)
+  f_nl            = -2.24841 +/- 4.48389      (best=0.0993906)
+  sigma_fog       = 4.48963 +/- 0.131854     (best=4.48776)
+
+rank #0: 2017-10-09 13:33:50,352 rsdfit.emcee_fitter WARNING  EMCEE Iteration    410/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.6034063260340633->0.7007299270072993 (median 0.6520681265206812))
+  b1              = 2.31507 +/- 0.0209188    (best=2.30846)
+  f_nl            = -1.14887 +/- 4.25644      (best=0.0993906)
+  sigma_fog       = 4.47647 +/- 0.127743     (best=4.48776)
+
+rank #0: 2017-10-09 13:34:11,957 rsdfit.emcee_fitter WARNING  EMCEE Iteration    420/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.6057007125890737->0.7007125890736342 (median 0.6543942992874109))
+  b1              = 2.30846 +/- 0.0169396    (best=2.30846)
+  f_nl            = -0.650031 +/- 3.89674      (best=0.0993906)
+  sigma_fog       = 4.46479 +/- 0.113932     (best=4.48776)
+
+rank #0: 2017-10-09 13:34:33,656 rsdfit.emcee_fitter WARNING  EMCEE Iteration    430/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.6102088167053364->0.703016241299304 (median 0.654292343387471))
+  b1              = 2.31053 +/- 0.0150639    (best=2.30846)
+  f_nl            = -0.567293 +/- 4.34831      (best=0.0993906)
+  sigma_fog       = 4.48447 +/- 0.110431     (best=4.48776)
+
+rank #0: 2017-10-09 13:34:55,390 rsdfit.emcee_fitter WARNING  EMCEE Iteration    440/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.6122448979591837->0.6984126984126984 (median 0.6519274376417233))
+  b1              = 2.30978 +/- 0.0187119    (best=2.30846)
+  f_nl            = -1.35589 +/- 4.35172      (best=0.0993906)
+  sigma_fog       = 4.48369 +/- 0.129722     (best=4.48776)
+
+rank #0: 2017-10-09 13:35:17,033 rsdfit.emcee_fitter WARNING  EMCEE Iteration    450/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.6119733924611973->0.6984478935698448 (median 0.6518847006651884))
+  b1              = 2.30674 +/- 0.0201741    (best=2.30846)
+  f_nl            = -1.43517 +/- 4.16183      (best=0.0993906)
+  sigma_fog       = 4.47079 +/- 0.135875     (best=4.48776)
+
+rank #0: 2017-10-09 13:35:38,601 rsdfit.emcee_fitter WARNING  EMCEE Iteration    460/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.613882863340564->0.6984815618221258 (median 0.6529284164859002))
+  b1              = 2.30973 +/- 0.0198997    (best=2.30846)
+  f_nl            = -0.804068 +/- 4.08191      (best=0.0993906)
+  sigma_fog       = 4.48219 +/- 0.136467     (best=4.48776)
+
+rank #0: 2017-10-09 13:36:00,264 rsdfit.emcee_fitter WARNING  EMCEE Iteration    470/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.6157112526539278->0.7006369426751592 (median 0.6528662420382165))
+  b1              = 2.31148 +/- 0.0184728    (best=2.30846)
+  f_nl            = -1.50395 +/- 3.69497      (best=0.0993906)
+  sigma_fog       = 4.48999 +/- 0.139701     (best=4.48776)
+
+rank #0: 2017-10-09 13:36:22,200 rsdfit.emcee_fitter WARNING  EMCEE Iteration    480/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.6174636174636174->0.6985446985446986 (median 0.6528066528066528))
+  b1              = 2.31291 +/- 0.0172795    (best=2.30846)
+  f_nl            = -0.606393 +/- 3.85363      (best=0.0993906)
+  sigma_fog       = 4.50787 +/- 0.159152     (best=4.48776)
+
+rank #0: 2017-10-09 13:36:44,525 rsdfit.emcee_fitter WARNING  EMCEE Iteration    490/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.6171079429735234->0.6985743380855397 (median 0.6507128309572301))
+  b1              = 2.31416 +/- 0.0210926    (best=2.30846)
+  f_nl            = -0.168082 +/- 3.76085      (best=0.0993906)
+  sigma_fog       = 4.50302 +/- 0.160515     (best=4.48776)
+
+rank #0: 2017-10-09 13:37:07,430 rsdfit.emcee_fitter WARNING  EMCEE Iteration    500/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.6127744510978044->0.6946107784431138 (median 0.6497005988023952))
+  b1              = 2.31313 +/- 0.0234458    (best=2.30846)
+  f_nl            = -0.362431 +/- 3.27384      (best=0.0993906)
+  sigma_fog       = 4.53536 +/- 0.14434      (best=4.48776)
+
+rank #0: 2017-10-09 13:40:57,222 rsdfit.emcee_fitter WARNING  EMCEE Iteration    600/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.6206322795341098->0.6938435940099834 (median 0.6497504159733777))
+  b1              = 2.31213 +/- 0.0185612    (best=2.30846)
+  f_nl            = 0.720901 +/- 4.02671      (best=0.0993906)
+  sigma_fog       = 4.45858 +/- 0.142826     (best=4.48776)
+
+rank #0: 2017-10-09 13:44:54,385 rsdfit.emcee_fitter WARNING  EMCEE Iteration    700/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.62339514978602->0.6776034236804565 (median 0.6476462196861626))
+  b1              = 2.30482 +/- 0.0150217    (best=2.30846)
+  f_nl            = 1.29314 +/- 3.6405       (best=0.0993906)
+  sigma_fog       = 4.47322 +/- 0.149566     (best=4.48776)
+
+rank #0: 2017-10-09 13:48:31,263 rsdfit.emcee_fitter WARNING  EMCEE Iteration    800/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.6179775280898876->0.682896379525593 (median 0.6460674157303371))
+  b1              = 2.30603 +/- 0.0160839    (best=2.30846)
+  f_nl            = -0.576796 +/- 4.19241      (best=0.0993906)
+  sigma_fog       = 4.43518 +/- 0.148155     (best=4.48776)
+
+rank #0: 2017-10-09 13:52:04,234 rsdfit.emcee_fitter WARNING  EMCEE Iteration    900/1000  : 20 walkers, 3 parameters
+      best logp = -109.014 (reached at iter 3, walker 8)
+      acceptance_fraction (0.6248612652608213->0.6870144284128746 (median 0.6481687014428413))
+  b1              = 2.31094 +/- 0.0177395    (best=2.30846)
+  f_nl            = 0.170599 +/- 4.25716      (best=0.0993906)
+  sigma_fog       = 4.46857 +/- 0.148957     (best=4.48776)
+
+rank #0: 2017-10-09 13:55:35,122 rsdfit.emcee_fitter WARNING  EMCEE: ...iterations finished. Time elapsed: 0:37:06.37
+rank #0: 2017-10-09 13:55:35,123 rsdfit.emcee_fitter WARNING  EMCEE: mean acceptance fraction: 0.651
+rank #0: 2017-10-09 13:55:37,032 rsdfit.emcee_fitter WARNING  EMCEE: exiting EMCEE fitter with exception = False
+rank #0: 2017-10-09 13:55:37,032 rsdfit.fitting_driver INFO     rank 0 on utley        ...fitting complete
+rank #0: 2017-10-09 13:55:37,033 rsdfit.fitting_driver INFO     rank 0 on utley        Saving the results to `/Users/nhand/Research/Analysis/thesis/eBOSS-QSO-PNG/fits/results/v1.9f/QSO-N-P0+P2-8bf8afaab7/2017-10-09_20x1000_chain0__1.npz`
+rank #0: 2017-10-09 13:55:37,074 rsdfit.emcee_results INFO     
+Emcee fitting finished: 1000 iterations, 20 walkers, 3 free parameters
+Best log likelihood value = -109.014136, corresponding to chi2 = 218.0283
+
+Free parameters [ median (+/-68%) (+/-95%) ]
+_______________
+<Parameter b1:             2.31 (+0.01812 -0.01869) (+0.03505 -0.03808)>
+<Parameter f_nl:           0.1022 (+3.859 -4.079) (+7.953 -8.351)>
+<Parameter sigma_fog:      4.479 (+0.1371 -0.1459) (+0.2727 -0.2874)>
+
+Constrained parameters [ median (+/-68%) (+/-95%) ]
+______________________
+<Parameter b1sigma8:       0.9185 (+0.007207 -0.007434) (+0.01394 -0.01514)>
