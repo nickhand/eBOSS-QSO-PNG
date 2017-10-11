@@ -89,15 +89,31 @@ def get_hashkeys(filename, cls):
     """
     from nbodykit import lab
 
-    # get the result class
-    cls = getattr(lab, cls)
-    r = cls.load(filename)
+    # filename is a directory --> FIT result
+    if os.path.isdir(filename):
+        filename = os.path.join(os.path.abspath(filename), 'hashinfo.json')
+        if not os.path.exists(filename):
+            return
+        import json
 
-    # need hashkeys
-    assert 'hashkeys' in r.attrs, "result filename does not have 'hashkeys' attribute"
+        # use json to load
+        d = {}
+        with open(filename, 'r') as ff:
+            d.update(json.load(ff))
 
-    # the dict
-    d = {k:r.attrs[k] for k in r.attrs['hashkeys']}
+        # echo hash info for the spectra file too
+        spectra_file = d.pop('spectra_file')
+        d.update(get_hashkeys(spectra_file, 'ConvolvedFFTPower'))
+    else:
+        # get the result class
+        cls = getattr(lab, cls)
+        r = cls.load(filename)
+
+        # need hashkeys
+        assert 'hashkeys' in r.attrs, "result filename does not have 'hashkeys' attribute"
+
+        # the dict
+        d = {k:r.attrs[k] for k in r.attrs['hashkeys']}
     return d
 
 def echo_hash():
@@ -127,24 +143,7 @@ def echo_hash():
 
 
     for filename in ns.filenames:
-
-        # filename is a directory --> FIT result
-        if os.path.isdir(filename):
-            filename = os.path.join(os.path.abspath(filename), 'hashinfo.json')
-            if not os.path.exists(filename):
-                continue
-            import json
-
-            # use json to load
-            d = {}
-            with open(filename, 'r') as ff:
-                d.update(json.load(ff))
-
-            # echo hash info for the spectra file too
-            spectra_file = d.pop('spectra_file')
-            d.update(get_hashkeys(spectra_file, 'ConvolvedFFTPower'))
-        else:
-            d = get_hashkeys(filename, ns.cls)
+        d = get_hashkeys(filename, ns.cls)
 
         # filter
         if ns.zmin is not None and d.get('zmin', None) != ns.zmin:

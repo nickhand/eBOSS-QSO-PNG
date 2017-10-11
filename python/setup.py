@@ -13,6 +13,8 @@ setup(
         'console_scripts': [
             'eboss-echo-hash = eboss_qso.measurements.utils:echo_hash',
             'eboss-qso-fit = eboss_qso.fits.driver:__main__',
+            'eboss-genreports = eboss_qso.fits.reports:_generate_all',
+            'eboss-gentoc = eboss_qso.fits.reports:generate_report_toc'
             ]
     }
 )
