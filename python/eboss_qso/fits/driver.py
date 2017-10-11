@@ -4,6 +4,16 @@ import numpy
 from eboss_qso.fits.preparer import QSOFitPreparer
 from pyRSD.rsd import QuasarSpectrum
 import tempfile
+import errno
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
 
 class QSOFitDriver(object):
     """
@@ -37,6 +47,8 @@ class QSOFitDriver(object):
         self.rsdfit_args = rsdfit_args
         self.vary = vary
         self.stats = stats
+        self.kmin = kmin
+        self.kmax = kmax
 
         # prepare the fit
         assert kmin >= 0.0001
@@ -44,9 +56,16 @@ class QSOFitDriver(object):
         self.preparer = QSOFitPreparer(spectra_file, stats, kmin=0.0001, kmax=0.4, overwrite=overwrite, quiet=quiet)
         self.config = self.preparer.config
 
+        # store zmin/zmax
+        self.zmin = self.preparer.hashinput['zmin']
+        self.zmax = self.preparer.hashinput['zmax']
+
         if output_only:
             print(self.output_dir)
             return
+
+        # make the directory output
+        mkdir_p(self.output_dir)
 
         # keywords we are going to add to parameter file template
         kws = {}
@@ -154,6 +173,8 @@ class QSOFitDriver(object):
     def output_dir(self):
         """
         The output directory name.
+
+        Format is krange/params/zbounds
         """
         try:
             return self._output_dir
@@ -161,11 +182,29 @@ class QSOFitDriver(object):
             from eboss_qso.measurements.utils import make_hash
             hashstr = make_hash(self.hashinfo)
 
+            # k-range
+            path ="%s-%s" %(self.kmin, self.kmax)
+
+            # params path
+            tmp = "basemodel"
+            if 'f' in self.vary and 'sigma8_z' in self.vary:
+                tmp += "-fs8"
+            if 'alpha_par' in self.vary or 'alpha_perp' in self.vary:
+                tmp += '-alphas'
+            if 'f_nl' in self.vary:
+                tmp += '-fnl'
+            path = os.path.join(path, tmp)
+
+            # z bounds
+            path = os.path.join(path, "%.1f-%.1f" %(self.zmin, self.zmax))
+
             # the output directory name
             sample = self.config.sample
             stats = '+'.join(self.stats)
             tag = f'QSO-{sample}-{stats}-{hashstr}'
-            self._output_dir = os.path.join(self.config.fits_results_dir, tag)
+
+            # full path
+            self._output_dir = os.path.join(self.config.fits_results_dir, path, tag)
             return self._output_dir
 
     def _run(self, param_file):
