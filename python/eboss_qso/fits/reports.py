@@ -352,7 +352,8 @@ def generate_toc(kind):
         ff.write(html_file)
 
 
-def generate_all(kind, dirpaths=[], overwrite=False, burnin=None, z_summary_only=False):
+def generate_all(kind, dirpaths=[], overwrite=False, burnin=None,
+                    z_summary_only=False, no_z_summary=False):
     """
     Generate the HTML reports, optionally overwriting existing reports.
     """
@@ -383,7 +384,7 @@ def generate_all(kind, dirpaths=[], overwrite=False, burnin=None, z_summary_only
         # need to make the report
         if not os.path.isdir(this_report_dir):
             mkdir_p(this_report_dir)
-        print("generating report for %s..." % relpath)
+        print("generating report for %s" % relpath)
         generate_fit_report(dirpath, r, burnin=burnin)
         return 1
 
@@ -400,26 +401,27 @@ def generate_all(kind, dirpaths=[], overwrite=False, burnin=None, z_summary_only
                 N += _generate(dirpath)
 
         # this is a directory holding redshift directories!
-        pattern = os.path.join(dirpath, "[0-9].[0-9]-[0-9].[0-9]")
-        if not len(filenames) and len(dirnames) and len(glob(pattern)) == len(dirnames):
+        if not no_z_summary:
+            pattern = os.path.join(dirpath, "[0-9].[0-9]-[0-9].[0-9]")
+            if not len(filenames) and len(dirnames) and len(glob(pattern)) == len(dirnames):
 
-            # modified times for all directories
-            mtimes = [os.path.getmtime(os.path.join(dirpath, f)) for f in dirnames]
+                # modified times for all directories
+                mtimes = [os.path.getmtime(os.path.join(dirpath, f)) for f in dirnames]
 
-            # get the matching report directory
-            relpath = os.path.relpath(dirpath, results_dir)
-            this_report_dir = os.path.join(reports_dir, relpath)
-            r = os.path.join(this_report_dir, 'redshift-report.html')
-            if os.path.isdir(this_report_dir) and os.path.isfile(r):
-                if all(t >= os.path.getmtime(r) for t in mtimes) and not overwrite:
-                    continue
+                # get the matching report directory
+                relpath = os.path.relpath(dirpath, results_dir)
+                this_report_dir = os.path.join(reports_dir, relpath)
+                r = os.path.join(this_report_dir, 'redshift-report.html')
+                if os.path.isdir(this_report_dir) and os.path.isfile(r):
+                    if all(t >= os.path.getmtime(r) for t in mtimes) and not overwrite:
+                        continue
 
-            # need to make the report
-            if not os.path.isdir(this_report_dir):
-                mkdir_p(this_report_dir)
-            print("generating redshift summary for %s..." % relpath)
-            generate_redshift_summary(dirpath, r, burnin=burnin)
-            N += 1
+                # need to make the report
+                if not os.path.isdir(this_report_dir):
+                    mkdir_p(this_report_dir)
+                print("generating redshift summary for %s..." % relpath)
+                generate_redshift_summary(dirpath, r, burnin=burnin)
+                N += 1
 
     return N
 
@@ -445,6 +447,9 @@ def _generate_all():
     h = 'whether to overwrite any existing redshift summary reports'
     parser.add_argument('--z-summary-only', action='store_true', help=h)
 
+    h = 'do not make any redshift summary reports'
+    parser.add_argument('--no-z-summary', action='store_true', help=h)
+
     h = 'the number of steps to consider burnin; default is 1/2 of chain'
     parser.add_argument('--burnin', type=int, help=h)
 
@@ -454,6 +459,7 @@ def _generate_all():
     updated = generate_all(ns.kind, dirpaths=ns.dirpaths,
                             overwrite=ns.overwrite,
                             z_summary_only=ns.z_summary_only,
+                            no_z_summary=ns.no_z_summary,
                             burnin=ns.burnin)
 
     # generate the new TOC

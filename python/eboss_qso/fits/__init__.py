@@ -1,6 +1,21 @@
 import os
 import numpy
 from scipy.interpolate import InterpolatedUnivariateSpline as spline
+import itertools
+
+def parametrize(params):
+    """
+    Execute a function for each of the input parameters.
+    """
+    keys = list(params.keys())
+    params = list(itertools.product(*[params[k] for k in params]))
+    def wrapped(func):
+        def func_wrapper(*args, **kwargs):
+            for p in params:
+                func(**dict(zip(keys, p)))
+
+        return func_wrapper
+    return wrapped
 
 class eBOSSConfig(object):
     """

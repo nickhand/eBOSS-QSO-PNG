@@ -71,9 +71,15 @@ class OutputAction(argparse.Action):
 
         print("Output directories\n" + "-"*20)
         for i, command in enumerate(RSDFitRunner.commands):
+            tag = RSDFitRunner.tags[i]
 
+            header = "%d:" %i
+            if len(tag):
+                header = header + " " + ", ".join(["'%s' = %s" %(k,tag[k]) for k in tag])
+            header += "\n"
+            
             # print test number first
-            toprint = "%d:\n" %i
+            toprint = header
 
             # get the output directories
             output = RSDFitRunner._execute(command, output_only=True)
@@ -118,9 +124,15 @@ class InfoAction(argparse.Action):
 
         print("Registered commands\n" + "-"*20)
         for i, command in enumerate(RSDFitRunner.commands):
+            tag = RSDFitRunner.tags[i]
             c = tw.dedent(command).strip()
             c = tw.fill(c, initial_indent=' '*4, subsequent_indent=' '*4, width=80)
-            print("%d:\n%s\n" %(i, c))
+
+            header = "%d:" %i
+            if len(tag):
+                header = header + " " + ", ".join(["'%s' = %s" %(k,tag[k]) for k in tag])
+            header += "\n"
+            print("%s\n%s\n" %(header, c))
 
         parser.exit()
 
@@ -129,13 +141,15 @@ class RSDFitRunner(object):
     Class to run ``rsdfit`` commands
     """
     commands = []
+    tags = []
 
     @classmethod
-    def register(cls, command):
+    def register(cls, command, tag={}):
         """
         Register a new ``rsdfit`` command
         """
         cls.commands.append(command)
+        cls.tags.append(tag)
 
     @classmethod
     def update_preparser(cls, name, **kws):
