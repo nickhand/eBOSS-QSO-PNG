@@ -17,7 +17,7 @@ def add_commands(sample, stats, params):
     dirname = os.path.join(EBOSS_SPECTRA, 'data', VERSION)
     for i, hashstr in enumerate(HASHES):
         filename = os.path.join(dirname, f'poles_eboss_{VERSION}-focal-QSO-{sample}-{hashstr}.json')
-        command = f"eboss-qso-fit mcmc -f {filename} --vary {params} --stats {stats} -i 1000 -w 20"
+        command = f"eboss-qso-fit mcmc -f {filename} --vary {params} --stats {stats} -i 2000 -w 30"
         tag = {'sample':sample, 'params':params, 'stats':stats, 'zbin':ZBINS[i]}
         RSDFitRunner.register(command, tag=tag)
 
