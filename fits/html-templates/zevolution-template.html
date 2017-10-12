@@ -1,0 +1,36 @@
+
+<html>
+    <head>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+      <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            processEscapes: true,
+            processEnvironments: true
+          }
+        });
+      </script>
+      <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+      <script type="text/javascript" async
+        src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG">
+      </script>
+      <script>
+        window.addEventListener('load',
+        function() {
+            var graphs = document.getElementsByClassName("plotly-graph-div");
+            for (var i = 0; i < graphs.length; i++) {
+               Plotly.relayout(graphs[i], {
+                   'xaxis.autorange': false,
+                   'yaxis.autorange': false
+               });
+             };
+           })
+      </script>
+      <style>body{ margin:0 100; background:whitesmoke; }</style>
+    </head>
+    <body>
+      <h1>Evolution of Fit Parameters with Redshift</h1>
+      {{ plot }}
+    </body>
+</html>
