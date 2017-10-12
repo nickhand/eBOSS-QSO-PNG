@@ -4,11 +4,90 @@ from pyRSD.rsdfit.analysis import BestfitParameterSet, tex_names
 from pyRSD.rsdfit.plotly import *
 from glob import glob
 import os
+import numpy as np
 from jinja2 import Environment, FileSystemLoader
 
+from eboss_qso.measurements.zweights import bias_model
 from eboss_qso.measurements import get_hashkeys
 from eboss_qso import EBOSS_FITS
 from .driver import mkdir_p
+
+def plot_param_evolution(drivers, dirpaths, params):
+    """
+    Plot the redshift evolution of fit parameters, with each parameter
+    getting its own subplot.
+
+    Parameters
+    ----------
+    *drivers :
+         a list of FittingDriver instances holding fit results
+    dirpaths :
+        list of the directory names associated with each object in ``drivers``
+    params : list
+        list of parameter names to plot the
+    """
+    import plotly.graph_objs as go
+    import plotly.tools as pytools
+
+    # make all of the parameters exist
+    assert all(p in d.results for d in drivers for p in params)
+    N = len(params)
+
+    # determine which type of results
+    mcmc_results = isinstance(drivers[0].results, EmceeResults)
+
+    prefixes = [os.path.split(f)[-1].rsplit('-', 1)[0] for f in dirpaths]
+    unique, index = np.unique(prefixes, return_inverse=True)
+
+    # the redshifts
+    z = np.array([d.theory.model.z for d in drivers])
+
+    # initialize the figure
+    fig = pytools.make_subplots(rows=N, print_grid=False, start_cell='bottom-left')
+
+    # the colors to use
+    colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+
+    # each subplot gets a parameter
+    for i, name in enumerate(params):
+        for ii in range(0, index.max()+1):
+
+            drivers_ = [d for aa, d in enumerate(drivers) if index[aa] == ii]
+            z_ = z[index==ii]
+            idx = np.argsort(z_)
+
+            if mcmc_results:
+                y = np.array([d.results[name].median for d in drivers_])[idx]
+                yerrminus = np.array([abs(d.results[name].one_sigma[0]) for d in drivers_])[idx]
+                yerr = np.array([d.results[name].one_sigma[1] for d in drivers_])[idx]
+                error_y = {'type':'data', 'symmetric':False, 'array':yerr,
+                            'arrayminus':yerrminus, 'color':colors[ii]}
+            else:
+                y = np.array([d.results[name] for d in drivers_])[idx]
+                error_y = None
+
+            # add the line plot
+            fig.append_trace(go.Scatter(x=z_[idx], y=y, error_y=error_y, name=unique[ii],
+                                mode='markers', showlegend=False, hoverinfo='closest',
+                                marker={'color':colors[ii]}), i+1, 1)
+
+
+        # bias model?
+        if name == 'b1':
+            zz = np.linspace(0.98*z.min(), z.max()*1.02, 100)
+            fig.append_trace(go.Scatter(x=zz, y=bias_model(zz), line={'color':'black'}, showlegend=False,
+                                        name='Laurent b(z)', hoverinfo='closest'), i+1, 1)
+
+        # label the y axes
+        if name in tex_names:
+            name = tex_names[name]
+        fig['layout'].update(**{'yaxis'+str(i+1):dict(title=name)})
+
+    # label the x axis
+    xaxis = {'title':r'$z$'}
+    fig['layout'].update(xaxis=xaxis)
+
+    return fig
 
 def _summarize_fit(info,  d):
     """
@@ -82,56 +161,29 @@ def generate_redshift_summary(dirname, output, burnin=None):
     """
     # get the template path/dir
     template_dir = os.path.join(EBOSS_FITS, "html-templates")
-    template_file = os.path.join(template_dir, "report-template.html")
+    template_file = os.path.join(template_dir, "zevolution-template.html")
 
-    # load the driver and bestfit results
-    d = _load_fit(dirname, burnin=burnin)
-    if isinstance(d.results, EmceeResults):
-        bestfit = BestfitParameterSet.from_mcmc(d.results)
-    else:
-        bestfit = BestfitParameterSet.from_nlopt(d.results)
-    bestfit['tex_name'] = [tex_names.get(name, name) for name in bestfit.index]
+    # find all result directories
+    dirpaths = []
+    for dirpath, dirnames, filenames in os.walk(dirname):
+        if all(f in filenames for f in ['params.dat', 'hashinfo.json']):
+            if any(f.endswith('.npz') for f in filenames):
+                dirpaths.append(dirpath)
 
-    # get the hashkeys
-    info = get_hashkeys(dirname, None)
+    if not len(dirpaths):
+        return
 
-    # make the fit summary
-    fit_summary = "<ul class='list-group'>"
-    for s in _summarize_fit(info, d):
-        fit_summary += s + '\n'
-    fit_summary += "</ul>"
+    # load the drivers
+    drivers = [_load_fit(t, burnin=burnin) for t in dirpaths]
 
-    # get the table
-    table = bestfit.to_ipynb().to_html()
-    table = table.replace('<table border="1" class="dataframe">','<table class="table table-striped">')
-
-    # plot theory/data comparison
-    labels = []
-    for stat in info['stats']:
-        if stat == "P0_sysfree":
-            labels.append(r"$P_0 + 2/5 P_2$")
-        else:
-            labels.append(r"$%s_%s$" %(stat[0], stat[1]))
-
-    fig = plot_fit_comparison(d, labels=labels)
+    # generate
+    fig = plot_param_evolution(drivers, dirpaths, drivers[0].results.free_names)
     div1 = py.plot(fig, output_type='div', include_plotlyjs=False)
-
-    # plot the triangle
-    div2 = ""
-    if isinstance(d.results, EmceeResults):
-        N = len(d.results.free_names)
-        width = 250*N; height = 250*N
-        fig = plot_triangle(d.results, params=d.results.free_names, thin=5, width=width, height=height)
-        div2 = py.plot(fig, output_type='div', include_plotlyjs=False, image_width=width, image_height=height)
-
-    # plot the traces
-    fig = plot_traces(d.results, *d.results.free_names, burnin=0, max_walkers=20)
-    div3 = py.plot(fig, output_type='div', include_plotlyjs=False)
 
     # render and save!
     jinja_env = Environment(loader=FileSystemLoader(template_dir))
     tpl = jinja_env.get_template(os.path.basename(template_file))
-    html_file = tpl.render(fit_summary=fit_summary, summary_table=table, summary_plot=div1, histogram=div2, traces=div3)
+    html_file = tpl.render(plot=div1)
 
     with open(output, 'w') as ff:
         ff.write(html_file)
@@ -267,7 +319,13 @@ def generate_toc(kind):
                 out += "\n"
 
                 d2 = os.path.join(d1, model)
-                zranges = sorted(glob(os.path.join(d2, '*')))
+                zranges = sorted(glob(os.path.join(d2, '[0-9].[0-9]-[0-9].[0-9]')))
+
+                redshift_report = os.path.join(d2, 'redshift-report.html')
+                if os.path.isfile(redshift_report):
+                    relpath = os.path.relpath(redshift_report, home_dir)
+                    out += "<ul><li><a href='%s'>Redshift Evolution Summary</a></li></ul>\n" %(relpath)
+
                 for zrange in zranges:
                     zrange = os.path.split(zrange)[-1]
                     zmin,zmax = zrange.split('-')
@@ -294,10 +352,12 @@ def generate_toc(kind):
         ff.write(html_file)
 
 
-def generate_all(kind, dirpaths=[], overwrite=False):
+def generate_all(kind, dirpaths=[], overwrite=False, burnin=None, z_summary_only=False):
     """
     Generate the HTML reports, optionally overwriting existing reports.
     """
+    dirpaths = [os.path.abspath(d) for d in dirpaths]
+
     if kind == 'data':
         subpath = kind
     else:
@@ -317,30 +377,49 @@ def generate_all(kind, dirpaths=[], overwrite=False):
         this_report_dir = os.path.join(reports_dir, relpath)
         r = os.path.join(this_report_dir, 'report.html')
         if os.path.isdir(this_report_dir) and os.path.isfile(r):
-            if os.path.getmtime(r) >= mtime and not overwrite:
+            if z_summary_only or os.path.getmtime(r) >= mtime and not overwrite:
                 return 0
 
         # need to make the report
         if not os.path.isdir(this_report_dir):
             mkdir_p(this_report_dir)
         print("generating report for %s..." % relpath)
-        generate_fit_report(dirpath, r)
+        generate_fit_report(dirpath, r, burnin=burnin)
         return 1
 
-    # do specific reports
     N = 0
-    if len(dirpaths):
-        for dirpath in dirpaths:
-            N += _generate(os.path.abspath(dirpath))
-    # do all out-of-date reports
-    else:
-        # walk the full directory path
-        for dirpath, dirnames, filenames in os.walk(results_dir):
+    # walk the full directory path
+    for dirpath, dirnames, filenames in os.walk(results_dir):
 
-            # this is a fit result directory
-            if all(f in filenames for f in ['params.dat', 'hashinfo.json']):
-                if any(f.endswith('.npz') for f in filenames):
-                    N += _generate(dirpath)
+        if len(dirpaths) and dirpath not in dirpaths:
+            continue
+
+        # this is a fit result directory
+        if all(f in filenames for f in ['params.dat', 'hashinfo.json']):
+            if any(f.endswith('.npz') for f in filenames):
+                N += _generate(dirpath)
+
+        # this is a directory holding redshift directories!
+        pattern = os.path.join(dirpath, "[0-9].[0-9]-[0-9].[0-9]")
+        if not len(filenames) and len(dirnames) and len(glob(pattern)) == len(dirnames):
+
+            # modified times for all directories
+            mtimes = [os.path.getmtime(os.path.join(dirpath, f)) for f in dirnames]
+
+            # get the matching report directory
+            relpath = os.path.relpath(dirpath, results_dir)
+            this_report_dir = os.path.join(reports_dir, relpath)
+            r = os.path.join(this_report_dir, 'redshift-report.html')
+            if os.path.isdir(this_report_dir) and os.path.isfile(r):
+                if all(t >= os.path.getmtime(r) for t in mtimes) and not overwrite:
+                    continue
+
+            # need to make the report
+            if not os.path.isdir(this_report_dir):
+                mkdir_p(this_report_dir)
+            print("generating redshift summary for %s..." % relpath)
+            generate_redshift_summary(dirpath, r, burnin=burnin)
+            N += 1
 
     return N
 
@@ -363,10 +442,19 @@ def _generate_all():
     h = 'whether to overwrite any existing reports'
     parser.add_argument('--overwrite', action='store_true', help=h)
 
+    h = 'whether to overwrite any existing redshift summary reports'
+    parser.add_argument('--z-summary-only', action='store_true', help=h)
+
+    h = 'the number of steps to consider burnin; default is 1/2 of chain'
+    parser.add_argument('--burnin', type=int, help=h)
+
     ns = parser.parse_args()
 
     # generate all reports
-    updated = generate_all(ns.kind, dirpaths=ns.dirpaths, overwrite=ns.overwrite)
+    updated = generate_all(ns.kind, dirpaths=ns.dirpaths,
+                            overwrite=ns.overwrite,
+                            z_summary_only=ns.z_summary_only,
+                            burnin=ns.burnin)
 
     # generate the new TOC
     if updated:
