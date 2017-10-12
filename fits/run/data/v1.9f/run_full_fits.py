@@ -4,7 +4,7 @@ from eboss_qso import EBOSS_SPECTRA
 import os
 
 ZBINS = [(0.9, 2.2), (0.5, 3.0)]
-fixed_params = ['b1', 'sigma_fog', 'f', 'sigma8_z']
+fixed_params = ['b1', 'sigma_fog', 'f', 'sigma8_z', 'f_nl']
 all_params = fixed_params + ['alpha_par', 'alpha_perp']
 stats = [['P0', 'P2'], ['P0_sysfree']]
 
@@ -20,7 +20,6 @@ def add_commands(sample, stats, params):
         command = f"eboss-qso-fit mcmc -f {filename} --vary {params} --stats {stats} -i 1000 -w 20"
         tag = {'sample':sample, 'params':params, 'stats':stats, 'zbin':ZBINS[i]}
         RSDFitRunner.register(command, tag=tag)
-
 
 if __name__ == '__main__':
     add_commands()
