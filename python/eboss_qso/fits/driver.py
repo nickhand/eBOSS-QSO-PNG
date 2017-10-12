@@ -108,10 +108,10 @@ class QSOFitDriver(object):
             # update redshift-dependent quantities
             for par in ['f', 'sigma8_z']:
                 value = getattr(model, par)
-                theorypars[par].update(value=value, fiducial=value, lower=0.5*value, upper=1.5*value)
+                theorypars[par].update(value=value, fiducial=value, lower=0, upper=2.0)
 
             for par in ['alpha_par', 'alpha_perp']:
-                theorypars[par].update(lower=0.6, upper=1.4)
+                theorypars[par].update(lower=0.3, upper=1.8)
 
             # write to file
             theorypars.to_file(ff, mode='a')
