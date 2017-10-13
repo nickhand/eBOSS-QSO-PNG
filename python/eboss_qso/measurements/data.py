@@ -1,5 +1,5 @@
 
-from . import data_dir, DATA_VERSIONS, fidcosmo
+from . import data_dir, DATA_VERSIONS
 import os
 from nbodykit.lab import FITSCatalog
 
