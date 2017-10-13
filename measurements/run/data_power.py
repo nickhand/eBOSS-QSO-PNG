@@ -23,13 +23,13 @@ def main(ns):
         d = eboss.trim_redshift_range(data, zmin=zmin, zmax=zmax)
         r = eboss.trim_redshift_range(randoms, zmin=zmin, zmax=zmax)
 
-        # compute effective values
-        z_eff = eboss.compute_effective_redshift(r)
-        nbar_eff = eboss.compute_effective_nbar(r)
-
         # finalize columns
         eboss.finalize_data(d, eboss.fidcosmo, P0_FKP=ns.P0_FKP)
         eboss.finalize_data(r, eboss.fidcosmo, P0_FKP=ns.P0_FKP)
+
+        # compute effective values
+        z_eff = eboss.compute_effective_redshift(r)
+        nbar_eff = eboss.compute_effective_nbar(r)
 
         # combine data and randoms into the FKP source
         fkp = FKPCatalog(data=d, randoms=r, BoxPad=0.1, use_cache=True)
