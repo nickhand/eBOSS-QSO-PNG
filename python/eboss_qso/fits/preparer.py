@@ -143,7 +143,13 @@ class QSOFitPreparer(object):
         if not os.path.exists(output) or self.overwrite:
 
             # the name of the (unformatted) window file
-            window_file = self._find_window_measurement()
+            if self.kind == 'ezmock':
+                version = self.version[:4]
+            elif self.kind == 'data':
+                version = self.version
+            else:
+                raise ValueError("do not understand 'kind' = '%s'" %self.kind)
+            window_file = self._find_window_measurement(version)
 
             ells = [0,2,4,6,8,10]
             compute_window(window_file, ells, output, smin=1e-2, smax=1e4, quiet=self.quiet)
@@ -176,7 +182,7 @@ class QSOFitPreparer(object):
                 print('skipping covariance preparation...')
         self.covariance_file = output
 
-    def _find_window_measurement(self):
+    def _find_window_measurement(self, version):
         """
         Try to find and return a matching window function file
         """
@@ -184,9 +190,9 @@ class QSOFitPreparer(object):
 
         # the directory holding any window results
         home_dir = os.path.join(os.environ['THESIS_DIR'], 'eBOSS-QSO-PNG')
-        dirname = os.path.join(home_dir, 'measurements', 'window', self.version)
+        dirname = os.path.join(home_dir, 'measurements', 'window', version)
 
-        filename = f"RR_eboss_{self.version}-QSO-{self.sample}-*.json"
+        filename = f"RR_eboss_{version}-QSO-{self.sample}-*.json"
         pattern = os.path.join(dirname, filename)
 
         # search all file matches

@@ -17,6 +17,16 @@ def parametrize(params):
         return func_wrapper
     return wrapped
 
+def get_mock_version(kind, version0):
+    if kind == 'ezmock':
+        version = version0[:4]
+    elif kind == 'data':
+        version = version0
+    else:
+        raise ValueError("do not understand 'kind' = '%s'" %kind)
+
+    return version
+
 class eBOSSConfig(object):
     """
     Configuration class for the eBOSS results + fits
@@ -37,7 +47,8 @@ class eBOSSConfig(object):
         self._kind_tag = kind if kind == 'data' else 'mocks/' + kind
 
     def _get_nbar_file(self):
-        filename = f'nbar-eboss_{self.version}-QSO-{self.sample}-eboss_{self.version}.dat'
+        version = get_mock_version(self.kind, self.version)
+        filename = f'nbar-eboss_{version}-QSO-{self.sample}-eboss_{version}.dat'
         return os.path.join(self.data_dir, 'meta', filename)
 
     def _get_effective_area(self):
@@ -90,7 +101,8 @@ class eBOSSConfig(object):
 
     @property
     def data_dir(self):
-        return os.path.join(self.home_dir, 'data', self.version)
+        version = get_mock_version(self.kind, self.version)
+        return os.path.join(self.home_dir, 'data', version)
 
     @property
     def fsky(self):

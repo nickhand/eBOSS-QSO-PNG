@@ -213,7 +213,7 @@ class QSOFitDriver(object):
         """
         # the arguments to pass to RSDFit
         args = self.rsdfit_args
-        args += ['-p', param_file, '-o', self.output_dir]
+        args += ['-p', param_file, '-o', self.output_dir, '--no-save-model']
 
         # run RSDFit
         cmd = 'rsdfit' + ' ' + ' '.join(args)
