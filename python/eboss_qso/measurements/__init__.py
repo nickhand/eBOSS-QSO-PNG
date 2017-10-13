@@ -23,6 +23,11 @@ _Ob0 = 0.022/_h**2
 _Ocdm0 = 0.31 - _Ob0
 fidcosmo = Cosmology(h=_h, Omega_b=_Ob0, Omega_cdm=_Ocdm0, m_ncdm=None, T_cmb=2.7255)
 
+_h=0.6777
+_Ob0=0.048206
+_Ocdm0=0.307115 - _Ob0
+ezmock_cosmo = Cosmology(h=_h, Omega_b=_Ob0, Omega_cdm=_Ocdm0, m_ncdm=None, n_s=0.9611, T_cmb=2.7255).match(sigma8=0.8225)
+
 # data functions
 from .data import read_data, read_randoms, finalize_data
 
