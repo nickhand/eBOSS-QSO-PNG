@@ -1,0 +1,63 @@
+#-------------------------------------------------------------------------------
+# driver params
+#-------------------------------------------------------------------------------
+driver.burnin = 0
+driver.epsilon = 0.02
+driver.init_from = "{{ init_from }}"
+driver.init_scatter = 0
+driver.lbfgs_epsilon = 0.0001
+driver.lbfgs_options = {'factr': 100000.0, 'gtol': 1e-05, 'max_iter':1000}
+driver.lbfgs_use_priors = True
+driver.start_from = None
+driver.test_convergence = False
+driver.tracer_type = "quasar"
+driver.theory_decorator = {{ theory_decorator }}
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# data params
+#-------------------------------------------------------------------------------
+data.covariance = "{{ covariance_file }}"
+data.covariance_Nmocks = 0.0
+data.covariance_rescaling = 1.0
+data.data_file = "{{ data_file }}"
+data.ells = {{ ells }}
+data.fitting_range = {{ fitting_range }}
+data.grid_file = None
+data.max_ellprime = {{ max_ellprime }}
+data.mode = 'poles'
+data.mu_bounds = None
+data.statistics = {{ stats }}
+data.window_file = "{{ window_file }}"
+#-------------------------------------------------------------------------------
+
+
+#-------------------------------------------------------------------------------
+# model params
+#-------------------------------------------------------------------------------
+model.Nk = 200
+model.Pdv_model_type = 'jennings'
+model.correct_mu2 = False
+model.correct_mu4 = False
+model.fog_model = 'gaussian'
+model.include_2loop = False
+model.interpolate = True
+model.k0_low = 0.005
+model.kmax = {{ kmax }}
+model.kmin = {{ kmin }}
+model.linear_power_file = None
+model.max_mu = 4
+model.params = {'H0': 67.77,'Neff': 3.046,'Ob0': 0.048206,'Om0': 0.307115,'Tcmb0': 2.7255,'m_nu': 0.0,'n_s': 0.9611,'sigma8': 0.8225}
+model.transfer_fit = 'CLASS'
+model.use_P00_model = True
+model.use_P01_model = True
+model.use_P11_model = True
+model.use_Pdv_model = True
+model.use_Phm_model = True
+model.use_Pvv_model = True
+model.use_mean_bias = False
+model.use_tidal_bias = False
+model.use_vlah_biasing = True
+model.vel_disp_from_sims = False
+model.z = {{ z_eff }}
+#-------------------------------------------------------------------------------
