@@ -117,7 +117,7 @@ def compute_covariance(config, stats, z_eff, b1, sigma_fog, zmin, zmax, P0_FKP,
         the maximux multipole number to include
     """
     # load the model
-    model = QuasarSpectrum(z=z_eff, params='boss_dr12_fidcosmo.ini')
+    model = QuasarSpectrum(z=z_eff, params=config.cosmo)
     model.b1 = b1
     model.sigma_fog = sigma_fog
 
