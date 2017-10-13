@@ -15,7 +15,7 @@ def main(ns):
 
         # load the randoms
         randoms = eboss.read_ezmock_randoms(ns.sample, ns.version)
-        eboss.finalize_ezmock(randoms, eboss.fidcosmo, P0_FKP=ns.P0_FKP)
+        eboss.finalize_ezmock(randoms, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
 
         # add effective redshift and nbar from randoms
         z_eff = eboss.compute_effective_redshift(randoms)
@@ -25,7 +25,7 @@ def main(ns):
 
             # load the data
             data = eboss.read_ezmock_data(box_num, ns.sample, ns.version, ns.subversion)
-            eboss.finalize_ezmock(data, eboss.fidcosmo, P0_FKP=ns.P0_FKP)
+            eboss.finalize_ezmock(data, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
 
             # combine data and randoms into the FKP source
             fkp = FKPCatalog(data=data, randoms=randoms, BoxPad=0.1, use_cache=True)
@@ -50,8 +50,8 @@ def main(ns):
 
             if ns.p is not None:
                 # the bias weight for the first field
-                fkp['data/BiasWeight'] = data['FKPWeight'] * eboss.bias_weight(data['Z'], eboss.fidcosmo)
-                fkp['randoms/BiasWeight'] = randoms['FKPWeight'] * eboss.bias_weight(randoms['Z'], eboss.fidcosmo)
+                fkp['data/BiasWeight'] = data['FKPWeight'] * eboss.bias_weight(data['Z'], eboss.ezmock_cosmo)
+                fkp['randoms/BiasWeight'] = randoms['FKPWeight'] * eboss.bias_weight(randoms['Z'], eboss.ezmock_cosmo)
 
                 # the fnl weight for the second field
                 fkp['data/FnlWeight'] = data['FKPWeight'] * eboss.fnl_weight(data['Z'], p=ns.p)
