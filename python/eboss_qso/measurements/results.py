@@ -11,7 +11,9 @@ def info_from_filename(kind, filename):
     if kind == 'data':
         pattern = r'poles\_eboss\_(?P<version>[\w\.]+)\-(?P<focal>[a-z]*)\-*QSO\-(?P<sample>[SN])\-(?P<hashstr>[\w+]{10})\.json'
     elif kind == 'ezmock':
-        pattern = r'poles\_zevoEZmock\_(?P<version>[\w\.\-]+)_QSO\-(?P<sample>[SN])[\_0-9]*\-(?P<hashstr>[\w+]{10})\.json'
+        pattern = r'poles\_zevoEZmock\_(?P<version>[\w\.\-]+)_QSO\-(?P<sample>[SN])\_(?P<box>[0-9]{4})\-(?P<hashstr>[\w+]{10})\.json'
+    else:
+        raise ValueError("invalid kind '%s'" %kind)
     return re.match(pattern, filename).groupdict()
 
 def save_RR_paircount(r, sample, version, **kwargs):
