@@ -12,7 +12,8 @@ def parametrize(params):
     def wrapped(func):
         def func_wrapper(*args, **kwargs):
             for p in params:
-                func(**dict(zip(keys, p)))
+                kwargs.update(dict(zip(keys, p)))
+                func(*args, **kwargs)
 
         return func_wrapper
     return wrapped
@@ -123,8 +124,15 @@ class eBOSSConfig(object):
 
     @property
     def cosmo(self):
-        from ..measurements import fidcosmo
-        return fidcosmo
+        from pyRSD.rsd.cosmology import Cosmology
+        if self.kind == 'data':
+            params = {'H0': 67.6, 'Neff': 3.046, 'Ob0': 0.04814257203879415,'Om0': 0.31,'Tcmb0': 2.7255,'m_nu': 0.0,'n_s': 0.97,'sigma8': 0.80}
+        elif self.kind == 'ezmock':
+            params = {'H0': 67.77, 'Neff': 3.046, 'Ob0': 0.048206, 'Om0': 0.307115, 'Tcmb0': 2.7255, 'm_nu': 0.0, 'n_s': 0.9611,'sigma8': 0.8225}
+        else:
+            raise ValueError("cannot compute cosmology in eBOSSConfig")
+
+        return Cosmology(flat=True, **params)
 
 
 from .runner import RSDFitRunner
