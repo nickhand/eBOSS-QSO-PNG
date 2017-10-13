@@ -241,9 +241,12 @@ def generate_fit_report(dirname, output, burnin=None):
     # plot the triangle
     div2 = ""
     if isinstance(d.results, EmceeResults):
-        N = len(d.results.free_names)
+        params = d.results.free_names
+        if 'f' in params and 'sigma8_z' in params:
+            params += ['fsigma8', 'b1sigma8']
+        N = len(params)
         width = 250*N; height = 250*N
-        fig = plot_triangle(d.results, params=d.results.free_names, thin=5, width=width, height=height)
+        fig = plot_triangle(d.results, params=params, thin=5, width=width, height=height)
         div2 = py.plot(fig, output_type='div', include_plotlyjs=False, image_width=width, image_height=height)
 
     # plot the traces
@@ -277,11 +280,36 @@ def _get_params_from_model_string(model):
 
     return "[" + ", ".join(out) + "]"
 
+
+def clean_reports():
+    """
+    Walk the reports directory and delete reports if the results directory
+    does not exist
+    """
+    import shutil
+    results_dir = os.path.join(EBOSS_FITS, 'results')
+    reports_dir = os.path.join(EBOSS_FITS, 'reports')
+
+    # walk the full directory path
+    todelete = []
+    for dirpath, dirnames, filenames in os.walk(reports_dir):
+        if 'report.html' in filenames:
+            a = os.path.relpath(dirpath, reports_dir) # the relative reports dir
+            b = os.path.join(results_dir, a) # the same results dir
+            if not os.path.isdir(b):
+                todelete.append(dirpath)
+
+    for dirpath in todelete:
+        shutil.rmtree(dirpath)
+
 def generate_toc(kind):
     """
     Generate the table of contents for the reports, using the structure of
     the HTML reports directory tree.
     """
+    # first, clean the reports tree
+    clean_reports()
+
     # either REPORT_DIR/data or REPORT_DIR/mocks/ezmock
     if kind == 'data':
         subpath = kind
@@ -463,5 +491,4 @@ def _generate_all():
                             burnin=ns.burnin)
 
     # generate the new TOC
-    if updated:
-        generate_toc(ns.kind)
+    generate_toc(ns.kind)
