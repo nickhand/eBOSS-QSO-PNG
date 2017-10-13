@@ -45,7 +45,7 @@ def main(ns):
                 result.attrs['nbar_eff'] = nbar_eff
 
                 # save
-                meta = {'p':None, 'zmin':0.9, 'zmax':2.2, 'P0_FKP':ns.P0_FKP}
+                meta = {'p':None, 'zmin':0.8, 'zmax':2.2, 'P0_FKP':ns.P0_FKP}
                 eboss.save_ezmock_spectra(result, box_num, ns.sample, ns.version, ns.subversion, **meta)
 
             if ns.p is not None:
