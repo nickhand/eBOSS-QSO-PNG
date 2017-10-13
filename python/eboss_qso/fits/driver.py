@@ -201,7 +201,12 @@ class QSOFitDriver(object):
             # the output directory name
             sample = self.config.sample
             stats = '+'.join(self.stats)
-            tag = f'QSO-{sample}-{stats}-{hashstr}'
+            box = getattr(self.preparer, 'box', None)
+
+            tag = f'QSO-{sample}-'
+            if box is not None:
+                tag += box + '-'
+            tag += f'{stats}-{hashstr}'
 
             # full path
             self._output_dir = os.path.join(self.config.fits_results_dir, path, tag)
