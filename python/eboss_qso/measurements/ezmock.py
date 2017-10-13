@@ -1,5 +1,5 @@
 
-from . import data_dir, EZMOCK_VERSIONS, EZMOCK_SUBVERSIONS, fidcosmo
+from . import data_dir, EZMOCK_VERSIONS, EZMOCK_SUBVERSIONS
 import os
 from nbodykit.lab import CSVCatalog
 
