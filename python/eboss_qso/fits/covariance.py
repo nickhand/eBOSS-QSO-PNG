@@ -25,8 +25,8 @@ def _compute_covariance(config, zmin, zmax, k, ells, model, P0_FKP=0., Nmu=100, 
 
     # volume of redshift shells for integral over z
     zbins = numpy.linspace(zmin, zmax, Nz+1)
-    R_hi = cosmo.comoving_distance(zbins[1:])
-    R_lo = cosmo.comoving_distance(zbins[:-1])
+    R_hi = cosmo.comoving_distance(zbins[1:]) * cosmo.h # in Mpc/h
+    R_lo = cosmo.comoving_distance(zbins[:-1]) * cosmo.h # in Mpc/h
     dV = (4./3.)*numpy.pi*(R_hi**3 - R_lo**3)
 
     # compute nbar
