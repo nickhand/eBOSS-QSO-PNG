@@ -117,7 +117,11 @@ class QSOFitPreparer(object):
         """
         # the output data file
         stats = '+'.join(self.stats)
-        filename = f"poles_{self.version}-QSO-{self.sample}_{stats}_{self.hashstr}.dat"
+        filename = f"poles_{self.version}-QSO-{self.sample}"
+        box = getattr(self, 'box', None)
+        if box is not None:
+            filename += '-' + box
+        filename += f"_{stats}_{self.hashstr}.dat"
         output = os.path.join(self.config.fits_data_dir, filename)
 
         if not os.path.exists(output) or self.overwrite:
