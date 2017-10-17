@@ -180,7 +180,11 @@ class QSOFitDriver(object):
             return self._output_dir
         except AttributeError:
             from eboss_qso.measurements.utils import make_hash
-            hashstr = make_hash(self.hashinfo)
+
+            usekeys = list(self.hashinfo.keys())
+            if getattr(self.preparer, 'box', None) is not None:
+                usekeys.pop(usekeys.index('spectra_file'))
+            hashstr = make_hash(self.hashinfo, usekeys=usekeys)
 
             # k-range
             path ="%s-%s" %(self.kmin, self.kmax)
