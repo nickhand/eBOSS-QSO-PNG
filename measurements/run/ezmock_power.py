@@ -15,6 +15,7 @@ def main(ns):
 
         # load the randoms
         randoms = eboss.read_ezmock_randoms(ns.sample, ns.version)
+        randoms_nz0 = randoms['NZ']
         eboss.finalize_ezmock(randoms, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
 
         # add effective redshift and nbar from randoms
@@ -26,6 +27,10 @@ def main(ns):
             # load the data
             data = eboss.read_ezmock_data(box_num, ns.sample, ns.version, ns.subversion)
             eboss.finalize_ezmock(data, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
+
+            # re-normalize randoms NZ properly
+            randoms['NZ'] = randoms_nz0 / (1.*len(randoms) / len(data))
+            eboss.finalize_ezmock(randoms, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
 
             # combine data and randoms into the FKP source
             fkp = FKPCatalog(data=data, randoms=randoms, BoxPad=0.1, use_cache=True)

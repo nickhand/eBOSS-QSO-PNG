@@ -55,9 +55,6 @@ def read_ezmock_randoms(sample, version):
     names = ['RA', 'DEC', 'Z', 'WEIGHT_FKP', 'COMP', 'NZ', 'VETO']
     s = CSVCatalog(path, names=names)
 
-    # re-normalize NZ
-    s['NZ'] /= 100.
-
     return s
 
 
