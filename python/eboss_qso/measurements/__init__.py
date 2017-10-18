@@ -1,5 +1,5 @@
 import os
-from nbodykit.cosmology import Cosmology
+from nbodykit.cosmology import Cosmology, Planck15
 import socket
 
 # data and result directories
@@ -18,10 +18,11 @@ EZMOCK_VERSIONS = ['v1.8e']
 EZMOCK_SUBVERSIONS = ['reg', 'no', 'fph']
 
 # the fiducial DR12 cosmology
-_h = 0.676
-_Ob0 = 0.022/_h**2
-_Ocdm0 = 0.31 - _Ob0
-fidcosmo = Cosmology(h=_h, Omega_b=_Ob0, Omega_cdm=_Ocdm0, m_ncdm=None, T_cmb=2.7255)
+# _h = 0.676
+# _Ob0 = 0.022/_h**2
+# _Ocdm0 = 0.31 - _Ob0
+# fidcosmo = Cosmology(h=_h, Omega_b=_Ob0, Omega_cdm=_Ocdm0, m_ncdm=None, T_cmb=2.7255)
+fidcosmo = Planck15
 
 _h=0.6777
 _Ob0=0.048206
