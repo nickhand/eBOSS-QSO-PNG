@@ -36,7 +36,7 @@ class QSOFitDriver(object):
     overwrite : bool, optional
         if ``True`` overwrite the input fit files
     """
-    def __init__(self, rsdfit_args, spectra_file, vary, stats,
+    def __init__(self, rsdfit_args, spectra_file, vary, stats, p=1.6,
                     kmin=0.0001, kmax=0.4, overwrite=False, output_only=False):
 
         quiet = False
@@ -46,6 +46,7 @@ class QSOFitDriver(object):
 
         self.rsdfit_args = rsdfit_args
         self.vary = vary
+        self.p = p
         self.stats = stats
         self.kmin = kmin
         self.kmax = kmax
@@ -105,6 +106,9 @@ class QSOFitDriver(object):
             for par in theorypars:
                 theorypars[par].vary = par in self.vary
 
+            # update p
+            theorypars['p'].update(vary=False, value=self.p, fiducial=self.p)
+
             # update redshift-dependent quantities
             for par in ['f', 'sigma8_z']:
                 value = getattr(model, par)
@@ -144,6 +148,10 @@ class QSOFitDriver(object):
         choices = ['alpha_par', 'alpha_perp', 'f', 'sigma8_z', 'b1', 'sigma_fog', 'f_nl']
         parser.add_argument('--vary', type=str, nargs='+', choices=choices, help=h, required=True)
 
+        h = 'the value of p to use'
+        choices = [1.0, 1.6]
+        parser.add_argument('-p', type=float, choices=choices, help=h, default=1.)
+
         h = 'the statistics to include'
         stats = ['P0', 'P2', 'P0_sysfree']
         parser.add_argument('--stats', nargs='*', type=str, choices=stats, default=['P0', 'P2'], help=h)
@@ -167,6 +175,10 @@ class QSOFitDriver(object):
         meta['vary'] = self.vary
         meta['spectra_file'] = self.preparer.spectra_file
         meta['stats'] = self.stats
+        if 'f_nl' in self.vary:
+            meta['p'] = self.p
+        else:
+            meta['p'] = None
         return meta
 
     @property
