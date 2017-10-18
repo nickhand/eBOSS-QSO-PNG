@@ -29,6 +29,7 @@ data.mode = 'poles'
 data.mu_bounds = None
 data.statistics = {{ stats }}
 data.window_file = "{{ window_file }}"
+data.window_kmax = 10.0
 #-------------------------------------------------------------------------------
 
 
@@ -47,7 +48,7 @@ model.kmax = {{ kmax }}
 model.kmin = {{ kmin }}
 model.linear_power_file = None
 model.max_mu = 4
-model.params = 'boss_dr12_fidcosmo.ini'
+model.params = 'Planck15'
 model.transfer_fit = 'CLASS'
 model.use_P00_model = True
 model.use_P01_model = True
