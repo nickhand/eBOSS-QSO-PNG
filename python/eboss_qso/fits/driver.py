@@ -106,6 +106,9 @@ class QSOFitDriver(object):
             for par in theorypars:
                 theorypars[par].vary = par in self.vary
 
+            # update b1 bounds
+            theorypars['b1'].update(lower=0.1, upper=6.0)
+
             # update p
             theorypars['p'].update(vary=False, value=self.p, fiducial=self.p)
 
