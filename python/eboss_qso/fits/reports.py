@@ -246,11 +246,11 @@ def generate_fit_report(dirname, output, burnin=None):
             params += ['fsigma8', 'b1sigma8']
         N = len(params)
         width = 250*N; height = 250*N
-        fig = plot_triangle(d.results, params=params, thin=5, width=width, height=height, hide_shapes=True)
+        fig = plot_triangle(d.results, params=params, thin=10, width=width, height=height, hide_shapes=True)
         div2 = py.plot(fig, output_type='div', include_plotlyjs=False, image_width=width, image_height=height)
 
     # plot the traces
-    fig = plot_traces(d.results, *d.results.free_names, burnin=0, max_walkers=20)
+    fig = plot_traces(d.results, d.results.free_names, burnin=0, max_walkers=20)
     div3 = py.plot(fig, output_type='div', include_plotlyjs=False)
 
     # render and save!
