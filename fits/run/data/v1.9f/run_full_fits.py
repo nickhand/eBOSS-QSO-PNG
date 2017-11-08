@@ -4,7 +4,7 @@ from eboss_qso import EBOSS_SPECTRA
 import os
 
 NWALKERS = 100
-ITERATIONS = 500
+ITERATIONS = 1000
 
 ZBINS = [(0.8, 2.2), (0.5, 3.0)]
 fixed_params = ['b1', 'sigma_fog', 'f', 'sigma8_z', 'f_nl']
