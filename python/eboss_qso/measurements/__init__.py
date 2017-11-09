@@ -36,7 +36,8 @@ from .data import read_data, read_randoms, finalize_data
 from .ezmock import read_ezmock_data, read_ezmock_randoms, finalize_ezmock
 
 # results
-from .results import save_data_spectra, save_ezmock_spectra, save_RR_paircount
+from .results import save_data_spectra, save_ezmock_spectra, save_RR_paircount, \
+                     load_data_spectra, load_ezmock_spectra
 
 # utilities and weights
 from .utils import trim_redshift_range, redshift_range_type, get_hashkeys, \

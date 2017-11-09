@@ -1,4 +1,88 @@
 import os
+from .utils import get_hashkeys
+from glob import glob
+import numpy
+
+def load_data_spectra(version, sample, p=None, focal_weights=True):
+    """
+    Load a data measurement result.
+    """
+    from nbodykit.lab import ConvolvedFFTPower
+
+    assert sample in ['N', 'S']
+    assert version in ['v1.8', 'v1.9f']
+
+    # the directory
+    eboss_dir = os.environ['EBOSS_DIR']
+    d = os.path.join(eboss_dir, 'measurements', 'spectra', 'data', version)
+
+    filename = f'poles_eboss_{version}'
+    if focal_weights: filename += '-focal-*' + sample + '-*'
+    matches = glob(os.path.join(d, filename))
+    assert len(matches) > 0
+
+    for f in matches:
+        hashkeys = get_hashkeys(f, 'ConvolvedFFTPower')
+        if hashkeys['p'] == p:
+            r = ConvolvedFFTPower.load(f)
+            r.poles['power_0'].real -= r.attrs['shotnoise']
+            return r
+
+    raise ValueError("no matches found!")
+
+def load_ezmock_spectra(version, sample, p=None, box=None, average=True):
+    """
+    Load a ezmock measurement result.
+    """
+    from nbodykit.lab import ConvolvedFFTPower
+
+    assert sample in ['N', 'S']
+    assert version in ['v1.8e-fph', 'v1.8e-no', 'v1.8e-reg']
+
+    # the directory
+    eboss_dir = os.environ['EBOSS_DIR']
+    d = os.path.join(eboss_dir, 'measurements', 'spectra', 'mocks', 'ezmock', version)
+
+    if box is not None:
+        filename = f'poles_zevoEZmock_{version}_QSO-{sample}_{box:04d}-*.json'
+    else:
+        filename = f'poles_zevoEZmock_{version}_QSO-{sample}_0001-*.json'
+
+    matches = glob(os.path.join(d, filename))
+    assert len(matches) > 0
+
+    hashstr = None
+    for f in matches:
+        hashkeys = get_hashkeys(f, 'ConvolvedFFTPower')
+        if hashkeys['p'] == p:
+            hashstr = os.path.splitext(f)[0][-10:]
+            break
+
+    if hashstr is None:
+        raise ValueError("no matches found!")
+
+    if box is not None:
+        f = os.path.join(d, f'poles_zevoEZmock_{version}_QSO-{sample}_{box:04d}-{hashstr}.json')
+        r = ConvolvedFFTPower.load(f)
+        r.poles['power_0'].real -= r.attrs['shotnoise']
+        return r
+    else:
+        files = glob(os.path.join(d, f'poles_zevoEZmock_{version}_QSO-{sample}_*-{hashstr}.json'))
+        results = [ConvolvedFFTPower.load(f) for f in files]
+
+        for r in results:
+            r.poles['power_0'].real -= r.attrs['shotnoise']
+
+        if not average:
+            data = numpy.asarray([r.poles.data for r in results])
+            return data
+        else:
+            data = results[0].poles.copy()
+            for k in results[0].poles.variables:
+                data[k] = numpy.asarray([r.poles[k] for r in results]).mean(axis=0)
+            return data
+
+    raise ValueError("no matches found!")
 
 def info_from_filename(kind, filename):
     """
