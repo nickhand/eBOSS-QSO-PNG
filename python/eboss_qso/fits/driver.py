@@ -120,6 +120,8 @@ class QSOFitDriver(object):
             for par in ['alpha_par', 'alpha_perp']:
                 theorypars[par].update(lower=0.3, upper=1.8)
 
+            theorypars['N'].update(lower=-1000, upper=1000)
+
             # write to file
             theorypars.to_file(ff, mode='a')
 
@@ -148,7 +150,7 @@ class QSOFitDriver(object):
         parser.add_argument('--kmax', type=float, default=0.4, help=h)
 
         h = 'the parameters to vary'
-        choices = ['alpha_par', 'alpha_perp', 'f', 'sigma8_z', 'b1', 'sigma_fog', 'f_nl']
+        choices = ['alpha_par', 'alpha_perp', 'f', 'sigma8_z', 'b1', 'sigma_fog', 'f_nl', 'N']
         parser.add_argument('--vary', type=str, nargs='+', choices=choices, help=h, required=True)
 
         h = 'the value of p to use'
@@ -210,6 +212,8 @@ class QSOFitDriver(object):
                 tmp += "-fs8"
             if 'alpha_par' in self.vary or 'alpha_perp' in self.vary:
                 tmp += '-alphas'
+            if 'N' in self.vary:
+                tmp += '-N'
             if 'f_nl' in self.vary:
                 tmp += '-fnl'
             path = os.path.join(path, tmp)
