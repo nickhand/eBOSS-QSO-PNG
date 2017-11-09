@@ -6,7 +6,7 @@ from argparse import Action
 
 ITERATIONS = 500
 ZBINS = [(0.8, 2.2)]
-all_params = ['b1', 'sigma_fog']
+all_params = ['b1', 'sigma_fog', 'f_nl']
 
 class BoxNumber(Action):
     def __call__(self, parser, namespace, box, option_string=None):
