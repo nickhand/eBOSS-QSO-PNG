@@ -136,3 +136,4 @@ class eBOSSConfig(object):
 
 
 from .runner import RSDFitRunner
+from .results import load_ezmock_results
