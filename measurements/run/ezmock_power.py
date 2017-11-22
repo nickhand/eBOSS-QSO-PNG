@@ -39,7 +39,7 @@ def main(ns):
             mesh_kwargs = {'Nmesh':1024, 'interlaced':True, 'window':'tsc', 'dtype':'f8'}
 
             # compute unweighted results
-            if ns.do_unweighted or ns.p is None:
+            if ns.p == 0.:
                 unweighted_mesh = fkp.to_mesh(nbar='NZ', fkp_weight='FKPWeight', comp_weight='Weight', **mesh_kwargs)
 
                 # run
@@ -53,7 +53,7 @@ def main(ns):
                 meta = {'p':None, 'zmin':0.8, 'zmax':2.2, 'P0_FKP':ns.P0_FKP}
                 eboss.save_ezmock_spectra(result, box_num, ns.sample, ns.version, ns.subversion, **meta)
 
-            if ns.p is not None:
+            else:
                 # the bias weight for the first field
                 fkp['data/BiasWeight'] = data['FKPWeight'] * eboss.bias_weight(data['Z'], eboss.ezmock_cosmo)
                 fkp['randoms/BiasWeight'] = randoms['FKPWeight'] * eboss.bias_weight(randoms['Z'], eboss.ezmock_cosmo)
@@ -99,13 +99,10 @@ if __name__ == '__main__':
     group.add_argument('--subversion', type=str, choices=eboss.EZMOCK_SUBVERSIONS, help=h, required=True)
 
     h = 'the value of p to use'
-    group.add_argument('--p', type=float, help=h, required=False)
+    group.add_argument('--p', type=float, help=h, choices=[0., 1., 1.6], required=True)
 
     h = 'the P0 FKP version to use'
     parser.add_argument('--P0_FKP', type=float, default=3e4, help=h)
-
-    h = 'whether to compute unweighted results'
-    parser.add_argument('--do-unweighted', action='store_true', help=h)
 
     h = 'the start box number'
     parser.add_argument('--start', default=1, type=int, help=h)
