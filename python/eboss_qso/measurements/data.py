@@ -27,7 +27,7 @@ def read_data(sample, version, focal_weights=False):
     # load the source
     usecols = ['RA', 'DEC', 'Z', 'NZ', 'WEIGHT_CP', 'WEIGHT_NOZ', 'WEIGHT_SYSTOT']
     if focal_weights: usecols += ['WEIGHT_FOCAL']
-    return FITSCatalog(path, use_cache=True)[usecols]
+    return FITSCatalog(path)[usecols]
 
 
 def read_randoms(sample, version):
@@ -49,7 +49,7 @@ def read_randoms(sample, version):
 
     # load the source
     usecols = ['RA', 'DEC', 'Z', 'NZ']
-    return FITSCatalog(path, use_cache=True)[usecols]
+    return FITSCatalog(path)[usecols]
 
 def finalize_data(s, cosmo, P0_FKP=None):
     """

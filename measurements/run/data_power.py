@@ -32,7 +32,7 @@ def main(ns):
         nbar_eff = eboss.compute_effective_nbar(r)
 
         # combine data and randoms into the FKP source
-        fkp = FKPCatalog(data=d, randoms=r, BoxPad=0.1, use_cache=True)
+        fkp = FKPCatalog(data=d, randoms=r, BoxPad=0.1)
 
         # the mesh kwargs to use
         mesh_kwargs = {'Nmesh':1024, 'interlaced':True, 'window':'tsc', 'dtype':'f8'}
