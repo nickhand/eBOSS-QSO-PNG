@@ -48,6 +48,11 @@ def load_ezmock_results(version, sample, krange, params, p=None):
             data[param].append(r[param])
             th[param].value = r[param]
 
+        # add fsigma8
+        if 'f' in r.free_names and 'sigma8_z' in r.free_names:
+            data['fsigma8'].append(r['f'] * r['sigma8_z'])
+
+        # the prior to add back
         lnprior = sum(par.lnprior for par in th.free)
 
         # add the reduced chi2
