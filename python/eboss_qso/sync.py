@@ -93,6 +93,10 @@ def sync_eboss():
     h = 'sync the `reports` directory'
     b = subparsers.add_parser('reports', parents=[parent], help=h)
 
+    # notebooks
+    h = 'sync the `notebooks` directory'
+    b = subparsers.add_parser('notebooks', parents=[parent], help=h)
+
     ns = parser.parse_args()
     sync = NERSCSync(ns.direction, ns.host, path=ns.dir, dry_run=ns.dry_run, delete=ns.delete)
 
@@ -103,6 +107,10 @@ def sync_eboss():
     elif ns.subparser_name == 'reports':
         remote_dir = "/global/project/projectdirs/m779/www/nhand/notebooks/eboss-qso-fits/"
         local_dir = "/Users/nhand/Research/Analysis/thesis/eBOSS-QSO-PNG/fits/reports/"
+        exclude = ["--exclude='.*'"]
+    elif ns.subparser_name == 'notebooks':
+        remote_dir = "/global/project/projectdirs/m779/www/nhand/notebooks/eboss-qso-notebooks/"
+        local_dir = "/Users/nhand/Research/Analysis/thesis/eBOSS-QSO-PNG/notebooks/"
         exclude = ["--exclude='.*'"]
 
     sync(remote_dir, local_dir, exclude=exclude)
