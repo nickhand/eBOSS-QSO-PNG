@@ -14,9 +14,9 @@ def main(ns):
     with TaskManager(ns.cpus_per_task, use_all_cpus=True) as tm:
 
         # load the randoms
-        randoms = eboss.read_ezmock_randoms(ns.sample, ns.version)
+        randoms = eboss.read_qpm_randoms(ns.sample, ns.version)
         randoms_nz0 = randoms['NZ']
-        eboss.finalize_ezmock(randoms, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
+        eboss.finalize_qpm(randoms, eboss.qpm_cosmo, P0_FKP=ns.P0_FKP)
 
         # add effective redshift and nbar from randoms
         z_eff = eboss.compute_effective_redshift(randoms)
@@ -25,12 +25,12 @@ def main(ns):
         for box_num in tm.iterate(range(ns.start, ns.stop, ns.step)):
 
             # load the data
-            data = eboss.read_ezmock_data(box_num, ns.sample, ns.version, ns.subversion)
-            eboss.finalize_ezmock(data, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
+            data = eboss.read_qpm_data(box_num, ns.sample, ns.version, ns.subversion)
+            eboss.finalize_qpm(data, eboss.qpm_cosmo, P0_FKP=ns.P0_FKP)
 
             # re-normalize randoms NZ properly
             randoms['NZ'] = randoms_nz0 / (1.*len(randoms) / len(data))
-            eboss.finalize_ezmock(randoms, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
+            eboss.finalize_qpm(randoms, eboss.qpm_cosmo, P0_FKP=ns.P0_FKP)
 
             # combine data and randoms into the FKP source
             fkp = FKPCatalog(data=data, randoms=randoms, BoxPad=0.1)
@@ -51,12 +51,12 @@ def main(ns):
 
                 # save
                 meta = {'p':None, 'zmin':0.8, 'zmax':2.2, 'P0_FKP':ns.P0_FKP}
-                eboss.save_ezmock_spectra(result, box_num, ns.sample, ns.version, ns.subversion, **meta)
+                eboss.save_qpm_spectra(result, box_num, ns.sample, ns.version, ns.subversion, **meta)
 
             else:
                 # the bias weight for the first field
-                fkp['data/BiasWeight'] = data['FKPWeight'] * eboss.bias_weight(data['Z'], eboss.ezmock_cosmo)
-                fkp['randoms/BiasWeight'] = randoms['FKPWeight'] * eboss.bias_weight(randoms['Z'], eboss.ezmock_cosmo)
+                fkp['data/BiasWeight'] = data['FKPWeight'] * eboss.bias_weight(data['Z'], eboss.qpm_cosmo)
+                fkp['randoms/BiasWeight'] = randoms['FKPWeight'] * eboss.bias_weight(randoms['Z'], eboss.qpm_cosmo)
 
                 # the fnl weight for the second field
                 fkp['data/FnlWeight'] = data['FKPWeight'] * eboss.fnl_weight(data['Z'], p=ns.p)
@@ -75,7 +75,7 @@ def main(ns):
 
                 # save
                 meta = {'p':ns.p, 'zmin':0.8, 'zmax':2.2, 'P0_FKP':ns.P0_FKP}
-                eboss.save_ezmock_spectra(result, box_num, ns.sample, ns.version, ns.subversion, **meta)
+                eboss.save_qpm_spectra(result, box_num, ns.sample, ns.version, ns.subversion, **meta)
 
 
 if __name__ == '__main__':
