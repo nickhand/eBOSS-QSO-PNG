@@ -3,9 +3,9 @@ from . import data_dir, MOCK_VERSIONS, MOCK_SUBVERSIONS
 import os
 from nbodykit.lab import CSVCatalog
 
-def read_ezmock_data(box, sample, version, subversion):
+def read_qpm_data(box, sample, version, subversion):
     """
-    Read an eBOSS QSO EZ mock data file.
+    Read an eBOSS QSO QPM mock data file.
 
     Parameters
     ----------
@@ -16,7 +16,7 @@ def read_ezmock_data(box, sample, version, subversion):
     version : str
         the string specifying which version to load
     subversion : str
-        the EZmock sub version to load, i.e., one of 'reg', 'no', 'fph'
+        the mock sub version to load, i.e., one of 'reg', 'no', 'fph'
     """
     assert version in MOCK_VERSIONS
     assert subversion in MOCK_SUBVERSIONS
@@ -24,17 +24,17 @@ def read_ezmock_data(box, sample, version, subversion):
     sample = 'ngc' if sample == 'N' else 'sgc'
 
     # get the file path
-    filename = f'zevoEZmock_QSO_{version}_veto_{sample}_{box:04d}_{subversion}.dat'
-    path = os.path.join(data_dir, 'mocks', 'ezmock', '-'.join([version,subversion]), filename)
+    filename = f"qpmmock_QSO_{version}_veto_{sample}_{box:04d}_{subversion}.dat"
+    path = os.path.join(data_dir, 'mocks', 'qpm', '-'.join([version,subversion]), filename)
 
     # load the source
     names = ['RA', 'DEC', 'Z', 'WEIGHT_FKP', 'COMP', 'NZ', 'WEIGHT_COMP']
     return CSVCatalog(path, names=names)
 
 
-def read_ezmock_randoms(sample, version):
+def read_qpm_randoms(sample, version):
     """
-    Read a eBOSS QSO EZ mock randoms file.
+    Read a eBOSS QSO QPM mock randoms file.
 
     Parameters
     ----------
@@ -48,8 +48,8 @@ def read_ezmock_randoms(sample, version):
     sample = 'ngc' if sample == 'N' else 'sgc'
 
     # get the file path
-    filename = f'randx100_QSO_{version}_veto_{sample}.dat'
-    path = os.path.join(data_dir, 'mocks', 'ezmock', 'randoms', filename)
+    filename = f"qpm_random_v1.8.1_{sample}_vetoed_smeared.dat"
+    path = os.path.join(data_dir, 'mocks', 'qpm', 'randoms', filename)
 
     # load the source
     names = ['RA', 'DEC', 'Z', 'WEIGHT_FKP', 'COMP', 'NZ', 'VETO']
@@ -58,7 +58,7 @@ def read_ezmock_randoms(sample, version):
     return s
 
 
-def finalize_ezmock(s, cosmo, P0_FKP=None):
+def finalize_qpm(s, cosmo, P0_FKP=None):
     """
     Finalize the creation of a CatalogSource from a data file by
     adding 'Position', 'Weight', and 'FKPWeight'.
