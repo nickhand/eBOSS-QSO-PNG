@@ -52,7 +52,7 @@ def read_qpm_randoms(sample, version):
     path = os.path.join(data_dir, 'mocks', 'qpm', 'randoms', filename)
 
     # load the source
-    names = ['RA', 'DEC', 'Z', 'WEIGHT_FKP', 'COMP', 'NZ', 'VETO']
+    names = ['RA', 'DEC', 'Z_RSD', 'Z', 'COMP', 'NZ', 'WEIGHT_FKP']
     s = CSVCatalog(path, names=names)
 
     return s
