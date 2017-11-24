@@ -29,7 +29,8 @@ def main(ns):
             eboss.finalize_qpm(data, eboss.qpm_cosmo, P0_FKP=ns.P0_FKP)
 
             # re-normalize randoms NZ properly
-            randoms['NZ'] = randoms_nz0  * (1.*randoms.csize / data['Weight'].sum())
+            Ndata_weighted = data.comm.allreduce(data['Weight'].sum())
+            randoms['NZ'] = randoms_nz0  * (1.*randoms.csize / Ndata_weighted)
             eboss.finalize_qpm(randoms, eboss.qpm_cosmo, P0_FKP=ns.P0_FKP)
 
             # combine data and randoms into the FKP source
