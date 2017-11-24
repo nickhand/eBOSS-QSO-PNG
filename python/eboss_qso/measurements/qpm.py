@@ -79,9 +79,9 @@ def finalize_qpm(s, cosmo, P0_FKP=None):
 
     # add systematic weights
     if 'WEIGHT_COMP' in s:
-        s['Weight'] = s['WEIGHT_COMP']
+        s['Weight'] = s['WEIGHT_COMP'] # data
     else:
-        s['Weight'] = 1.0
+        s['Weight'] = 1.0 / s['COMP'] # upweight by randoms completeness
 
     # FKP WEIGHT
     if P0_FKP is not None:
