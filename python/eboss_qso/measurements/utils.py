@@ -3,6 +3,18 @@ import json
 from nbodykit.utils import JSONEncoder
 import os
 
+def nbar_from_randoms(sample, version, d, r, cosmo):
+
+    from nbodykit.lab import RedshiftHistogram
+    from eboss_qso.fits import eBOSSConfig
+    from scipy.interpolate import InterpolatedUnivariateSpline
+
+    c = eBOSSConfig(sample, version, 'data')
+    zhist = RedshiftHistogram(r, c.fsky, cosmo, redshift='Z', weight='INV_COMP')
+
+    alpha = d['Weight'].sum() / r.csize
+    return InterpolatedUnivariateSpline(zhist.bin_centers, zhist.nbar*alpha)
+
 def compute_effective_redshift(cat):
     """
     Compute the effective redshift of a CatalogSource.

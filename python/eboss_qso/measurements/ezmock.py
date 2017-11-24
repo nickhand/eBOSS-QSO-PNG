@@ -55,6 +55,12 @@ def read_ezmock_randoms(sample, version):
     names = ['RA', 'DEC', 'Z', 'WEIGHT_FKP', 'COMP', 'NZ', 'VETO']
     s = CSVCatalog(path, names=names)
 
+    # inverse completeness
+    s['INV_COMP'] = 1. / s['COMP']
+
+    # up-weight expected angular completeness
+    s['NZ'] *= s['INV_COMP']
+
     return s
 
 

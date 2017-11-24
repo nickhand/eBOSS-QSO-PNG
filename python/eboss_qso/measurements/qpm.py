@@ -55,6 +55,12 @@ def read_qpm_randoms(sample, version):
     names = ['RA', 'DEC', 'Z_RSD', 'Z', 'COMP', 'NZ', 'WEIGHT_FKP']
     s = CSVCatalog(path, names=names)
 
+    # inverse completeness
+    s['INV_COMP'] = 1. / s['COMP']
+
+    # up-weight expected angular completeness
+    s['NZ'] *= s['INV_COMP']
+
     return s
 
 
@@ -81,7 +87,7 @@ def finalize_qpm(s, cosmo, P0_FKP=None):
     if 'WEIGHT_COMP' in s:
         s['Weight'] = s['WEIGHT_COMP'] # data
     else:
-        s['Weight'] = 1.0 / s['COMP'] # upweight by randoms completeness
+        s['Weight'] = 1.0
 
     # FKP WEIGHT
     if P0_FKP is not None:
