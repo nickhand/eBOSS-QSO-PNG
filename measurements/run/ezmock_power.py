@@ -29,7 +29,7 @@ def main(ns):
             eboss.finalize_ezmock(data, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
 
             # re-normalize randoms NZ properly
-            randoms['NZ'] = randoms_nz0 / (1.*len(randoms) / len(data))
+            randoms['NZ'] = randoms_nz0 / (1.*randoms.csize / data.csize)
             eboss.finalize_ezmock(randoms, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
 
             # combine data and randoms into the FKP source
