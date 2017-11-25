@@ -202,7 +202,7 @@ class QSOFitPreparer(object):
         from glob import glob
 
         # the directory holding any window results
-        home_dir = s.environ['EBOSS_DIR']
+        home_dir = os.environ['EBOSS_DIR']
         dirname = os.path.join(home_dir, 'measurements', 'window', version)
 
         filename = f"RR_eboss_{version}-QSO-{self.sample}-*.json"
