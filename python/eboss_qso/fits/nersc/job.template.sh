@@ -14,7 +14,7 @@ source /usr/common/contrib/bccp/conda-activate.sh 3.6
 
 # install correct nbodykit version to computing nodes
 bcast-pip .
-bcast $TAR_DIR/$NERSC_HOST/pyRSD.tar.gz
+bcast $TAR_DIR/anaconda3/envs/3.6-$NERSC_HOST/pyrsd.tar.gz
 
 cd $SLURM_SUBMIT_DIR
 
