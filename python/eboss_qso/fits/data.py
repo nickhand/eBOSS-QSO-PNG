@@ -1,5 +1,3 @@
-from ebossqso import config
-
 import os
 import numpy
 from pyRSD.rsdfit.data import PowerMeasurements
