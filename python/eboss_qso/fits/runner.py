@@ -8,7 +8,7 @@ import time
 import tempfile
 import shutil
 
-EBOSS_FITS = os.path.join(os.environ['THESIS_DIR'], 'eBOSS-QSO-PNG', 'fits', 'results')
+EBOSS_FITS = os.path.join(os.environ['EBOSS_DIR'], 'fits', 'results')
 
 def get_modified_time(o):
     return "last modified: %s" % time.ctime(os.path.getmtime(o))
