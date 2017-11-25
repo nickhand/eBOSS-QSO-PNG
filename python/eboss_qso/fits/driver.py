@@ -315,8 +315,10 @@ class QSOFitDriver(object):
                     tag = 'data_file'
                     newf = self.preparer._covariance_file
 
-                newf = os.path.join('$EBOSS_DIR', os.path.relpath(newf, os.environ['EBOSS_DIR']))
-                lines[i] = "data.%s = %s" % (tag, newf)
+                # replace line
+                if tag is not None:
+                    newf = os.path.join('$EBOSS_DIR', os.path.relpath(newf, os.environ['EBOSS_DIR']))
+                    lines[i] = "data.%s = %s" % (tag, newf)
 
             # write out new parameter file
             with open(params_file, 'w') as ff:
