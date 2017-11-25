@@ -5,6 +5,7 @@ from eboss_qso.fits.preparer import QSOFitPreparer
 from pyRSD.rsd import QuasarSpectrum
 import tempfile
 import errno
+import shutil
 from mpi4py import MPI
 
 def mkdir_p(path):
@@ -299,7 +300,7 @@ class QSOFitDriver(object):
 
                 # rename the file
                 if os.path.exists(f):
-                    os.rename(f, newf)
+                    shutil.move(f, newf)
 
             # search and fix NERSC-specific paths
             for i, line in enumerate(lines):
