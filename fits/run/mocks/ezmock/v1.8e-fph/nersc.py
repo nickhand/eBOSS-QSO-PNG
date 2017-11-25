@@ -12,7 +12,7 @@ def main(ns):
         for box in tm.iterate(range(ns.start, ns.stop, ns.step)):
 
             RSDFitRunner.commands.clear()
-            add_commands(box=box, vary_shot_noise=vary_shot_noise)
+            add_commands(box=box, vary_shot_noise=vary_shot_noise, use_temp_files=True)
 
             command = RSDFitRunner.commands[ns.testno]
             QSOFitDriver.run_from_args(command.split()[1:], comm=tm.comm)
@@ -21,7 +21,7 @@ def main(ns):
 if __name__ == '__main__':
 
     from eboss_qso.fits import NERSCManager
-    
+
     h = 'the name of the file to run'
     NERSCManager.add_argument('filename', type=str, help=h)
     NERSCManager.add_argument('testno', type=int, help=h)
