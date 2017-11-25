@@ -7,13 +7,13 @@
 #SBATCH -t {{ time }}
 {{ haswell_config }}
 
-cd $EBOSS_DIR
+cd $EBOSS_DIR/python
 
 # activate environment
 source /usr/common/contrib/bccp/conda-activate.sh 3.6
 
 # install correct nbodykit version to computing nodes
-bcast-pip python
+bcast-pip .
 bcast $TAR_DIR/$NERSC_HOST/pyRSD.tar.gz
 
 cd $SLURM_SUBMIT_DIR
