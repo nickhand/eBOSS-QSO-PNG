@@ -61,6 +61,7 @@ class QSOFitDriver(object):
         self.stats = stats
         self.kmin = kmin
         self.kmax = kmax
+        self.use_temp_files = use_temp_files
 
         # prepare the fit
         assert kmin >= 0.0001
@@ -144,14 +145,6 @@ class QSOFitDriver(object):
             # run
             ff.seek(0)
             self._run(ff.name)
-
-        # remove temporary files
-        if use_temp_files:
-            for name in ['data_file', 'covariance_file', 'window_file']:
-                f = getattr(self.preparer, name)
-                if os.path.exists(f):
-                    os.remove(f)
-
 
     @classmethod
     def run_from_args(cls, args=None, comm=None):
@@ -271,6 +264,7 @@ class QSOFitDriver(object):
         """
         from pyRSD.rsdfit.util import rsdfit_parser
         from pyRSD.rsdfit import rsdfit
+        from pyRSD.rsdfit.parameters import ParameterSet
 
         # the arguments to pass to RSDFit
         args = self.rsdfit_args
@@ -290,6 +284,46 @@ class QSOFitDriver(object):
             with open(os.path.join(self.output_dir, 'hashinfo.json'), 'w') as ff:
                 import json
                 json.dump(self.hashinfo, ff)
+
+        # remove temporary files
+        if self.use_temp_files:
+
+            # read the original parameter file
+            params_file = os.path.join(self.output_dir, 'params.dat')
+            lines = open(params_file, 'r').readlines()
+
+            # rename the input files
+            for name in ['data_file', 'covariance_file', 'window_file']:
+                f = getattr(self.preparer, name)
+                newf = getattr(self.preparer, '_' + name)
+
+                # rename the file
+                if os.path.exists(f):
+                    os.rename(f, newf)
+
+            # search and fix NERSC-specific paths
+            for i, line in enumerate(lines):
+                tag = None
+                if line.startswith('data.covariance'):
+                    tag = "covariance"
+                    newf = self.preparer._covariance_file
+                elif line.startswith('data.window_file'):
+                    tag = 'window_file'
+                    newf = self.preparer._window_file
+                elif line.startswith('data.data_file'):
+                    tag = 'data_file'
+                    newf = self.preparer._covariance_file
+
+                newf = os.path.join('$EBOSS_DIR', os.path.relpath(newf, os.environ['EBOSS_DIR']))
+                lines[i] = "data.%s = %s" % (tag, newf)
+
+            # write out new parameter file
+            with open(params_file, 'w') as ff:
+                ff.write("\n".join(lines))
+
+
+
+
 
 
     def _render_params(self, **kwargs):

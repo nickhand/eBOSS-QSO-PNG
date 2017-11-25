@@ -126,15 +126,16 @@ class QSOFitPreparer(object):
         Write the necessary data file.
         """
         # the output data file
-        if not self.use_temp_files:
-            stats = '+'.join(self.stats)
-            filename = f"poles_{self.version}-QSO-{self.sample}"
-            box = getattr(self, 'box', None)
-            if box is not None:
-                filename += '-' + box
-            filename += f"_{stats}_{self.hashstr}.dat"
-            output = os.path.join(self.config.fits_data_dir, filename)
-        else:
+        stats = '+'.join(self.stats)
+        filename = f"poles_{self.version}-QSO-{self.sample}"
+        box = getattr(self, 'box', None)
+        if box is not None:
+            filename += '-' + box
+        filename += f"_{stats}_{self.hashstr}.dat"
+        output = os.path.join(self.config.fits_data_dir, filename)
+
+        if self.use_temp_files:
+            self._data_file = output
             output = tempfile.mktemp()
 
         # make the data file
@@ -153,12 +154,13 @@ class QSOFitPreparer(object):
         from ..measurements.utils import make_hash
 
         # the window file
-        if not self.use_temp_files:
-            meta = {'zmin':self.hashinput['zmin'], 'zmax':self.hashinput['zmax']}
-            hashstr = make_hash(meta)
-            filename = f"poles_{self.version}-QSO-{self.sample}_{hashstr}.dat"
-            output = os.path.join(self.config.fits_window_dir, filename)
-        else:
+        meta = {'zmin':self.hashinput['zmin'], 'zmax':self.hashinput['zmax']}
+        hashstr = make_hash(meta)
+        filename = f"poles_{self.version}-QSO-{self.sample}_{hashstr}.dat"
+        output = os.path.join(self.config.fits_window_dir, filename)
+
+        if self.use_temp_files:
+            self._window_file = output
             output = tempfile.mktemp()
 
         # make the window
@@ -185,15 +187,16 @@ class QSOFitPreparer(object):
         Write the necessary covariance file.
         """
         # the output data file
-        if not self.use_temp_files:
-            stats = '+'.join(self.stats)
-            filename = f"poles_{self.version}-QSO-{self.sample}"
-            box = getattr(self, 'box', None)
-            if box is not None and box == 'mean':
-                filename += '-mean'
-            filename += f"_{stats}_{self.hashstr}.dat"
-            output = os.path.join(self.config.fits_covariance_dir, filename)
-        else:
+        stats = '+'.join(self.stats)
+        filename = f"poles_{self.version}-QSO-{self.sample}"
+        box = getattr(self, 'box', None)
+        if box is not None and box == 'mean':
+            filename += '-mean'
+        filename += f"_{stats}_{self.hashstr}.dat"
+        output = os.path.join(self.config.fits_covariance_dir, filename)
+
+        if self.use_temp_files:
+            self._covariance_file = output
             output = tempfile.mktemp()
 
         # make the covariance

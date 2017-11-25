@@ -3,6 +3,26 @@ from glob import glob
 import numpy
 from ..measurements.utils import get_hashkeys
 
+def fix_result_paths():
+    """
+    Fix paths local to NERSC in fitting results.
+    """
+    from argparse import ArgumentParser
+    import os
+
+    parser = ArgumentParser(description='fix EBOSS_DIR path')
+    parser.add_argument('dirname', type=str)
+    ns = parser.parse_args()
+    assert os.path.isdir(ns.dirname)
+
+    for dirpath, dirnames, filenames in os.walk(ns.dirname):
+        if 'params.dat' in filenames:
+            f = os.path.join(dirpath, 'params.dat')
+            content = open(f, 'r').read()
+            new_content = content.replace("/global/project/projectdirs/m779/nhand/Research/eBOSS", "$EBOSS_DIR")
+            with open(f, 'w') as ff:
+                ff.write(new_content)
+
 
 def load_ezmock_results(version, sample, krange, params, p=None):
     """

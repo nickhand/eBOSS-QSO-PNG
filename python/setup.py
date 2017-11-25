@@ -16,7 +16,8 @@ setup(
             'eboss-qso-fit = eboss_qso.fits.driver:__main__',
             'eboss-genreports = eboss_qso.fits.reports:_generate_all',
             'eboss-gentoc = eboss_qso.fits.reports:generate_report_toc',
-            'eboss-sync = eboss_qso.sync:sync_eboss'
+            'eboss-sync = eboss_qso.sync:sync_eboss',
+            'eboss-fix-paths = eboss_qso.fits.results:fix_result_paths',
             ]
     }
 )

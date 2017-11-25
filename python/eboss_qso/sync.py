@@ -89,6 +89,10 @@ def sync_eboss():
     h = 'sync the `measurements` directory'
     a = subparsers.add_parser('measurements', parents=[parent], help=h)
 
+    # measurements
+    h = 'sync the `fits` directory'
+    a = subparsers.add_parser('fits', parents=[parent], help=h)
+
     # reports
     h = 'sync the `reports` directory'
     b = subparsers.add_parser('reports', parents=[parent], help=h)
@@ -111,6 +115,10 @@ def sync_eboss():
     elif ns.subparser_name == 'notebooks':
         remote_dir = "/global/project/projectdirs/m779/www/nhand/notebooks/eboss-qso-notebooks/"
         local_dir = "/Users/nhand/Research/Analysis/thesis/eBOSS-QSO-PNG/notebooks/"
+        exclude = ["--exclude='.*'"]
+    elif ns.subparser_name == 'fits':
+        remote_dir = "/global/project/projectdirs/m779/nhand/Research/eBOSS/fits/results/"
+        local_dir = "/Users/nhand/Research/Analysis/thesis/eBOSS-QSO-PNG/fits/results/"
         exclude = ["--exclude='.*'"]
 
     sync(remote_dir, local_dir, exclude=exclude)
