@@ -1,4 +1,3 @@
-from ebossqso import config
 from pyRSD.rsd import QuasarSpectrum
 from pyRSD.rsdfit.data import PoleCovarianceMatrix
 
