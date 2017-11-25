@@ -7,6 +7,7 @@ ITERATIONS = 500
 ZBINS = [(0.8, 2.2)]
 VERSION = 'v1.8e-fph'
 HASHES = ['bba5aabfa6', '8ba79d78df', '0ef5c14a14']
+p = {'0ef5c14a14': 1.0, 'bba5aabfa6':None, '8ba79d78df':1.6}
 
 @parametrize({'sample':['N', 'S'], 'hashstr':HASHES})
 def add_commands(sample, hashstr, box, vary_shot_noise=True):
@@ -17,12 +18,13 @@ def add_commands(sample, hashstr, box, vary_shot_noise=True):
         all_params += ['N']
     params = " ".join(all_params)
 
+    # filename of spectra we are fitting
     dirname = os.path.join(EBOSS_SPECTRA, 'mocks', 'ezmock', VERSION)
     filename = os.path.join(dirname, f'poles_zevoEZmock_{VERSION}_QSO-{sample}_{box:04d}-{hashstr}.json')
 
     # make the command
-    command = f"eboss-qso-fit nlopt -f {filename} --vary {params} --stats P0 P2 -i {ITERATIONS} --kmax 0.3"
-    RSDFitRunner.register(command, tag={'sample':sample, 'hashstr':hashstr, 'zbin':ZBINS[0]})
+    command = f"eboss-qso-fit nlopt -f {filename} --vary {params} --stats P0 P2 -i {ITERATIONS} --kmax 0.3 --overwrite"
+    RSDFitRunner.register(command, tag={'sample':sample, 'p':p[hashstr], 'zbin':ZBINS[0]})
 
 
 if __name__ == '__main__':

@@ -2,38 +2,40 @@
 from eboss_qso.fits import RSDFitRunner, parametrize
 from eboss_qso import EBOSS_SPECTRA
 import os
-from argparse import Action
 
 ITERATIONS = 500
 ZBINS = [(0.8, 2.2)]
-all_params = ['b1', 'sigma_fog']
+VERSION = 'v1.8e-fph'
+HASHES = ['bba5aabfa6', '8ba79d78df', '0ef5c14a14']
+p = {'0ef5c14a14': 1.0, 'bba5aabfa6':None, '8ba79d78df':1.6}
 
-class BoxNumber(Action):
-    def __call__(self, parser, namespace, box, option_string=None):
-        global all_params
-        if namespace.vary_shot_noise:
-            all_params += ['N']
-        add_commands(box=box)
-        setattr(namespace, self.dest, box)
+@parametrize({'sample':['N', 'S'], 'hashstr':HASHES})
+def add_commands(sample, hashstr, box, vary_shot_noise=True):
 
-ZBINS = [(0.8, 2.2)]
-
-@parametrize({'sample':['N', 'S']})
-def add_commands(box, sample):
-    VERSION = 'v1.8e-fph'
-    HASHES = ['bba5aabfa6'] # no z-weights
+    # determine the params we are fitting
+    all_params = ['b1', 'sigma_fog']
+    if vary_shot_noise:
+        all_params += ['N']
     params = " ".join(all_params)
 
+    # filename of spectra we are fitting
     dirname = os.path.join(EBOSS_SPECTRA, 'mocks', 'ezmock', VERSION)
-    for i, hashstr in enumerate(HASHES):
-        filename = os.path.join(dirname, f'poles_zevoEZmock_{VERSION}_QSO-{sample}_{box:04d}-{hashstr}.json')
-        command = f"eboss-qso-fit nlopt -f {filename} --vary {params} --stats P0 P2 -i {ITERATIONS} --kmax 0.3"
-        RSDFitRunner.register(command, tag={'sample':sample, 'zbin':ZBINS[i]})
+    filename = os.path.join(dirname, f'poles_zevoEZmock_{VERSION}_QSO-{sample}_{box:04d}-{hashstr}.json')
+
+    # make the command
+    command = f"eboss-qso-fit nlopt -f {filename} --vary {params} --stats P0 P2 -i {ITERATIONS} --kmax 0.3 --overwrite"
+    RSDFitRunner.register(command, tag={'sample':sample, 'p':p[hashstr], 'zbin':ZBINS[0]})
 
 
 if __name__ == '__main__':
 
-    # the box number
-    RSDFitRunner.update_preparser('--vary-shot-noise', choices=[0,1], type=int, required=True)
-    RSDFitRunner.update_preparser('--box', required=True, type=int, action=BoxNumber)
-    RSDFitRunner.execute()
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser()
+    parser.add_argument('--vary-shot-noise', choices=[0,1], type=int, required=True)
+    parser.add_argument('--box', required=True, type=int)
+
+    ns, args = parser.parse_known_args()
+
+    add_commands(vary_shot_noise=ns.vary_shot_noise, box=ns.box)
+    RSDFitRunner.execute(args=args)
