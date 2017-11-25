@@ -50,7 +50,7 @@ class eBOSSConfig(object):
     def _get_nbar_file(self):
         version = get_mock_version(self.kind, self.version)
         filename = f'nbar-eboss_{version}-QSO-{self.sample}-eboss_{version}.dat'
-        return os.path.join(self.data_dir, 'meta', filename)
+        return os.path.join(self.data_dir, 'Meta', filename)
 
     def _get_effective_area(self):
         """
