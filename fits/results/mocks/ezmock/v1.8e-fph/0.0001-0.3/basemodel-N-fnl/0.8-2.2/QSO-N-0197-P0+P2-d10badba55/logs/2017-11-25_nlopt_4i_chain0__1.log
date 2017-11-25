@@ -1,0 +1,30 @@
+rank #0: 2017-11-25 11:58:34,716 rsdfit.fitting_driver INFO     rank 160 on nid00481     Calling the 'nlopt' solve function
+rank #0: 2017-11-25 11:58:34,716 rsdfit.lbfgs_fitter INFO     running LBFGS for 500 iterations and then stopping
+rank #0: 2017-11-25 11:58:34,716 rsdfit.lbfgs_fitter INFO     running LBFGS minimizer with priors
+rank #0: 2017-11-25 11:58:34,717 root         INFO     Iter           N          b1        f_nl   sigma_fog   F(X)     
+rank #0: 2017-11-25 11:58:34,771 root         INFO     analytic derivative for parameter 'N' not available; no registered subclass for dPkmu/dN
+rank #0: 2017-11-25 11:58:35,065 LBFGS        INFO     options = {'factr': 100000.0, 'gtol': 1e-05, 'max_iter': 500, 'test_convergence': False}
+rank #0: 2017-11-25 11:58:35,066 LBFGS        PARAM    0000          0.000000          2.000000          0.000000          4.000000        185.103403
+rank #0: 2017-11-25 11:58:35,472 LBFGS        PARAM    0001         14.125080          2.051943          0.376405          3.991229        161.015738
+rank #0: 2017-11-25 11:58:35,819 LBFGS        PARAM    0002        -35.111799          2.168865          1.716298          4.036653        136.259285
+rank #0: 2017-11-25 11:58:36,165 LBFGS        PARAM    0003       -112.483276          2.205342          2.438623          4.103004        128.269357
+rank #0: 2017-11-25 11:58:36,511 LBFGS        PARAM    0004       -306.828585          2.253608          4.148019          4.213045        119.575858
+rank #0: 2017-11-25 11:59:01,169 LBFGS        INFO     Linesearch failed in both LBFGS and gradient directions
+rank #0: 2017-11-25 11:59:01,170 LBFGS        PARAM    0004       -306.828585          2.253608          4.148019          4.213045        119.575858
+rank #0: 2017-11-25 11:59:01,170 rsdfit.lbfgs_fitter WARNING  ...LBFGS optimization finished. Time elapsed: 0:00:26.11
+rank #0: 2017-11-25 11:59:01,171 rsdfit.lbfgs_fitter ERROR    nonlinear fit with method L-BFGS-B failed: Linesearch failed in both LBFGS and gradient directions
+rank #0: 2017-11-25 11:59:01,171 rsdfit.fitting_driver INFO     rank 160 on nid00481     ...fitting complete
+rank #0: 2017-11-25 11:59:01,184 rsdfit.fitting_driver INFO     rank 160 on nid00481     Saving the results to `/global/project/projectdirs/m779/nhand/Research/eBOSS/fits/results/mocks/ezmock/v1.8e-fph/0.0001-0.3/basemodel-N-fnl/0.8-2.2/QSO-N-0197-P0+P2-d10badba55/2017-11-25_nlopt_4i_chain0__1.npz`
+rank #0: 2017-11-25 11:59:01,244 pyRSD.analysis.lbfgs_results INFO     
+minimum chi2 = 119.575858103
+
+Free parameters [ mean ]
+_______________
+N              : -306.82858536
+b1             : 2.25360778914
+f_nl           : 4.14801875056
+sigma_fog      : 4.2130450541
+
+Constrained parameters [ mean ]
+_________________________
+b1sigma8       : 0.897094428593
