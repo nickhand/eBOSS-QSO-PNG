@@ -43,7 +43,7 @@ class QSOFitDriver(object):
     """
     def __init__(self, rsdfit_args, spectra_file, vary, stats, p=1.6,
                     kmin=0.0001, kmax=0.4, overwrite=False, output_only=False,
-                    error_rescale=1.0, comm=None):
+                    error_rescale=1.0, comm=None, use_temp_files=False):
 
         quiet = False
         if output_only:
@@ -66,7 +66,8 @@ class QSOFitDriver(object):
         assert kmin >= 0.0001
         assert kmax <= 0.4
         self.preparer = QSOFitPreparer(spectra_file, stats, error_rescale=error_rescale,
-                            kmin=0.0001, kmax=0.4, overwrite=overwrite, quiet=quiet)
+                                        kmin=0.0001, kmax=0.4, overwrite=overwrite,
+                                        quiet=quiet, use_temp_files=use_temp_files)
         self.config = self.preparer.config
 
         # get the p value from the preparer
@@ -144,6 +145,13 @@ class QSOFitDriver(object):
             ff.seek(0)
             self._run(ff.name)
 
+        # remove temporary files
+        if use_temp_files:
+            for name in ['data_file', 'covariance_file', 'window_file']:
+                f = getattr(self.preparer, name)
+                if os.path.exists(f):
+                    os.remove(f)
+
 
     @classmethod
     def run_from_args(cls, args=None, comm=None):
@@ -184,6 +192,9 @@ class QSOFitDriver(object):
 
         h = 'whether to only print the output directory'
         parser.add_argument('--output', dest='output_only', action='store_true', help=h)
+
+        h = 'whether to use temporary files'
+        parser.add_argument('--use-temp-files', action='store_true', help=h)
 
         ns, unknown = parser.parse_known_args(args=args)
         return cls(rsdfit_args=unknown, comm=comm, **vars(ns))

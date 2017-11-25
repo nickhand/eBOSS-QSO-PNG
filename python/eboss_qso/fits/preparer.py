@@ -1,6 +1,7 @@
 import os
 import numpy
 from nbodykit.lab import ConvolvedFFTPower
+import tempfile
 
 from ..measurements.results import info_from_filename
 from ..measurements import get_hashkeys
@@ -29,7 +30,8 @@ class QSOFitPreparer(object):
     """
     Class to prepare a QSO power spectrum fit.
     """
-    def __init__(self, spectra_file, stats, kmin=0.0001, kmax=0.4, overwrite=False, error_rescale=1.0, quiet=False):
+    def __init__(self, spectra_file, stats, kmin=0.0001, kmax=0.4,
+                    overwrite=False, error_rescale=1.0, quiet=False, use_temp_files=False):
 
         self.spectra_file = os.path.abspath(spectra_file)
         self.stats = stats
@@ -38,6 +40,7 @@ class QSOFitPreparer(object):
         self.overwrite = overwrite
         self.quiet = quiet
         self.error_rescale = error_rescale
+        self.use_temp_files = use_temp_files
 
         # dictionary of info from the filename
         self.kind = get_spectra_type(self.spectra_file)
@@ -109,6 +112,9 @@ class QSOFitPreparer(object):
         h = 'whether to overwrite existing files'
         parser.add_argument('--overwrite', action='store_true', help=h)
 
+        h = 'whether to use temporary files'
+        parser.add_argument('--use-temp-files', action='store_true', help=h)
+
         h = 'rescale the errors by this amount'
         parser.add_argument('--error-rescale', type=float, default=1.0, help=h)
 
@@ -120,14 +126,18 @@ class QSOFitPreparer(object):
         Write the necessary data file.
         """
         # the output data file
-        stats = '+'.join(self.stats)
-        filename = f"poles_{self.version}-QSO-{self.sample}"
-        box = getattr(self, 'box', None)
-        if box is not None:
-            filename += '-' + box
-        filename += f"_{stats}_{self.hashstr}.dat"
-        output = os.path.join(self.config.fits_data_dir, filename)
+        if not self.use_temp_files:
+            stats = '+'.join(self.stats)
+            filename = f"poles_{self.version}-QSO-{self.sample}"
+            box = getattr(self, 'box', None)
+            if box is not None:
+                filename += '-' + box
+            filename += f"_{stats}_{self.hashstr}.dat"
+            output = os.path.join(self.config.fits_data_dir, filename)
+        else:
+            output = tempfile.mktemp()
 
+        # make the data file
         if not os.path.exists(output) or self.overwrite:
             write_data(self.spectra_file, self.stats, self.stat_names, output,
                         kmin=self.kmin, kmax=self.kmax, quiet=self.quiet)
@@ -143,11 +153,15 @@ class QSOFitPreparer(object):
         from ..measurements.utils import make_hash
 
         # the window file
-        meta = {'zmin':self.hashinput['zmin'], 'zmax':self.hashinput['zmax']}
-        hashstr = make_hash(meta)
-        filename = f"poles_{self.version}-QSO-{self.sample}_{hashstr}.dat"
-        output = os.path.join(self.config.fits_window_dir, filename)
+        if not self.use_temp_files:
+            meta = {'zmin':self.hashinput['zmin'], 'zmax':self.hashinput['zmax']}
+            hashstr = make_hash(meta)
+            filename = f"poles_{self.version}-QSO-{self.sample}_{hashstr}.dat"
+            output = os.path.join(self.config.fits_window_dir, filename)
+        else:
+            output = tempfile.mktemp()
 
+        # make the window
         if not os.path.exists(output) or self.overwrite:
 
             # the name of the (unformatted) window file
@@ -171,15 +185,18 @@ class QSOFitPreparer(object):
         Write the necessary covariance file.
         """
         # the output data file
-        stats = '+'.join(self.stats)
-        filename = f"poles_{self.version}-QSO-{self.sample}"
-        box = getattr(self, 'box', None)
-        if box is not None and box == 'mean':
-            filename += '-mean'
-        filename += f"_{stats}_{self.hashstr}.dat"
+        if not self.use_temp_files:
+            stats = '+'.join(self.stats)
+            filename = f"poles_{self.version}-QSO-{self.sample}"
+            box = getattr(self, 'box', None)
+            if box is not None and box == 'mean':
+                filename += '-mean'
+            filename += f"_{stats}_{self.hashstr}.dat"
+            output = os.path.join(self.config.fits_covariance_dir, filename)
+        else:
+            output = tempfile.mktemp()
 
-        output = os.path.join(self.config.fits_covariance_dir, filename)
-
+        # make the covariance
         if not os.path.exists(output) or self.overwrite:
 
             P0_FKP = self.hashinput.get('P0_FKP', None)
