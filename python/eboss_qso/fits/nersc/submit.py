@@ -75,6 +75,8 @@ class NERSCManager(object):
             # and call
             subprocess.call(["sbatch", ff.name])
 
+        sys.exit(0)
+
     @classmethod
     def add_argument(cls, *args, **kwargs):
 
