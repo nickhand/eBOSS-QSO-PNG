@@ -3,11 +3,10 @@ from nbodykit.cosmology import Cosmology, Planck15
 import socket
 
 # data and result directories
+data_dir = os.environ['EBOSS_DIR']
 if socket.gethostname() == 'utley':
-    data_dir = os.path.join(os.environ['THESIS_DIR'], 'eBOSS-QSO-PNG')
     results_dir = os.path.join(data_dir, 'measurements')
 else:
-    data_dir = '/global/cscratch1/sd/nhand/eBOSS'
     results_dir = '/global/cscratch1/sd/nhand/Research/eBOSS/measurements'
 
 # allowed data versions

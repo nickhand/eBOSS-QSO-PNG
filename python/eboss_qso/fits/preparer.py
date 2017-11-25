@@ -18,7 +18,7 @@ def get_spectra_type(filename):
     if 'data' in filename:
         return 'data'
     elif 'mocks' in filename:
-        home_dir = os.path.join(os.environ['THESIS_DIR'], 'eBOSS-QSO-PNG')
+        home_dir = os.environ['EBOSS_DIR']
         spectra_dir = os.path.join(home_dir, 'measurements', 'spectra', 'mocks')
         return os.path.relpath(filename, spectra_dir).split(os.path.sep)[0]
     else:
@@ -202,7 +202,7 @@ class QSOFitPreparer(object):
         from glob import glob
 
         # the directory holding any window results
-        home_dir = os.path.join(os.environ['THESIS_DIR'], 'eBOSS-QSO-PNG')
+        home_dir = s.environ['EBOSS_DIR']
         dirname = os.path.join(home_dir, 'measurements', 'window', version)
 
         filename = f"RR_eboss_{version}-QSO-{self.sample}-*.json"

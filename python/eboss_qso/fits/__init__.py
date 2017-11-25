@@ -74,7 +74,7 @@ class eBOSSConfig(object):
 
     @property
     def fits_input_dir(self):
-        return os.path.join(os.environ['THESIS_DIR'], 'eBOSS-QSO-PNG', 'fits', 'input', self._kind_tag)
+        return os.path.join(self.home_dir, 'fits', 'input', self._kind_tag)
 
     @property
     def fits_covariance_dir(self):
