@@ -42,7 +42,7 @@ class QSOFitDriver(object):
     comm : MPI communicator
         the MPI communicator
     """
-    def __init__(self, rsdfit_args, spectra_file, vary, stats, p=1.6,
+    def __init__(self, rsdfit_args, spectra_file, vary, stats, 
                     kmin=0.0001, kmax=0.4, overwrite=False, output_only=False,
                     error_rescale=1.0, comm=None, use_temp_files=False):
 
@@ -172,10 +172,6 @@ class QSOFitDriver(object):
         h = 'the parameters to vary'
         choices = ['alpha_par', 'alpha_perp', 'f', 'sigma8_z', 'b1', 'sigma_fog', 'f_nl', 'N']
         parser.add_argument('--vary', type=str, nargs='+', choices=choices, help=h, required=True)
-
-        h = 'the value of p to use'
-        choices = [1.0, 1.6]
-        parser.add_argument('-p', type=float, choices=choices, help=h, default=1.)
 
         h = 'the statistics to include'
         stats = ['P0', 'P2', 'P0_sysfree']
