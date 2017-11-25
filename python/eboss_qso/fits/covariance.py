@@ -83,7 +83,7 @@ def _compute_covariance(config, zmin, zmax, k, ells, model, P0_FKP=0., Nmu=100, 
 
 
 def compute_covariance(config, stats, z_eff, b1, sigma_fog, zmin, zmax, P0_FKP,
-                        output, kmin=0., kmax=0.7, dk=0.005, quiet=False):
+                        output, kmin=0., kmax=0.7, dk=0.005, quiet=False, rescale=1.0):
     """
     Compute the multipole covariance matrix
 
@@ -136,6 +136,9 @@ def compute_covariance(config, stats, z_eff, b1, sigma_fog, zmin, zmax, P0_FKP,
         C22 = C.sel(ell1=2, ell2=2)
         C02 = C.sel(ell1=0, ell2=2)
         C = C00 + 2./5 * C22 + 2 * 2./5 * C02
+
+    # rescale
+    C *= rescale
 
     # and save
     if not quiet:
