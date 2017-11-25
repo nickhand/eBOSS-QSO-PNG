@@ -16,7 +16,8 @@ fixed_params = ['b1', 'sigma_fog', 'f', 'sigma8_z']
 all_params = fixed_params + ['alpha_par', 'alpha_perp']
 
 @parametrize({'sample':['N', 'S'], 'hashstr':HASHES, 'params':[all_params, fixed_params]})
-def add_commands(sample, hashstr, params, box, vary_shot_noise=True, use_temp_files=False, overwrite=False):
+def add_commands(sample, hashstr, box, vary_shot_noise=True,
+                    use_temp_files=False, overwrite=False, kmin=1e-4, kmax=0.3):
 
     # determine the params we are fitting
     if vary_shot_noise:
@@ -28,12 +29,13 @@ def add_commands(sample, hashstr, params, box, vary_shot_noise=True, use_temp_fi
     filename = os.path.join(dirname, f'poles_zevoEZmock_{VERSION}_QSO-{sample}_{box:04d}-{hashstr}.json')
 
     # make the command
-    command = f"eboss-qso-fit nlopt -f {filename} --vary {params} --stats P0 P2 -i {ITERATIONS} --kmax 0.3"
+    command = f"eboss-qso-fit nlopt -f {filename} --vary {params} --stats P0 P2"
+    command += f" -i {ITERATIONS} --kmin {kmin} --kmax {kmax}"
     if use_temp_files:
         command += " --use-temp-files"
     if overwrite:
         command += " --overwrite"
-        
+
     # and register it
     tag = {'sample':sample, 'p':p[hashstr], 'params':params, 'zbin':ZBINS[0]}
     RSDFitRunner.register(command, tag=tag)
@@ -44,11 +46,13 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
 
     parser = ArgumentParser()
-    parser.add_argument('--vary-shot-noise', choices=[0,1], type=int, required=True)
     parser.add_argument('--box', required=True, type=int)
+    parser.add_argument('--vary-shot-noise', choices=[0,1], type=int, required=True)
     parser.add_argument('--overwrite', action='store_true', default=False)
+    parser.add_argument('--kmin', type=float, default=1e-4)
+    parser.add_argument('--kmax', type=float, default=0.3)
 
     ns, args = parser.parse_known_args()
 
-    add_commands(vary_shot_noise=ns.vary_shot_noise, box=ns.box, overwrite=ns.overwrite)
+    add_commands(**vars(ns))
     RSDFitRunner.execute(args=args)

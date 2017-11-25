@@ -5,15 +5,21 @@ from run_fnl_fits import RSDFitRunner, add_commands
 
 def main(ns):
 
+    # run with 1 core per task
     with TaskManager(cpus_per_task=1, use_all_cpus=True) as tm:
 
+        # whether we are varying shot noise
         vary_shot_noise = False if ns.fix_shot_noise else True
 
+        # iterate through the boxes in parallel
         for box in tm.iterate(range(ns.start, ns.stop, ns.step)):
 
+            # clear old commands and update the list of commands for this box
             RSDFitRunner.commands.clear()
-            add_commands(box=box, vary_shot_noise=vary_shot_noise, kmax=ns.kmax, use_temp_files=True)
+            add_commands(box=box, vary_shot_noise=vary_shot_noise, kmin=ns.kmin,
+                            kmax=ns.kmax, use_temp_files=True)
 
+            # get the command and run
             command = RSDFitRunner.commands[ns.testno]
             QSOFitDriver.run_from_args(command.split()[1:], comm=tm.comm)
 
@@ -29,7 +35,10 @@ if __name__ == '__main__':
     NERSCManager.add_argument('--start', type=int, required=True)
     NERSCManager.add_argument('--stop', type=int, required=True)
     NERSCManager.add_argument('--step', type=int, default=1)
+
+    # optional config
     NERSCManager.add_argument('--fix-shot-noise', action='store_true', default=False)
+    NERSCManager.add_argument('--kmin', type=float, default=1e-4)
     NERSCManager.add_argument('--kmax', type=float, default=0.3)
 
     ns = NERSCManager.parse_args()
