@@ -29,7 +29,7 @@ class QSOFitPreparer(object):
     """
     Class to prepare a QSO power spectrum fit.
     """
-    def __init__(self, spectra_file, stats, kmin=0.0001, kmax=0.4, overwrite=False, quiet=False):
+    def __init__(self, spectra_file, stats, kmin=0.0001, kmax=0.4, overwrite=False, error_rescale=1.0, quiet=False):
 
         self.spectra_file = os.path.abspath(spectra_file)
         self.stats = stats
@@ -37,6 +37,7 @@ class QSOFitPreparer(object):
         self.kmax = kmax
         self.overwrite = overwrite
         self.quiet = quiet
+        self.error_rescale = error_rescale
 
         # dictionary of info from the filename
         self.kind = get_spectra_type(self.spectra_file)
@@ -108,6 +109,9 @@ class QSOFitPreparer(object):
         h = 'whether to overwrite existing files'
         parser.add_argument('--overwrite', action='store_true', help=h)
 
+        h = 'rescale the errors by this amount'
+        parser.add_argument('--error-rescale', type=float, default=1.0, help=h)
+
         ns = parser.parse_args()
         return cls(**vars(ns))
 
@@ -168,7 +172,12 @@ class QSOFitPreparer(object):
         """
         # the output data file
         stats = '+'.join(self.stats)
-        filename = f"poles_{self.version}-QSO-{self.sample}_{stats}_{self.hashstr}.dat"
+        filename = f"poles_{self.version}-QSO-{self.sample}"
+        box = getattr(self, 'box', None)
+        if box is not None and box == 'mean':
+            filename += '-mean'
+        filename += f"_{stats}_{self.hashstr}.dat"
+
         output = os.path.join(self.config.fits_covariance_dir, filename)
 
         if not os.path.exists(output) or self.overwrite:
@@ -180,7 +189,7 @@ class QSOFitPreparer(object):
             compute_covariance(self.config, self.stats, self.z_eff, b1, sigma_fog,
                                 self.hashinput['zmin'], self.hashinput['zmax'],
                                 P0_FKP, output, kmin=self.kmin, kmax=self.kmax, dk=0.005,
-                                quiet=self.quiet)
+                                quiet=self.quiet, rescale=self.error_rescale)
         else:
             if not self.quiet:
                 print('skipping covariance preparation...')

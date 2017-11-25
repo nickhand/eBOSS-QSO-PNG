@@ -37,7 +37,7 @@ class QSOFitDriver(object):
         if ``True`` overwrite the input fit files
     """
     def __init__(self, rsdfit_args, spectra_file, vary, stats, p=1.6,
-                    kmin=0.0001, kmax=0.4, overwrite=False, output_only=False):
+                    kmin=0.0001, kmax=0.4, overwrite=False, output_only=False, error_rescale=1.0):
 
         quiet = False
         if output_only:
@@ -46,7 +46,6 @@ class QSOFitDriver(object):
 
         self.rsdfit_args = rsdfit_args
         self.vary = vary
-        self.p = p
         self.stats = stats
         self.kmin = kmin
         self.kmax = kmax
@@ -54,8 +53,11 @@ class QSOFitDriver(object):
         # prepare the fit
         assert kmin >= 0.0001
         assert kmax <= 0.4
-        self.preparer = QSOFitPreparer(spectra_file, stats, kmin=0.0001, kmax=0.4, overwrite=overwrite, quiet=quiet)
+        self.preparer = QSOFitPreparer(spectra_file, stats, error_rescale=error_rescale,
+                            kmin=0.0001, kmax=0.4, overwrite=overwrite, quiet=quiet)
         self.config = self.preparer.config
+
+        self.p = self.preparer.hashinput['p']
 
         # store zmin/zmax
         self.zmin = self.preparer.hashinput['zmin']
@@ -149,6 +151,9 @@ class QSOFitDriver(object):
         h = 'the maximum k value to include'
         parser.add_argument('--kmax', type=float, default=0.4, help=h)
 
+        h = 'rescale the errors by this amount'
+        parser.add_argument('--error-rescale', type=float, default=1.0, help=h)
+
         h = 'the parameters to vary'
         choices = ['alpha_par', 'alpha_perp', 'f', 'sigma8_z', 'b1', 'sigma_fog', 'f_nl', 'N']
         parser.add_argument('--vary', type=str, nargs='+', choices=choices, help=h, required=True)
@@ -184,6 +189,7 @@ class QSOFitDriver(object):
             meta['p'] = self.p
         else:
             meta['p'] = None
+
         return meta
 
     @property
