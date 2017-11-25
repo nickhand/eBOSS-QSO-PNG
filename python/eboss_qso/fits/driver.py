@@ -138,7 +138,7 @@ class QSOFitDriver(object):
             for par in ['alpha_par', 'alpha_perp']:
                 theorypars[par].update(lower=0.3, upper=1.8)
 
-            theorypars['N'].update(lower=-1000, upper=1000)
+            theorypars['N'].update(lower=-5000, upper=5000)
 
             # write to file
             theorypars.to_file(ff, mode='a')
