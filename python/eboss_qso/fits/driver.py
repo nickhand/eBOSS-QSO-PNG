@@ -305,15 +305,15 @@ class QSOFitDriver(object):
             # search and fix NERSC-specific paths
             for i, line in enumerate(lines):
                 tag = None
-                if line.startswith('data.covariance'):
+                if line.startswith('data.covariance ='):
                     tag = "covariance"
                     newf = self.preparer._covariance_file
-                elif line.startswith('data.window_file'):
+                elif line.startswith('data.window_file ='):
                     tag = 'window_file'
                     newf = self.preparer._window_file
-                elif line.startswith('data.data_file'):
+                elif line.startswith('data.data_file ='):
                     tag = 'data_file'
-                    newf = self.preparer._covariance_file
+                    newf = self.preparer._data_file
 
                 # replace line
                 if tag is not None:
