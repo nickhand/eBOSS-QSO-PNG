@@ -317,12 +317,12 @@ class QSOFitDriver(object):
 
                 # replace line
                 if tag is not None:
-                    newf = os.path.join('$EBOSS_DIR', os.path.relpath(newf, os.environ['EBOSS_DIR']))
-                    lines[i] = "data.%s = %s" % (tag, newf)
+                    newf = os.path.join('$(EBOSS_DIR)', os.path.relpath(newf, os.environ['EBOSS_DIR']))
+                    lines[i] = "data.%s = '%s'\n" % (tag, newf)
 
             # write out new parameter file
             with open(params_file, 'w') as ff:
-                ff.write("\n".join(lines))
+                ff.write("".join(lines))
 
 
 

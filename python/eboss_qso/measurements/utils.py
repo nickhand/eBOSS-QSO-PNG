@@ -115,6 +115,9 @@ def get_hashkeys(filename, cls):
 
         # echo hash info for the spectra file too
         spectra_file = d.get('spectra_file')
+        nersc_dir = "/global/project/projectdirs/m779/nhand/Research/eBOSS"
+        if nersc_dir in spectra_file:
+            spectra_file = spectra_file.replace(nersc_dir, os.environ['EBOSS_DIR'])
         d.update(get_hashkeys(spectra_file, 'ConvolvedFFTPower'))
     else:
         # get the result class
