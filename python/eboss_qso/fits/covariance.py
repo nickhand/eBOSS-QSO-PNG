@@ -142,4 +142,5 @@ def compute_covariance(config, stats, z_eff, b1, sigma_fog, zmin, zmax, P0_FKP,
     # and save
     if not quiet:
         print("saving %s..." %output)
+    C.attrs.clear()
     C.to_plaintext(output)
