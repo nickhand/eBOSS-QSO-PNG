@@ -10,7 +10,7 @@ HASHES = ['bba5aabfa6', '8ba79d78df', '0ef5c14a14']
 p = {'0ef5c14a14': 1.0, 'bba5aabfa6':None, '8ba79d78df':1.6}
 
 @parametrize({'sample':['N', 'S'], 'hashstr':HASHES})
-def add_commands(sample, hashstr, box, vary_shot_noise=True):
+def add_commands(sample, hashstr, box, vary_shot_noise=True, use_temp_files=False, overwrite=False):
 
     # determine the params we are fitting
     all_params = ['b1', 'sigma_fog']
@@ -23,8 +23,15 @@ def add_commands(sample, hashstr, box, vary_shot_noise=True):
     filename = os.path.join(dirname, f'poles_zevoEZmock_{VERSION}_QSO-{sample}_{box:04d}-{hashstr}.json')
 
     # make the command
-    command = f"eboss-qso-fit nlopt -f {filename} --vary {params} --stats P0 P2 -i {ITERATIONS} --kmax 0.3 --overwrite"
-    RSDFitRunner.register(command, tag={'sample':sample, 'p':p[hashstr], 'zbin':ZBINS[0]})
+    command = f"eboss-qso-fit nlopt -f {filename} --vary {params} --stats P0 P2 -i {ITERATIONS} --kmax 0.3"
+    if use_temp_files:
+        command += " --use-temp-files"
+    if overwrite:
+
+
+    # register it
+    tag = {'sample':sample, 'p':p[hashstr], 'zbin':ZBINS[0]}
+    RSDFitRunner.register(command, tag=tag)
 
 
 if __name__ == '__main__':
@@ -34,8 +41,9 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--vary-shot-noise', choices=[0,1], type=int, required=True)
     parser.add_argument('--box', required=True, type=int)
+    parser.add_argument('--overwrite', action='store_true', default=False)
 
     ns, args = parser.parse_known_args()
 
-    add_commands(vary_shot_noise=ns.vary_shot_noise, box=ns.box)
+    add_commands(vary_shot_noise=ns.vary_shot_noise, box=ns.box, overwrite=ns.overwrite)
     RSDFitRunner.execute(args=args)
