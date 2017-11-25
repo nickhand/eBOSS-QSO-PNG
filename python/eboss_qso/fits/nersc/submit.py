@@ -37,7 +37,7 @@ class NERSCManager(object):
         if ns.subparser_name == 'run':
             return ns
 
-        command = [sys.executable, sys.argv[0]] + ['run'] + unknown
+        command = [os.path.basename(sys.executable), sys.argv[0]] + ['run'] + unknown
 
         # determine the NERSC host
         host = os.environ.get('NERSC_HOST', 'cori')
