@@ -77,7 +77,7 @@ class OutputAction(argparse.Action):
             if len(tag):
                 header = header + " " + ", ".join(["'%s' = %s" %(k,tag[k]) for k in tag])
             header += "\n"
-            
+
             # print test number first
             toprint = header
 
@@ -156,12 +156,12 @@ class RSDFitRunner(object):
         ArgumentParser.update_preparser(name, **kws)
 
     @classmethod
-    def execute(cls):
+    def execute(cls, args=None):
         """
         Execute the ``RSDFitRunner`` command
         """
         # parse and get the command
-        ns = cls.parse_args()
+        ns = cls.parse_args(args=args)
 
         # execute
         cls._execute(cls.commands[ns.testno], clean=ns.clean)
@@ -251,13 +251,15 @@ class RSDFitRunner(object):
 
         return cls.parser
 
+
+
     @classmethod
-    def parse_args(cls):
+    def parse_args(cls, args=None):
         """
         Parse the command-line arguments
         """
         parser = cls.get_parser()
-        ns = parser.parse_args()
+        ns = parser.parse_args(args=args)
 
         # make sure the integer value is valid
         if not (0 <= ns.testno < len(cls.commands)):

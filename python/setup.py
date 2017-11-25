@@ -5,6 +5,7 @@ setup(
     name='eboss_qso',
     version='0.0.1',
     author='Nick Hand',
+    package_data = {'eboss_qso': ['fits/nersc/job.template.sh']},
     packages=find_packages(),
     description=("Python code to analyze primordial non-Gaussianity "
                  "from the eBOSS QSO sample"),

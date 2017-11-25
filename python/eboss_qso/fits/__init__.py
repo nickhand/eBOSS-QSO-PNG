@@ -7,13 +7,13 @@ def parametrize(params):
     """
     Execute a function for each of the input parameters.
     """
-    keys = list(params.keys())
-    params = list(itertools.product(*[params[k] for k in params]))
+    keys = sorted(params.keys())
+    params = list(itertools.product(*[params[k] for k in keys]))
     def wrapped(func):
-        def func_wrapper(*args, **kwargs):
+        def func_wrapper(**kwargs):
             for p in params:
                 kwargs.update(dict(zip(keys, p)))
-                func(*args, **kwargs)
+                func(**kwargs)
 
         return func_wrapper
     return wrapped
@@ -70,7 +70,7 @@ class eBOSSConfig(object):
 
     @property
     def home_dir(self):
-        return os.path.join(os.environ['THESIS_DIR'], 'eBOSS-QSO-PNG')
+        return os.environ['EBOSS_DIR']
 
     @property
     def fits_input_dir(self):
@@ -94,7 +94,7 @@ class eBOSSConfig(object):
 
     @property
     def fits_results_dir(self):
-        return os.path.join(os.environ['THESIS_DIR'], 'eBOSS-QSO-PNG', 'fits', 'results', self._kind_tag, self.version)
+        return os.path.join(os.environ['EBOSS_DIR'], 'fits', 'results', self._kind_tag, self.version)
 
     @property
     def spectra_dir(self):
@@ -137,3 +137,4 @@ class eBOSSConfig(object):
 
 from .runner import RSDFitRunner
 from .results import load_ezmock_results
+from .nersc import NERSCManager

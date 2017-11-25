@@ -5,6 +5,7 @@ from eboss_qso.fits.preparer import QSOFitPreparer
 from pyRSD.rsd import QuasarSpectrum
 import tempfile
 import errno
+from mpi4py import MPI
 
 def mkdir_p(path):
     try:
@@ -35,15 +36,26 @@ class QSOFitDriver(object):
         the maximum  ``k`` value to include in the fit
     overwrite : bool, optional
         if ``True`` overwrite the input fit files
+    error_rescale : float
+        multiply the covariance matrix by this value
+    comm : MPI communicator
+        the MPI communicator
     """
     def __init__(self, rsdfit_args, spectra_file, vary, stats, p=1.6,
-                    kmin=0.0001, kmax=0.4, overwrite=False, output_only=False, error_rescale=1.0):
+                    kmin=0.0001, kmax=0.4, overwrite=False, output_only=False,
+                    error_rescale=1.0, comm=None):
 
         quiet = False
         if output_only:
             overwrite = False
             quiet = True
 
+        # determine the communicator
+        if comm is None:
+            comm = MPI.COMM_WORLD
+        self.comm = comm
+
+        # save the input args
         self.rsdfit_args = rsdfit_args
         self.vary = vary
         self.stats = stats
@@ -57,6 +69,7 @@ class QSOFitDriver(object):
                             kmin=0.0001, kmax=0.4, overwrite=overwrite, quiet=quiet)
         self.config = self.preparer.config
 
+        # get the p value from the preparer
         self.p = self.preparer.hashinput['p']
 
         # store zmin/zmax
@@ -133,7 +146,7 @@ class QSOFitDriver(object):
 
 
     @classmethod
-    def initialize(cls):
+    def run_from_args(cls, args=None, comm=None):
         """
         Initialize the QSOFitDriver from command-line arguments.
         """
@@ -172,8 +185,8 @@ class QSOFitDriver(object):
         h = 'whether to only print the output directory'
         parser.add_argument('--output', dest='output_only', action='store_true', help=h)
 
-        ns, unknown = parser.parse_known_args()
-        return cls(rsdfit_args=unknown, **vars(ns))
+        ns, unknown = parser.parse_known_args(args=args)
+        return cls(rsdfit_args=unknown, comm=comm, **vars(ns))
 
     @property
     def hashinfo(self):
@@ -245,14 +258,21 @@ class QSOFitDriver(object):
         """
         Internal function that will call the ``rsdfit`` command.
         """
+        from pyRSD.rsdfit.util import rsdfit_parser
+        from pyRSD.rsdfit import rsdfit
+
         # the arguments to pass to RSDFit
         args = self.rsdfit_args
         args += ['-p', param_file, '-o', self.output_dir, '--no-save-model']
 
-        # run RSDFit
-        cmd = 'rsdfit' + ' ' + ' '.join(args)
-        print(f"calling '{cmd}'...")
-        ret = os.system(cmd)
+        # parse the args passed to rsdfit
+        args = rsdfit_parser().parse_args(args)
+        args = vars(args)
+
+        # initialize and run the RSDFit driver
+        mode = args.pop('subparser_name')
+        driver = rsdfit.RSDFitDriver(self.comm, mode, **args)
+        driver.run()
 
         # and save the hashkey info
         if os.path.isdir(self.output_dir):
