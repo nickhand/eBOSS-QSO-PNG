@@ -31,6 +31,8 @@ class QSOFitDriver(object):
         list of parameter names we want to vary in the fit, i.e., ``f``
     stats : list of str
         list of the names of the statistics we want to fit
+    p : float
+        the value of the fnl parameter ``p``
     kmin : float, optional
         the minimum ``k`` value to include in the fit
     kmax : float, optional
@@ -42,7 +44,7 @@ class QSOFitDriver(object):
     comm : MPI communicator
         the MPI communicator
     """
-    def __init__(self, rsdfit_args, spectra_file, vary, stats, 
+    def __init__(self, rsdfit_args, spectra_file, vary, stats, p=1.6,
                     kmin=0.0001, kmax=0.4, overwrite=False, output_only=False,
                     error_rescale=1.0, comm=None, use_temp_files=False):
 
@@ -74,6 +76,8 @@ class QSOFitDriver(object):
 
         # get the p value from the preparer
         self.p = self.preparer.hashinput['p']
+        if self.p is None:
+            self.p = p
 
         # store zmin/zmax
         self.zmin = self.preparer.hashinput['zmin']
@@ -165,6 +169,9 @@ class QSOFitDriver(object):
 
         h = 'the maximum k value to include'
         parser.add_argument('--kmax', type=float, default=0.4, help=h)
+
+        h = 'the value of ``p`` to use when fitting'
+        parser.add_argument('-p', type=float, default=1.6, help=h)
 
         h = 'rescale the errors by this amount'
         parser.add_argument('--error-rescale', type=float, default=1.0, help=h)
@@ -336,4 +343,4 @@ class QSOFitDriver(object):
 
 
 def __main__():
-    driver = QSOFitDriver.initialize()
+    driver = QSOFitDriver.run_from_args()
