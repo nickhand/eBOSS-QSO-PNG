@@ -67,14 +67,16 @@ def load_ezmock_spectra(version, sample, p=None, box=None, average=True):
         r.poles['power_0'].real -= r.attrs['shotnoise']
         return r
     else:
-        files = glob(os.path.join(d, f'poles_zevoEZmock_{version}_QSO-{sample}_*-{hashstr}.json'))
+        box_number = "[0-9]"*4
+        files = glob(os.path.join(d, f'poles_zevoEZmock_{version}_QSO-{sample}_{box_number}-{hashstr}.json'))
         results = [ConvolvedFFTPower.load(f) for f in files]
 
         for r in results:
             r.poles['power_0'].real -= r.attrs['shotnoise']
 
         if not average:
-            data = numpy.asarray([r.poles.data for r in results])
+            data = [r.poles.data for r in results]
+            data = numpy.asarray(data, dtype=data[0].dtype)
             return data
         else:
             data = results[0].poles.copy()
