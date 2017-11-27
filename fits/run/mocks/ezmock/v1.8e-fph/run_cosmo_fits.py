@@ -16,7 +16,7 @@ fixed_params = ['b1', 'sigma_fog', 'f', 'sigma8_z']
 all_params = fixed_params + ['alpha_par', 'alpha_perp']
 
 @parametrize({'sample':['N', 'S'], 'hashstr':HASHES, 'params':[all_params, fixed_params]})
-def add_commands(sample, hashstr, box, vary_shot_noise=True,
+def add_commands(sample, hashstr, params, box, vary_shot_noise=True, cov='analytic',
                     use_temp_files=False, overwrite=False, kmin=1e-4, kmax=0.3):
 
     # determine the params we are fitting
@@ -30,7 +30,7 @@ def add_commands(sample, hashstr, box, vary_shot_noise=True,
 
     # make the command
     command = f"eboss-qso-fit nlopt -f {filename} --vary {params} --stats P0 P2"
-    command += f" -i {ITERATIONS} --kmin {kmin} --kmax {kmax}"
+    command += f" -i {ITERATIONS} --kmin {kmin} --kmax {kmax} --cov {cov}"
     if use_temp_files:
         command += " --use-temp-files"
     if overwrite:
@@ -48,6 +48,7 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--box', required=True, type=int)
     parser.add_argument('--vary-shot-noise', choices=[0,1], type=int, required=True)
+    parser.add_argument('--cov', choices=['mock', 'analytic'], required=True)
     parser.add_argument('--overwrite', action='store_true', default=False)
     parser.add_argument('--kmin', type=float, default=1e-4)
     parser.add_argument('--kmax', type=float, default=0.3)

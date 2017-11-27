@@ -17,7 +17,7 @@ def main(ns):
             # clear old commands and update the list of commands for this box
             RSDFitRunner.commands.clear()
             add_commands(box=box, vary_shot_noise=vary_shot_noise, kmin=ns.kmin,
-                            kmax=ns.kmax, use_temp_files=True)
+                            cov=ns.cov, kmax=ns.kmax, use_temp_files=True)
 
             # get the command and run
             command = RSDFitRunner.commands[ns.testno]
@@ -36,7 +36,8 @@ if __name__ == '__main__':
     NERSCManager.add_argument('--stop', type=int, required=True)
     NERSCManager.add_argument('--step', type=int, default=1)
 
-    # optional config
+    # other config
+    NERSCManager.add_argument('--cov', choices=['mock', 'analytic'], required=True)
     NERSCManager.add_argument('--fix-shot-noise', action='store_true', default=False)
     NERSCManager.add_argument('--kmin', type=float, default=1e-4)
     NERSCManager.add_argument('--kmax', type=float, default=0.3)
