@@ -38,7 +38,7 @@ def to_poles(filename, ells):
     """
     from nbodykit.algorithms import SurveyDataPairCount
     r = SurveyDataPairCount.load(filename)
-    d = r.result
+    d = r.pairs
 
     mu = np.repeat(d.coords['mu'][None,:], d.data.shape[0], axis=0)
     weights = np.array([(2*ell+1)*legendre(ell)(mu) for ell in ells])
