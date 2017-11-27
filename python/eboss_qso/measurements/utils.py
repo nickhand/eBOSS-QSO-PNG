@@ -2,6 +2,43 @@ import hashlib
 import json
 from nbodykit.utils import JSONEncoder
 import os
+import numpy
+
+def find_window_measurement(version, sample, zmin, zmax):
+    """
+    Try to find and return a matching window function file.
+
+    Parameters
+    ----------
+    version : str
+        the data version
+    sample : 'N','S'
+        the sample
+    zmin : float
+        the minimum redshift
+    zmax : float
+        the maximum redshift
+    """
+    from glob import glob
+
+    # the directory holding any window results
+    home_dir = os.environ['EBOSS_DIR']
+    dirname = os.path.join(home_dir, 'measurements', 'window', version)
+
+    filename = f"RR_eboss_{version}-QSO-{sample}-*.json"
+    pattern = os.path.join(dirname, filename)
+
+    # search all file matches
+    for f in glob(pattern):
+        hashinput = get_hashkeys(f, 'SurveyDataPairCount')
+
+        # compare zmin and zmax
+        x = [zmin, zmax]
+        y = [hashinput[k] for k in ['zmin', 'zmax']]
+        if numpy.allclose(x, y):
+            return f
+
+    raise ValueError(f"no window file match found for pattern '{pattern}'")
 
 def nbar_from_randoms(sample, version, d, r, cosmo):
 

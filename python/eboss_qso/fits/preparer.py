@@ -4,6 +4,7 @@ from nbodykit.lab import ConvolvedFFTPower
 import tempfile
 
 from ..measurements.results import info_from_filename
+from ..measurements.utils import find_window_measurement
 from ..measurements import get_hashkeys
 from ..measurements.zweights import bias_model
 
@@ -173,7 +174,9 @@ class QSOFitPreparer(object):
                 version = self.version
             else:
                 raise ValueError("do not understand 'kind' = '%s'" %self.kind)
-            window_file = self._find_window_measurement(version)
+            window_file = find_window_measurement(version, self.sample,
+                                                    self.hashinput['zmin'],
+                                                    self.hashinput['zmax'])
 
             ells = [0,2,4,6,8,10]
             compute_window(window_file, ells, output, smin=1e-2, smax=1e4, quiet=self.quiet)
@@ -214,28 +217,3 @@ class QSOFitPreparer(object):
             if not self.quiet:
                 print('skipping covariance preparation...')
         self.covariance_file = output
-
-    def _find_window_measurement(self, version):
-        """
-        Try to find and return a matching window function file
-        """
-        from glob import glob
-
-        # the directory holding any window results
-        home_dir = os.environ['EBOSS_DIR']
-        dirname = os.path.join(home_dir, 'measurements', 'window', version)
-
-        filename = f"RR_eboss_{version}-QSO-{self.sample}-*.json"
-        pattern = os.path.join(dirname, filename)
-
-        # search all file matches
-        for f in glob(pattern):
-            hashinput = get_hashkeys(f, 'SurveyDataPairCount')
-
-            # compare zmin and zmax
-            x = [self.hashinput[k] for k in ['zmin', 'zmax']]
-            y = [hashinput[k] for k in ['zmin', 'zmax']]
-            if numpy.allclose(x, y):
-                return f
-
-        raise ValueError(f"no window file match found for pattern '{pattern}'")
