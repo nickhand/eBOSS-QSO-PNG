@@ -11,7 +11,7 @@ from ..measurements.zweights import bias_model
 from . import eBOSSConfig
 from .data import write_data
 from .window import compute_window
-from .covariance import compute_covariance
+from .covariance import compute_analytic_covariance
 
 def get_spectra_type(filename):
     """
@@ -31,7 +31,7 @@ class QSOFitPreparer(object):
     """
     Class to prepare a QSO power spectrum fit.
     """
-    def __init__(self, spectra_file, stats, kmin=0.0001, kmax=0.4,
+    def __init__(self, spectra_file, stats, kmin=0.0001, kmax=0.4, cov_type='analytic',
                     overwrite=False, error_rescale=1.0, quiet=False, use_temp_files=False):
 
         self.spectra_file = os.path.abspath(spectra_file)
@@ -42,6 +42,7 @@ class QSOFitPreparer(object):
         self.quiet = quiet
         self.error_rescale = error_rescale
         self.use_temp_files = use_temp_files
+        self.cov_type = cov_type
 
         # dictionary of info from the filename
         self.kind = get_spectra_type(self.spectra_file)
@@ -119,6 +120,10 @@ class QSOFitPreparer(object):
         h = 'rescale the errors by this amount'
         parser.add_argument('--error-rescale', type=float, default=1.0, help=h)
 
+        h = 'the type of covariance to use'
+        parser.add_argument('--cov', dest='cov_type', choices=['analytic', 'mock'],
+                                default='analytic', help=h)
+
         ns = parser.parse_args()
         return cls(**vars(ns))
 
@@ -191,10 +196,11 @@ class QSOFitPreparer(object):
         """
         # the output data file
         stats = '+'.join(self.stats)
-        filename = f"poles_{self.version}-QSO-{self.sample}"
-        box = getattr(self, 'box', None)
-        if box is not None and box == 'mean':
-            filename += '-mean'
+        filename = f"poles_{self.version}-QSO-{self.sample}-{self.cov_type}"
+        if self.cov_type == 'analytic':
+            box = getattr(self, 'box', None)
+            if box is not None and box == 'mean':
+                filename += '-mean'
         filename += f"_{stats}_{self.hashstr}.dat"
         output = os.path.join(self.config.fits_covariance_dir, filename)
 
@@ -205,14 +211,46 @@ class QSOFitPreparer(object):
         # make the covariance
         if not os.path.exists(output) or self.overwrite:
 
-            P0_FKP = self.hashinput.get('P0_FKP', None)
-            if P0_FKP is None: P0_FKP = 0.
-            b1 = bias_model(self.z_eff)
-            sigma_fog = 4.0
-            compute_covariance(self.config, self.stats, self.z_eff, b1, sigma_fog,
-                                self.hashinput['zmin'], self.hashinput['zmax'],
-                                P0_FKP, output, kmin=self.kmin, kmax=self.kmax, dk=0.005,
-                                quiet=self.quiet, rescale=self.error_rescale)
+            if self.cov_type == 'analytic':
+
+                P0_FKP = self.hashinput.get('P0_FKP', None)
+                if P0_FKP is None: P0_FKP = 0.
+                b1 = bias_model(self.z_eff)
+                sigma_fog = 4.0
+                compute_analytic_covariance(self.config, self.stats, self.z_eff, b1, sigma_fog,
+                                            self.hashinput['zmin'], self.hashinput['zmax'],
+                                            P0_FKP, output, kmin=self.kmin, kmax=self.kmax, dk=0.005,
+                                            quiet=self.quiet, rescale=self.error_rescale)
+
+            else:
+                from eboss_qso.measurements.results import load_ezmock_spectra
+                from pyRSD.rsdfit.data import PoleCovarianceMatrix
+
+                p = self.hashinput['p']
+                mocks = load_ezmock_spectra('v1.8e-fph', self.sample, p=p,
+                                            subtract_shot_noise=False, average=False)
+
+                ells = [int(stat[-1]) for stat in self.stats]
+                Pell = numpy.concatenate([mocks['power_%d' %ell].real for ell in ells], axis=-1)
+                cov = numpy.cov(Pell, rowvar=False)
+
+                k = mocks['k'].mean(axis=0)
+                k_coord = numpy.concatenate([k for i in range(len(ells))])
+                ell_coord = numpy.concatenate([numpy.ones(len(k), dtype=int)*ell for ell in ells])
+
+                # create and slice to correct range
+                C = PoleCovarianceMatrix(cov, k_coord, ell_coord, verify=False)
+                valid_range = slice(self.kmin, self.kmax)
+                C = C.sel(k1=valid_range, k2=valid_range)
+
+                C.attrs['Nmock'] = len(mocks)
+
+                # rescale
+                C *= self.error_rescale
+
+                # and save
+                C.to_plaintext(output)
+
         else:
             if not self.quiet:
                 print('skipping covariance preparation...')

@@ -81,8 +81,8 @@ def _compute_covariance(config, zmin, zmax, k, ells, model, P0_FKP=0., Nmu=100, 
     return PoleCovarianceMatrix(C, k_coord, ell_coord, verify=False)
 
 
-def compute_covariance(config, stats, z_eff, b1, sigma_fog, zmin, zmax, P0_FKP,
-                        output, kmin=0., kmax=0.7, dk=0.005, quiet=False, rescale=1.0):
+def compute_analytic_covariance(config, stats, z_eff, b1, sigma_fog, zmin, zmax, P0_FKP,
+                                    output, kmin=0., kmax=0.7, dk=0.005, quiet=False, rescale=1.0):
     """
     Compute the multipole covariance matrix
 

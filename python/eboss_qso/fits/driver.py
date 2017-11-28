@@ -3,6 +3,8 @@ import os
 import numpy
 from eboss_qso.fits.preparer import QSOFitPreparer
 from pyRSD.rsd import QuasarSpectrum
+from pyRSD.rsdfit.data import PoleCovarianceMatrix
+
 import tempfile
 import errno
 import shutil
@@ -45,8 +47,9 @@ class QSOFitDriver(object):
         the MPI communicator
     """
     def __init__(self, rsdfit_args, spectra_file, vary, stats, p=1.6,
-                    kmin=0.0001, kmax=0.4, overwrite=False, output_only=False,
-                    error_rescale=1.0, comm=None, use_temp_files=False):
+                    kmin=0.0001, kmax=0.4, cov_type='analytic', error_rescale=1.0,
+                    overwrite=False, output_only=False,
+                    comm=None, use_temp_files=False):
 
         quiet = False
         if output_only:
@@ -69,7 +72,8 @@ class QSOFitDriver(object):
         # prepare the fit
         assert kmin >= 0.0001
         assert kmax <= 0.4
-        self.preparer = QSOFitPreparer(spectra_file, stats, error_rescale=error_rescale,
+        self.preparer = QSOFitPreparer(spectra_file, stats, cov_type=cov_type,
+                                        error_rescale=error_rescale,
                                         kmin=0.0001, kmax=0.4, overwrite=overwrite,
                                         quiet=quiet, use_temp_files=use_temp_files)
         self.config = self.preparer.config
@@ -90,6 +94,7 @@ class QSOFitDriver(object):
         # make the directory output
         mkdir_p(self.output_dir)
 
+
         # keywords we are going to add to parameter file template
         kws = {}
         kws['kmin'] = 1e-6
@@ -102,14 +107,22 @@ class QSOFitDriver(object):
         kws['z_eff'] = self.preparer.z_eff
         kws['fitting_range'] = [(kmin, kmax) for stat in stats]
         kws['max_ellprime'] = 4
+
+        # add the proper theory decorator
         kws['theory_decorator'] = {}
         for i, stat in enumerate(stats):
             if stat == 'P0_sysfree':
                 kws['theory_decorator'][kws['stats'][i]] = "systematic_free_P0"
+
+        # how to initialize?
         if 'mcmc' in ' '.join(self.rsdfit_args):
             kws['init_from'] = 'nlopt'
         else:
             kws['init_from'] = 'fiducial'
+
+        # re-scale mock covariance?
+        C = PoleCovarianceMatrix.from_plaintext(kws['covariance_file'])
+        kws['covariance_Nmocks'] = C.attrs.get('Nmock', 0)
 
         # render the parameter file
         params = self._render_params(**kws)
@@ -169,6 +182,9 @@ class QSOFitDriver(object):
 
         h = 'the maximum k value to include'
         parser.add_argument('--kmax', type=float, default=0.4, help=h)
+
+        h = 'the type of covariance to use'
+        parser.add_argument('--cov', dest='cov_type', choices=['analytic', 'mock'], default='analytic', help=h)
 
         h = 'the value of ``p`` to use when fitting'
         parser.add_argument('-p', type=float, default=1.6, help=h)
@@ -253,10 +269,11 @@ class QSOFitDriver(object):
             stats = '+'.join(self.stats)
             box = getattr(self.preparer, 'box', None)
 
+            cov_type = self.preparer.cov_type+'-cov'
             tag = f'QSO-{sample}-'
             if box is not None:
                 tag += box + '-'
-            tag += f'{stats}-{hashstr}'
+            tag += f'{stats}-{cov_type}-{hashstr}'
 
             # full path
             self._output_dir = os.path.join(self.config.fits_results_dir, path, tag)
