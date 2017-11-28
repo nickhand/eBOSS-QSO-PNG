@@ -86,3 +86,37 @@ def load_ezmock_results(version, sample, krange, params, p=None):
         out[param] = numpy.array(data[param])
 
     return out
+
+def load_data_results(version, sample, krange, params, zrange, p=None):
+    """
+    Load a set of data fit results.
+
+    Returns a structued numpy array holding best-fit values for all free
+    parameters all mocks.
+    """
+    from pyRSD.rsdfit import FittingDriver
+
+    assert sample in ['N', 'S']
+    assert version in ['v1.8', 'v1.9f']
+
+    d = os.path.join(os.environ['EBOSS_DIR'], 'fits', 'results', 'data', version)
+    d = os.path.join(d, krange, params, zrange)
+    assert os.path.isdir(d), "'%s' directory not found" % d
+
+    matches = glob(os.path.join(d, f'QSO-{sample}-*'))
+    match = None
+    for f in matches:
+        hashkeys = get_hashkeys(f, None)
+        if hashkeys['p'] == p:
+            match = f
+
+    # load the driver
+    driver = FittingDriver.from_directory(match)
+
+    assert len(matches) == 1, "exactly one match should have been found"
+    pattern = match.replace('0001', '*')
+
+    r = sorted(glob(os.path.join(f, '*.npz')), key=os.path.getmtime, reverse=True)
+    assert len(r) > 0, "no npz results found in directory '%s'" %os.path.normpath(f)
+    driver.results = r[0]
+    return driver
