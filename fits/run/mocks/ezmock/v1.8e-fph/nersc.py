@@ -21,6 +21,7 @@ def main(ns):
 
             # get the command and run
             command = RSDFitRunner.commands[ns.testno]
+            print("executing %s..." %command)
             QSOFitDriver.run_from_args(command.split()[1:], comm=tm.comm)
 
 
