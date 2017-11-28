@@ -4,10 +4,7 @@ import socket
 
 # data and result directories
 data_dir = os.environ['EBOSS_DIR']
-if socket.gethostname() == 'utley':
-    results_dir = os.path.join(data_dir, 'measurements')
-else:
-    results_dir = '/global/cscratch1/sd/nhand/Research/eBOSS/measurements'
+results_dir = os.path.join(data_dir, 'measurements')
 
 # allowed data versions
 DATA_VERSIONS = ['v1.6', 'v1.8', 'v1.9f']
