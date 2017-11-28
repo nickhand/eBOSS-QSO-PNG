@@ -7,7 +7,7 @@
 #SBATCH -t {{ time }}
 {{ haswell_config }}
 
-cd $HOME/eBOSS/python
+cd $PROJECT_HOME/Research/eBOSS/python
 
 # activate environment
 source /usr/common/contrib/bccp/conda-activate.sh 3.6

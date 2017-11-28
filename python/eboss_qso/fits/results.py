@@ -19,7 +19,7 @@ def fix_result_paths():
         if 'params.dat' in filenames:
             f = os.path.join(dirpath, 'params.dat')
             content = open(f, 'r').read()
-            new_content = content.replace("/global/project/projectdirs/m779/nhand/Research/eBOSS", "$EBOSS_DIR")
+            new_content = content.replace("/global/cscratch1/sd/nhand/eBOSS", "$EBOSS_DIR")
             with open(f, 'w') as ff:
                 ff.write(new_content)
 

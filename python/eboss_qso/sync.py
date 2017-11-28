@@ -117,7 +117,7 @@ def sync_eboss():
         local_dir = "/Users/nhand/Research/Analysis/thesis/eBOSS-QSO-PNG/notebooks/"
         exclude = ["--exclude='.*'"]
     elif ns.subparser_name == 'fits':
-        remote_dir = "/global/project/projectdirs/m779/nhand/Research/eBOSS/fits/"
+        remote_dir = "/global/cscratch1/sd/nhand/eBOSS/fits/"
         local_dir = "/Users/nhand/Research/Analysis/thesis/eBOSS-QSO-PNG/fits/"
         exclude = ["--exclude='.*'", "--exclude='html-templates'", "--exclude='reports'"]
 
