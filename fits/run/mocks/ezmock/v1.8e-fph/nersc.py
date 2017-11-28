@@ -1,9 +1,15 @@
 from argparse import ArgumentParser
 from nbodykit.lab import TaskManager
 from eboss_qso.fits.driver import QSOFitDriver
-from run_fnl_fits import RSDFitRunner, add_commands
+import importlib, os
 
 def main(ns):
+
+    # the module name
+    modname = os.path.splitext(os.path.split(ns.filename)[-1])[0]
+    mod = importlib.import_module(modname)
+    add_commands = mod.getattr(mod, 'add_commands')
+    RSDFitRunner = mod.getattr(mod, 'RSDFitRunner')
 
     # run with 1 core per task
     with TaskManager(cpus_per_task=1, use_all_cpus=True) as tm:
