@@ -3,7 +3,7 @@ from .utils import get_hashkeys
 from glob import glob
 import numpy
 
-def load_data_spectra(version, sample, p=None, focal_weights=True):
+def load_data_spectra(version, sample, p=None, zmin=0.8, zmax=2.2, focal_weights=True):
     """
     Load a data measurement result.
     """
@@ -23,7 +23,7 @@ def load_data_spectra(version, sample, p=None, focal_weights=True):
 
     for f in matches:
         hashkeys = get_hashkeys(f, 'ConvolvedFFTPower')
-        if hashkeys['p'] == p:
+        if hashkeys['p'] == p and numpy.allclose([zmin, zmax], [hashkeys['zmin'], hashkeys['zmax']]):
             r = ConvolvedFFTPower.load(f)
             r.poles['power_0'].real -= r.attrs['shotnoise']
             return r
