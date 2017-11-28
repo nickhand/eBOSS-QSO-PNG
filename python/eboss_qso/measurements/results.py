@@ -30,7 +30,7 @@ def load_data_spectra(version, sample, p=None, focal_weights=True):
 
     raise ValueError("no matches found!")
 
-def load_ezmock_spectra(version, sample, p=None, box=None, average=True):
+def load_ezmock_spectra(version, sample, p=None, box=None, subtract_shot_noise=True, average=True):
     """
     Load a ezmock measurement result.
     """
@@ -64,15 +64,17 @@ def load_ezmock_spectra(version, sample, p=None, box=None, average=True):
     if box is not None:
         f = os.path.join(d, f'poles_zevoEZmock_{version}_QSO-{sample}_{box:04d}-{hashstr}.json')
         r = ConvolvedFFTPower.load(f)
-        r.poles['power_0'].real -= r.attrs['shotnoise']
+        if subtract_shot_noise:
+            r.poles['power_0'].real -= r.attrs['shotnoise']
         return r
     else:
         box_number = "[0-9]"*4
         files = glob(os.path.join(d, f'poles_zevoEZmock_{version}_QSO-{sample}_{box_number}-{hashstr}.json'))
         results = [ConvolvedFFTPower.load(f) for f in files]
 
-        for r in results:
-            r.poles['power_0'].real -= r.attrs['shotnoise']
+        if subtract_shot_noise:
+            for r in results:
+                r.poles['power_0'].real -= r.attrs['shotnoise']
 
         if not average:
             data = [r.poles.data for r in results]
