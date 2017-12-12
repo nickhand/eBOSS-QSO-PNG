@@ -5,27 +5,50 @@ import os
 
 NWALKERS = 50
 ITERATIONS = 500
+ZBINS = [(0.8, 2.2)]
+VERSION = 'v1.9f'
+HASHES = ['bba5aabfa6', '8ba79d78df', '0ef5c14a14']
+p = {'0ef5c14a14': 1.0, 'bba5aabfa6':None, '8ba79d78df':1.6}
 
-kmins = [1e-4, 0.01]
-ZBINS = [(0.8, 2.2), (0.5, 3.0)]
-stats = [['P0', 'P2'], ['P0_sysfree']]
 
-@parametrize({'kmin': kmins, 'sample':['N', 'S'], 'stats':stats})
-def add_commands(kmin, sample, stats):
-    VERSION = 'v1.9f'
-    HASHES = ['bba5aabfa6', '983c59a111']
-    PARAMS = " ".join(['b1', 'sigma_fog', 'f_nl'])
-    stats = " ".join(stats)
+@parametrize({'sample':['N', 'S'], 'hashstr':HASHES})
+def add_commands(sample, hashstr, vary_shot_noise=True, cov='analytic',
+                    use_temp_files=False, overwrite=False, kmin=1e-4, kmax=0.3):
+
+    # determine the params we are fitting
+    all_params = ['b1', 'sigma_fog', 'f_nl']
+    if vary_shot_noise:
+        all_params += ['N']
+    params = " ".join(all_params)
 
     dirname = os.path.join(EBOSS_SPECTRA, 'data', VERSION)
-    for i, hashstr in enumerate(HASHES):
-        filename = os.path.join(dirname, f'poles_eboss_{VERSION}-focal-QSO-{sample}-{hashstr}.json')
-        command = f"eboss-qso-fit mcmc --kmin {kmin} -f {filename} --vary {PARAMS} --stats {stats} -i {ITERATIONS} -w {NWALKERS} --overwrite"
+    filename = os.path.join(dirname, f'poles_eboss_{VERSION}-focal-QSO-{sample}-{hashstr}.json')
 
-        tag = {'kmin':kmin, 'sample':sample, 'stats':stats, 'zbin':ZBINS[i]}
-        RSDFitRunner.register(command, tag=tag)
+    # make the command
+    command = f"eboss-qso-fit mcmc -f {filename} --vary {params} --stats P0 P2"
+    command += f" -i {ITERATIONS} -w {NWALKERS} --kmin {kmin} --kmax {kmax} --cov {cov}"
+    if use_temp_files:
+        command += " --use-temp-files"
+    if overwrite:
+        command += " --overwrite"
+
+    # and register it
+    tag = {'sample':sample, 'p':p[hashstr], 'zbin':ZBINS[0]}
+    RSDFitRunner.register(command, tag=tag)
 
 
 if __name__ == '__main__':
-    add_commands()
-    RSDFitRunner.execute()
+
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser()
+    parser.add_argument('--vary-shot-noise', choices=[0,1], type=int, required=True)
+    parser.add_argument('--cov', choices=['mock', 'analytic'], required=True)
+    parser.add_argument('--overwrite', action='store_true', default=False)
+    parser.add_argument('--kmin', type=float, default=1e-4)
+    parser.add_argument('--kmax', type=float, default=0.3)
+
+    ns, args = parser.parse_known_args()
+
+    add_commands(**vars(ns))
+    RSDFitRunner.execute(args=args)
