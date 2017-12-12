@@ -58,6 +58,7 @@ def load_ezmock_spectra(version, sample, p=None, box=None, subtract_shot_noise=T
             hashstr = os.path.splitext(f)[0][-10:]
             break
 
+    print("using hash string %s" %hashstr)
     if hashstr is None:
         raise ValueError("no matches found!")
 
