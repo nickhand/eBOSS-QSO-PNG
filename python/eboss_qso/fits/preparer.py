@@ -11,7 +11,7 @@ from ..measurements.zweights import bias_model
 from . import eBOSSConfig
 from .data import write_data
 from .window import compute_window
-from .covariance import compute_analytic_covariance
+from .covariance import compute_analytic_covariance, compute_ezmock_covariance
 
 def get_spectra_type(filename):
     """
@@ -212,38 +212,31 @@ class QSOFitPreparer(object):
         if not os.path.exists(output) or self.overwrite:
 
             if self.cov_type == 'analytic':
+                from pyRSD.rsd import QuasarSpectrum
 
                 P0_FKP = self.hashinput.get('P0_FKP', None)
                 if P0_FKP is None: P0_FKP = 0.
-                b1 = bias_model(self.z_eff)
-                sigma_fog = 4.0
-                compute_analytic_covariance(self.config, self.stats, self.z_eff, b1, sigma_fog,
-                                            self.hashinput['zmin'], self.hashinput['zmax'],
-                                            P0_FKP, output, kmin=self.kmin, kmax=self.kmax, dk=0.005,
-                                            quiet=self.quiet, rescale=self.error_rescale)
+
+                # load the model
+                model = QuasarSpectrum(z=self.z_eff, params=config.cosmo)
+
+                # compute
+                C = compute_analytic_covariance(self.config, self.stats, model,
+                                                self.hashinput['zmin'], self.hashinput['zmax'],
+                                                P0_FKP, kmin=self.kmin, kmax=self.kmax, dk=0.005)
+
+                C *= self.error_rescale
+
+                # and save
+                if not self.quiet:
+                    print("saving %s..." %output)
+                C.attrs.clear()
+                C.to_plaintext(output)
 
             else:
-                from eboss_qso.measurements.results import load_ezmock_spectra
-                from pyRSD.rsdfit.data import PoleCovarianceMatrix
-
-                p = self.hashinput['p']
-                mocks = load_ezmock_spectra('v1.8e-fph', self.sample, p=p,
-                                            subtract_shot_noise=False, average=False)
-
-                ells = [int(stat[-1]) for stat in self.stats]
-                Pell = numpy.concatenate([mocks['power_%d' %ell].real for ell in ells], axis=-1)
-                cov = numpy.cov(Pell, rowvar=False)
-
-                k = mocks['k'].mean(axis=0)
-                k_coord = numpy.concatenate([k for i in range(len(ells))])
-                ell_coord = numpy.concatenate([numpy.ones(len(k), dtype=int)*ell for ell in ells])
-
-                # create and slice to correct range
-                C = PoleCovarianceMatrix(cov, k_coord, ell_coord, verify=False)
-                valid_range = slice(self.kmin, self.kmax)
-                C = C.sel(k1=valid_range, k2=valid_range)
-
-                C.attrs['Nmock'] = len(mocks)
+                # compute the covariance from the mocks
+                C = compute_ezmock_covariance('v1.8e-fph', self.sample, self.stats,
+                                                kmin=self.kmin, kmax=self.kmax, p=self.hashinput['p'])
 
                 # rescale
                 C *= self.error_rescale
