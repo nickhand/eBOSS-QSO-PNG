@@ -49,7 +49,7 @@ class QSOFitDriver(object):
     def __init__(self, rsdfit_args, spectra_file, vary, stats, p=1.6,
                     kmin=0.0001, kmax=0.4, cov_type='analytic', error_rescale=1.0,
                     overwrite=False, output_only=False,
-                    comm=None, use_temp_files=False):
+                    comm=None, use_temp_files=False, tag=None, zeff=None):
 
         quiet = False
         if output_only:
@@ -62,6 +62,7 @@ class QSOFitDriver(object):
         self.comm = comm
 
         # save the input args
+        self.tag = tag
         self.rsdfit_args = rsdfit_args
         self.vary = vary
         self.stats = stats
@@ -104,7 +105,7 @@ class QSOFitDriver(object):
         kws['window_file'] = self.preparer.window_file
         kws['ells'] = self.preparer.ells
         kws['stats'] = self.preparer.stat_names
-        kws['z_eff'] = self.preparer.z_eff
+        kws['z_eff'] = self.preparer.z_eff if zeff is None else zeff
         kws['fitting_range'] = [(kmin, kmax) for stat in stats]
         kws['max_ellprime'] = 4
 
@@ -195,6 +196,12 @@ class QSOFitDriver(object):
         h = 'the value of ``p`` to use when fitting'
         parser.add_argument('-p', type=float, default=1.6, help=h)
 
+        h = 'tag the output directory'
+        parser.add_argument('--tag', type=str, default=None, help=h)
+
+        h = 'the effective redshift'
+        parser.add_argument('--zeff', type=float, default=None, help=h)
+
         h = 'rescale the errors by this amount'
         parser.add_argument('--error-rescale', type=float, default=1.0, help=h)
 
@@ -283,6 +290,8 @@ class QSOFitDriver(object):
 
             # full path
             self._output_dir = os.path.join(self.config.fits_results_dir, path, tag)
+            if self.tag is not None:
+                self._output_dir += '_' + self.tag
             return self._output_dir
 
     def _run(self, param_file):
