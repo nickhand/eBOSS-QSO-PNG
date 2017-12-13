@@ -117,12 +117,18 @@ class QSOFitDriver(object):
         # how to initialize?
         if 'mcmc' in ' '.join(self.rsdfit_args):
             kws['init_from'] = 'nlopt'
+            kws['lbfgs_numerical_from_lnlike'] = False
         else:
             kws['init_from'] = 'fiducial'
+            kws['lbfgs_numerical_from_lnlike'] = True
 
         # re-scale mock covariance?
-        C = PoleCovarianceMatrix.from_plaintext(kws['covariance_file'])
-        kws['covariance_Nmocks'] = C.attrs.get('Nmock', 0)
+        if self.preparer.kind == 'data':
+            kws['covariance_Nmocks'] = 0
+        else:
+            C = PoleCovarianceMatrix.from_plaintext(kws['covariance_file'])
+            kws['covariance_Nmocks'] = C.attrs.get('Nmock', 0)
+
 
         # render the parameter file
         params = self._render_params(**kws)
