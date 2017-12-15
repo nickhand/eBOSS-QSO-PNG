@@ -3,8 +3,8 @@ from eboss_qso.fits import RSDFitRunner, parametrize
 from eboss_qso import EBOSS_SPECTRA
 import os
 
-NWALKERS = 100
-ITERATIONS = 1000
+NWALKERS = 200
+ITERATIONS = 2000
 ZBINS = [(0.8, 2.2)]
 VERSION = 'v1.9f'
 HASHES = ['bba5aabfa6', '8ba79d78df', '0ef5c14a14']
