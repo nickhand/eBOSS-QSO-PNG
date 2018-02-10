@@ -30,7 +30,7 @@ def main(ns):
     eboss.finalize_ezmock(r, eboss.ezmock_cosmo)
 
     # FKP
-    fkp = FKPCatalog(data=None, randoms=randoms, BoxPad=0.1)
+    fkp = FKPCatalog(data=None, randoms=r, BoxPad=0.1)
 
     # to mesh
     mesh_kwargs = {'Nmesh':1024, 'interlaced':True, 'window':'tsc', 'dtype':'f8'}
