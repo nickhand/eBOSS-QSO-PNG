@@ -3,6 +3,38 @@ from .utils import get_hashkeys
 from glob import glob
 import numpy
 
+def load_window_poles(version, sample, zmin=0.8, zmax=2.2, raw=False):
+    """
+    Load window multipoles.
+    """
+    from .utils import make_hash
+    from .utils import find_window_measurement
+
+    assert sample in ['N', 'S']
+    assert version in ['v1.8', 'v1.9f']
+
+    if raw:
+
+        from ..fits.window import to_poles
+        filename = find_window_measurement(version, sample, zmin, zmax)
+        return to_poles(filename, [0,2,4,6,8,10])
+
+    else:
+        # the directory
+        eboss_dir = os.environ['EBOSS_DIR']
+        d = os.path.join(eboss_dir, 'fits', 'input', 'data', 'window', version)
+
+        # the hash
+        meta = {'zmin':zmin, 'zmax':zmax}
+        hashstr = make_hash(meta)
+
+        filename = f'poles_{version}-QSO-{sample}_{hashstr}.dat'
+        filename = os.path.join(d, filename)
+        if not os.path.exists(filename):
+            raise ValueError("no such file: %s" %filename)
+
+        return numpy.loadtxt(filename)
+
 def load_data_spectra(version, sample, p=None, zmin=0.8, zmax=2.2, focal_weights=True):
     """
     Load a data measurement result.
@@ -188,6 +220,40 @@ def save_RR_paircount(r, sample, version, **kwargs):
 
     # make the hash
     usekeys = ['redges_str', 'zmin', 'zmax', 'N', 'subsample']
+
+    r.attrs['hashkeys'] = usekeys
+    id_str = make_hash(r.attrs, usekeys=usekeys)
+    r.save(os.path.join(output_dir, filename + '-' + id_str + '.json'))
+
+def save_RR_poles(r, sample, version, **kwargs):
+    """
+    Save the randoms multipoles result with a unique hash string based on the
+    meta-data of the result.
+
+    Parameters
+    ----------
+    r :
+        the nbodykit result object; should have a save() method
+    sample : str
+        the eBOSS QSO sample
+    version : str
+        the version number
+    **kwargs :
+        additional meta-data to save
+    """
+    from .utils import make_hash
+    from . import results_dir
+
+    # output path
+    output_dir =  os.path.join(results_dir, 'window', version)
+    filename = f"RR_poles_eboss_{version}-QSO-{sample}"
+
+    # save the extra meta-data
+    for k in kwargs:
+        r.attrs[k] = kwargs[k]
+
+    # make the hash
+    usekeys = ['zmin', 'zmax']
 
     r.attrs['hashkeys'] = usekeys
     id_str = make_hash(r.attrs, usekeys=usekeys)

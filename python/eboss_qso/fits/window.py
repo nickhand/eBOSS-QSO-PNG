@@ -8,6 +8,7 @@ import functools
 
 from scipy.special import legendre
 from scipy.interpolate import InterpolatedUnivariateSpline as spline
+from scipy.signal import savgol_filter
 
 _epsilon = np.finfo(float).eps
 
@@ -103,7 +104,7 @@ def blend_models(W0, models, smin, smax, s_switch):
 
     for i in range(1, W0.shape[1]):
 
-        spl = spline(W0[:,0], W0[:,i])
+        spl = spline(W0[:,0], savgol_filter(W0[:,i], 31, 5))
         ell = 2*(i-1)
 
         switch = transition(s, s_switch[i-1], 10.)
@@ -121,7 +122,7 @@ def blend_models(W0, models, smin, smax, s_switch):
 
     return W
 
-def compute_window(filename, ells, output, smin=1e-2, smax=1e4, quiet=False):
+def compute_window(filename, ells, output, smin=1e-2, smax=1e5, quiet=False):
     """
     Compute the smoothed window function correlation function multipoles
     from ``DD(s,mu)`` and save to a plaintext file

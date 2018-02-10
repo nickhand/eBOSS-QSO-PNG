@@ -43,11 +43,14 @@ from .qpm import read_qpm_data, read_qpm_randoms, finalize_qpm
 from .results import save_qpm_spectra, load_qpm_spectra
 
 # results
-from .results import save_RR_paircount
+from .results import save_RR_paircount, save_RR_poles
 
 # utilities and weights
 from .utils import trim_redshift_range, redshift_range_type, get_hashkeys, \
                     compute_effective_redshift, compute_effective_nbar, \
                     find_window_measurement
+
+# window
+from .results import load_window_poles
 
 from .zweights import fnl_weight, bias_weight, bias_model
