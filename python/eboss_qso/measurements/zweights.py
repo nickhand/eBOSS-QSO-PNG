@@ -1,16 +1,23 @@
-def bias_weight(z, cosmo):
+def bias_weight(z, cosmo, ell):
     """
     Compute the bias redshift weight.
 
     .. math::
 
-        W = D(z) [ b(z) + f(z)/3 ]
+        W = D(z) [ b(z) + f(z)/3 ] for monopole
+
+
     """
+    assert ell in [0, 2]
+
     b = bias_model(z)
     D = z.map_blocks(cosmo.scale_independent_growth_factor)
     f = z.map_blocks(cosmo.scale_independent_growth_rate)
 
-    return D*(b+f/3.)
+    if ell == 0:
+        return D*(b+f/3.)
+    elif ell == 2:
+        return 2./3.*D*f
 
 
 def fnl_weight(z, p=1.6):
