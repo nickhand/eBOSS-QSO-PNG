@@ -1,4 +1,4 @@
-def bias_weight(z, cosmo, ell):
+def bias_weight(z, cosmo, ell=0):
     """
     Compute the bias redshift weight.
 
