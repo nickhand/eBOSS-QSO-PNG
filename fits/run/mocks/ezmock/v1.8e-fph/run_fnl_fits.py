@@ -8,6 +8,7 @@ ZBINS = [(0.8, 2.2)]
 VERSION = 'v1.8e-fph'
 HASHES = ['bba5aabfa6', '8ba79d78df', '0ef5c14a14']
 p = {'0ef5c14a14': 1.0, 'bba5aabfa6':None, '8ba79d78df':1.6}
+effective_redshifts = {None: 1.557, 1.0: 1.728, 1.6: 1.829}
 
 @parametrize({'sample':['N', 'S'], 'hashstr':HASHES})
 def add_commands(sample, hashstr, box, vary_shot_noise=True, cov='analytic',
@@ -23,9 +24,12 @@ def add_commands(sample, hashstr, box, vary_shot_noise=True, cov='analytic',
     dirname = os.path.join(EBOSS_SPECTRA, 'mocks', 'ezmock', VERSION)
     filename = os.path.join(dirname, f'poles_zevoEZmock_{VERSION}_QSO-{sample}_{box:04d}-{hashstr}.json')
 
+    # the effective redshift
+    zeff = effective_redshifts[p[hashstr]]
+
     # make the command
     command = f"eboss-qso-fit nlopt -f {filename} --vary {params} --stats P0 P2"
-    command += f" -i {ITERATIONS} --kmin {kmin} --kmax {kmax} --cov {cov}"
+    command += f" -i {ITERATIONS} --kmin {kmin} --kmax {kmax} --cov {cov} --zeff {zeff}"
     if use_temp_files:
         command += " --use-temp-files"
     if overwrite:

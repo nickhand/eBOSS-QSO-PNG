@@ -48,7 +48,7 @@ from .results import save_RR_paircount, save_RR_poles
 # utilities and weights
 from .utils import trim_redshift_range, redshift_range_type, get_hashkeys, \
                     compute_effective_redshift, compute_effective_nbar, \
-                    find_window_measurement
+                    find_window_measurement, compute_effective_quantities
 
 # window
 from .results import load_window_poles

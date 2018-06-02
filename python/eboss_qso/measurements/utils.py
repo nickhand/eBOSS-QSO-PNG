@@ -3,6 +3,7 @@ import json
 from nbodykit.utils import JSONEncoder
 import os
 import numpy
+from .zweights import fnl_weight, bias_weight
 
 def find_window_measurement(version, sample, zmin, zmax):
     """
@@ -51,6 +52,36 @@ def nbar_from_randoms(sample, version, d, r, cosmo):
 
     alpha = d['Weight'].sum() / r.csize
     return InterpolatedUnivariateSpline(zhist.bin_centers, zhist.nbar*alpha)
+
+def compute_effective_quantities(r, cosmo, p=None, P0=3e4):
+    """
+    Compute effective redshift and number density quantities.
+    """
+    assert 'Z' in r.columns
+    assert 'NZ' in r.columns
+
+    # weights
+    w_fkp = 1. / (1 + r['NZ']*P0)
+    if p is not None:
+        w1 = fnl_weight(r['Z'], p=p)
+        w2 = bias_weight(r['Z'], cosmo)
+    else:
+        w1 = w2 = 1.0
+    
+    # effective redshift
+    A = (r['Z'] * r['NZ'] * w_fkp**2 * w1 * w2).sum().compute()
+    norm = (r['NZ'] * w_fkp**2 * w1 * w2).sum().compute()
+    z_eff = A/norm
+
+    # effective nbar
+    A = (r['NZ'] * r['NZ'] * w_fkp**2 * w1 * w2).sum().compute()
+    nbar_eff = A/norm
+
+    return z_eff, nbar_eff
+
+
+
+
 
 def compute_effective_redshift(cat):
     """

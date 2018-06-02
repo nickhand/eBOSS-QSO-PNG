@@ -141,7 +141,7 @@ class QSOFitDriver(object):
             ff.write((params+"\n\n").encode())
 
             # write out the theory too
-            model = QuasarSpectrum(z=self.preparer.z_eff)
+            model = QuasarSpectrum(z=kws['z_eff'])
             theorypars = model.default_params()
 
             # the pars which we are varying
