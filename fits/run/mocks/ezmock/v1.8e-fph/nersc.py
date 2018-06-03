@@ -1,9 +1,10 @@
 from argparse import ArgumentParser
-from nbodykit.lab import TaskManager
 from eboss_qso.fits.driver import QSOFitDriver
 import importlib, os
 
 def main(ns):
+
+    from nbodykit.lab import TaskManager
 
     # the module name
     modname = os.path.splitext(os.path.split(ns.filename)[-1])[0]
