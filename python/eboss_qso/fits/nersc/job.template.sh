@@ -15,7 +15,7 @@ bcast-pip git+git://github.com/bccp/nbodykit.git
 
 # install correct nbodykit version to computing nodes
 bcast-pip .
-bcast $LOCAL_STACK/anaconda3/envs/pyrsd-anaconda-3.6-$NERSC_HOST.tar.gz
+bcast $PROGRAMS_DIR/pkgs/$NERSC_HOST/pyRSD*
 
 cd $SLURM_SUBMIT_DIR
 
