@@ -11,7 +11,7 @@ cd $PROJECT_HOME/Research/eBOSS/python
 
 # activate environment
 source /usr/common/contrib/bccp/conda-activate.sh 3.6
-bcast-pip git+git://github.com/bccp/nbodykit.git
+#bcast-pip git+git://github.com/bccp/nbodykit.git
 
 # install correct nbodykit version to computing nodes
 bcast-pip .
