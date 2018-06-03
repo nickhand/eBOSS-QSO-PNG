@@ -235,6 +235,7 @@ class QSOFitDriver(object):
         meta['vary'] = self.vary
         meta['spectra_file'] = self.preparer.spectra_file
         meta['stats'] = self.stats
+        meta['hashstr'] = self.preparer.hashstr
         if 'f_nl' in self.vary:
             meta['p'] = self.p
         else:
