@@ -46,7 +46,7 @@ class QSOFitDriver(object):
     comm : MPI communicator
         the MPI communicator
     """
-    def __init__(self, rsdfit_args, spectra_file, vary, stats, p=1.6,
+    def __init__(self, rsdfit_args, spectra_file, vary, stats, p=None,
                     kmin=0.0001, kmax=0.4, cov_type='analytic', error_rescale=1.0,
                     overwrite=False, output_only=False,
                     comm=None, use_temp_files=False, tag=None, zeff=None):
@@ -81,8 +81,12 @@ class QSOFitDriver(object):
 
         # get the p value from the preparer
         self.p = self.preparer.hashinput['p']
-        if self.p is None:
+        if p is not None:
             self.p = p
+        
+        if self.p is None:
+            raise ValueError("please specify a value for 'p' to use")
+        print("using p = %.1f" % self.p)
 
         # store zmin/zmax
         self.zmin = self.preparer.hashinput['zmin']
