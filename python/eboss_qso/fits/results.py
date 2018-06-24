@@ -50,10 +50,10 @@ def load_ezmock_results(version, sample, krange, params, p=None):
         if hashkeys['p'] == p:
             match = f
 
+    assert match is not None, "no matches found!"
+    
     # load the driver
     driver = FittingDriver.from_directory(match)
-
-    assert match is not None, "no matches found!"
     pattern = match.replace('0001', '*')
 
     data = defaultdict(list)
