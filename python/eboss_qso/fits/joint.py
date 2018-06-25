@@ -122,7 +122,13 @@ def run_joint_mcmc_fit(kind, iterations, walkers, output, load_kwargs, joint_par
     order = []
     for name in theory.free_names:
         order.append(free_names.index(name))
-    sampler.chain = sampler.chain[...,order]
+    try:
+        sampler.chain = sampler.chain[...,order]
+    except:
+        if hasattr(sampler, '_chain'):
+            sampler._chain = sampler.chain[..., order]
+        else:
+            raise
 
     # create and save the result
     result = EmceeResults(sampler, theory, burnin)
