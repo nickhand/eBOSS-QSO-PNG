@@ -186,7 +186,9 @@ def get_hashkeys(filename, cls):
         nersc_dir = "/global/cscratch1/sd/nhand/eBOSS"
         if nersc_dir in spectra_file:
             spectra_file = spectra_file.replace(nersc_dir, os.environ['EBOSS_DIR'])
-        d.update(get_hashkeys(spectra_file, 'ConvolvedFFTPower'))
+        spectra_keys = get_hashkeys(spectra_file, 'ConvolvedFFTPower')
+        spectra_keys.pop("p", None)
+        d.update(spectra_keys)
     else:
         # get the result class
         cls = getattr(lab, cls)
