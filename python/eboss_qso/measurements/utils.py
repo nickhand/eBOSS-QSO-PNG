@@ -3,7 +3,7 @@ import json
 from nbodykit.utils import JSONEncoder
 import os
 import numpy
-from .zweights import fnl_weight, bias_weight
+from .weights import fnl_weight, bias_weight
 
 def find_window_measurement(version, sample, zmin, zmax):
     """

@@ -1,3 +1,13 @@
+def fkp_weight(nz, P0):
+    """
+    Return the FKP weight.
+
+    .. math::
+
+        w_fkp = (1 + nz * P0)^(-1)
+    """
+    return 1 / (1 + nz*P0)
+
 def bias_weight(z, cosmo, ell=0):
     """
     Compute the bias redshift weight.
@@ -5,8 +15,7 @@ def bias_weight(z, cosmo, ell=0):
     .. math::
 
         W = D(z) [ b(z) + f(z)/3 ] for monopole
-
-
+        W = 2 D(z) f(z) / 3  for quadrupole
     """
     assert ell in [0, 2]
 

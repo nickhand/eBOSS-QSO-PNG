@@ -53,4 +53,4 @@ from .utils import trim_redshift_range, redshift_range_type, get_hashkeys, \
 # window
 from .results import load_window_poles
 
-from .zweights import fnl_weight, bias_weight, bias_model
+from .weights import fnl_weight, bias_weight, bias_model
