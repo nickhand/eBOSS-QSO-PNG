@@ -136,5 +136,5 @@ class eBOSSConfig(object):
 
 
 from .runner import RSDFitRunner
-from .results import load_ezmock_results, load_data_results
+from .results import load_ezmock_results, load_data_results, load_joint_data_results
 from .nersc import NERSCManager

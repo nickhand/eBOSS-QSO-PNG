@@ -24,7 +24,7 @@ def fix_result_paths():
                 ff.write(new_content)
 
 
-def load_ezmock_results(version, sample, krange, params, p=None):
+def load_ezmock_results(version, sample, krange, params, z_weighted, p=None):
     """
     Load a set of ezmock fit results.
 
@@ -43,21 +43,30 @@ def load_ezmock_results(version, sample, krange, params, p=None):
     d = os.path.join(d, krange, params, '0.8-2.2')
     assert os.path.isdir(d), "'%s' directory not found" % d
 
+    if p is None or p == 1.6:
+        p = [None, 1.6]
+    else:
+        p = [p]
+
     matches = glob(os.path.join(d, f'QSO-{sample}-0001-*'))
     match = None
     for f in matches:
         hashkeys = get_hashkeys(f, None)
-        if hashkeys['p'] == p:
+        if hashkeys['p'] in p and hashkeys['z-weighted'] == z_weighted:
             match = f
 
-    assert match is not None, "no matches found!"
+    if match is None:
+        raise ValueError((f"no matches found: version={version}, sample={sample}, "
+                          f"krange={krange}, params={params}, z_weighted={z_weighted}, p={p}"))
     
     # load the driver
     driver = FittingDriver.from_directory(match)
-    pattern = match.replace('0001', '*')
+    dirname, basename = os.path.split(match)
+    pattern = os.path.join(dirname, basename.replace('0001', '*'))
 
     data = defaultdict(list)
     matches = glob(pattern)
+
     for f in matches:
         r = sorted(glob(os.path.join(f, '*.npz')), key=os.path.getmtime, reverse=True)
         assert len(r) > 0, "no npz results found in directory '%s'" %os.path.normpath(f)
@@ -87,7 +96,43 @@ def load_ezmock_results(version, sample, krange, params, p=None):
 
     return out
 
-def load_data_results(version, sample, krange, params, zrange, p=None):
+def load_joint_data_results(kmin, z_weighted, p):
+    """
+    Load a set of data joint NGC + SGC fit results.
+    """
+    from eboss_qso.measurements.utils import make_hash
+    from pyRSD.rsdfit.results import EmceeResults
+
+    # the data to load
+    kws = {}
+    kws['version'] = 'v1.9f'
+    kws['krange'] = '%s-0.3' % kmin
+    kws['params'] = 'basemodel-N-fnl'
+    kws['zrange'] = '0.8-2.2'
+    kws['z_weighted'] = z_weighted
+    kws['p'] = p
+
+    hashstr = make_hash(kws)
+
+    d = os.path.join(os.environ['EBOSS_DIR'],
+                     'fits', 'results', 'data', 'v1.9f')
+    d = os.path.join(d, kws['krange'], kws['params'], kws['zrange'])
+    assert os.path.isdir(d), "'%s' directory not found" % d
+
+    matches = glob(os.path.join(d, f'QSO-N+S-{hashstr}'))
+    assert len(matches) == 1
+    match = matches[0]
+
+    if match is None:
+        raise ValueError("no matches found for joint NGC + SGC data fits!")
+
+    r = sorted(glob(os.path.join(match, '*.npz')),
+               key=os.path.getmtime, reverse=True)
+    assert len(r) > 0, "no npz results found in directory '%s'" % os.path.normpath(f)
+    
+    return EmceeResults.from_npz(r[0])
+
+def load_data_results(version, sample, krange, params, zrange, z_weighted, p=None):
     """
     Load a set of data fit results.
 
@@ -103,20 +148,27 @@ def load_data_results(version, sample, krange, params, zrange, p=None):
     d = os.path.join(d, krange, params, zrange)
     assert os.path.isdir(d), "'%s' directory not found" % d
 
+    if p is None or p == 1.6:
+        p = [None, 1.6]
+    else:
+        p = [p]
+
     matches = glob(os.path.join(d, f'QSO-{sample}-*'))
     match = None
     for f in matches:
         hashkeys = get_hashkeys(f, None)
-        if hashkeys['p'] == p:
+        if hashkeys['p'] in p and hashkeys['z-weighted'] == z_weighted:
             match = f
+
+    if match is None:
+        raise ValueError((f"no matches found: version={version}, sample={sample}, "
+                          f"krange={krange}, params={params}, zrange={zrange}, "
+                          f"z_weighted={z_weighted}, p={p}"))
 
     # load the driver
     driver = FittingDriver.from_directory(match)
 
-    assert len(matches) == 1, "exactly one match should have been found"
-    pattern = match.replace('0001', '*')
-
-    r = sorted(glob(os.path.join(f, '*.npz')), key=os.path.getmtime, reverse=True)
+    r = sorted(glob(os.path.join(match, '*.npz')), key=os.path.getmtime, reverse=True)
     assert len(r) > 0, "no npz results found in directory '%s'" %os.path.normpath(f)
     driver.results = r[0]
     return driver
