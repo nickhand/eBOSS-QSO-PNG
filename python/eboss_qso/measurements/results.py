@@ -218,8 +218,13 @@ def save_RR_paircount(r, sample, version, **kwargs):
     for k in kwargs:
         r.attrs[k] = kwargs[k]
 
+    for col in ['p', 'z_weighted', 'P0_FKP']:
+        if col not in r.attrs:
+            r.attrs[col] = None
+            
     # make the hash
-    usekeys = ['redges_str', 'zmin', 'zmax', 'N', 'subsample']
+    usekeys = ['redges_str', 'zmin', 'zmax', 'N', 'subsample', 
+               'p', 'z_weighted', 'P0_FKP']
 
     r.attrs['hashkeys'] = usekeys
     id_str = make_hash(r.attrs, usekeys=usekeys)
