@@ -30,14 +30,33 @@ def main(ns):
 
     # trim redshift range
     r = eboss.trim_redshift_range(randoms, zmin=ns.zmin, zmax=ns.zmax)
+    
+    # and finalize
+    eboss.finalize_data(r, eboss.fidcosmo, P0_FKP=ns.P0_FKP)
 
     # do the pair count
     redges = numpy.logspace(0, 4, 500)
-    result = SurveyDataPairCount('2d', r, redges, eboss.fidcosmo, Nmu=100, ra='RA', dec='DEC', redshift='Z')
+    if ns.p == 0:
+        result = SurveyDataPairCount('2d', r, redges, eboss.fidcosmo, 
+                                        Nmu=100, ra='RA', dec='DEC', redshift='Z',
+                                        weight='FKPWeight')
+        meta = {'p': None, 'P0_FKP': ns.P0_FKP, 'z_weighted': False}
+    else:
+        r['Weight'] = r['FKPWeight'] * eboss.bias_weight(r['Z'], eboss.ezmock_cosmo)
+        
+        second = r.copy()
+        second['Weight'] = second['FKPWeight'] * eboss.fnl_weight(second['Z'], p=ns.p)
+        result = SurveyDataPairCount('2d', r, redges, eboss.fidcosmo,
+                                     second=second, Nmu=100, ra='RA', dec='DEC', 
+                                     redshift='Z', weight='Weight')
+        meta = {'p': ns.p, 'P0_FKP': ns.P0_FKP, 'z_weighted' : True}
+
+    # save the csize
     result.attrs['N'] = r.csize
 
     # and save!
     kws = {'subsample':ns.subsample, 'zmin':ns.zmin, 'zmax':ns.zmax, 'redges_str':'logspace(0,4,500)'}
+    kws.update(meta)
     eboss.save_RR_paircount(result, ns.sample, ns.version, **kws)
 
 if __name__ == '__main__':
@@ -62,6 +81,13 @@ if __name__ == '__main__':
 
     h = 'the desired collective size to subsample to'
     parser.add_argument('--subsample', type=float, help=h)
+
+    h = 'the P0 FKP version to use'
+    parser.add_argument('--P0_FKP', type=float, default=3e4, help=h)
+
+    h = 'the value of p to use'
+    group.add_argument('--p', type=float, help=h,
+                       choices=[0., 1., 1.6], required=True)
 
     # and go!
     main(parser.parse_args())
