@@ -60,7 +60,7 @@ if __name__ == '__main__':
     parser.add_argument('--box', required=True, type=int)
     parser.add_argument('--vary-shot-noise', choices=[0,1], type=int, required=True)
     parser.add_argument('--cov', choices=['mock', 'analytic'], required=True)
-    parser.add_argument('--overwrite', action='store_true', default=False)
+    parser.add_argument('--overwrite', action='store_true', default=True)
     parser.add_argument('--kmin', type=float, default=1e-4)
     parser.add_argument('--kmax', type=float, default=0.3)
 
