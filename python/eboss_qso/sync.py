@@ -105,7 +105,7 @@ def sync_eboss():
     sync = NERSCSync(ns.direction, ns.host, path=ns.dir, dry_run=ns.dry_run, delete=ns.delete)
 
     if ns.subparser_name == 'measurements':
-        remote_dir = "/global/cscratch1/sd/nhand/Research/eBOSS/measurements/"
+        remote_dir = "/global/cscratch1/sd/nhand/eBOSS/measurements/"
         local_dir = "/Users/nhand/Research/Analysis/thesis/eBOSS-QSO-PNG/measurements/"
         exclude = ["--exclude='info'", "--exclude='plots'", "--exclude='.*'", '--exclude=run']
     elif ns.subparser_name == 'reports':

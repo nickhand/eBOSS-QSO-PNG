@@ -43,11 +43,11 @@ def to_poles(filename, ells):
 
     mu = np.repeat(d.coords['mu'][None,:], d.data.shape[0], axis=0)
     weights = np.array([(2*ell+1)*legendre(ell)(mu) for ell in ells])
-    N_1d = d['npairs'].sum(axis=-1)
-    poles = (weights*d['npairs']).sum(axis=-1).T
+    N_1d = d['wnpairs'].sum(axis=-1)
+    poles = (weights*d['wnpairs']).sum(axis=-1).T
     valid = N_1d > 0
     toret = np.zeros((valid.sum(), 1+len(ells)))
-    toret[:,0] = (d['npairs']*d['r']).sum(axis=-1)[valid] / d['npairs'].sum(axis=-1)[valid]
+    toret[:,0] = (d['wnpairs']*d['r']).sum(axis=-1)[valid] / d['wnpairs'].sum(axis=-1)[valid]
     toret[:,1:] = poles[valid,:]/ toret[:,0][:,None]**3
     return toret
 

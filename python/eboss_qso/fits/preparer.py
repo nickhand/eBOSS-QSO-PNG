@@ -181,7 +181,8 @@ class QSOFitPreparer(object):
                 raise ValueError("do not understand 'kind' = '%s'" %self.kind)
             window_file = find_window_measurement(version, self.sample,
                                                     self.hashinput['zmin'],
-                                                    self.hashinput['zmax'])
+                                                    self.hashinput['zmax'],
+                                                    self.hashinput['p'])
 
             ells = [0,2,4,6,8,10]
             compute_window(window_file, ells, output, smin=1e-2, smax=1e4, quiet=self.quiet)
