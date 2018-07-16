@@ -7,7 +7,7 @@ import os
 import numpy as np
 from jinja2 import Environment, FileSystemLoader
 
-from eboss_qso.measurements.zweights import bias_model
+from eboss_qso.measurements.weights import bias_model
 from eboss_qso.measurements import get_hashkeys
 from eboss_qso import EBOSS_FITS
 from .driver import mkdir_p

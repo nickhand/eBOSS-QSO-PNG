@@ -6,7 +6,7 @@ import tempfile
 from ..measurements.results import info_from_filename
 from ..measurements.utils import find_window_measurement
 from ..measurements import get_hashkeys
-from ..measurements.zweights import bias_model
+from ..measurements.weights import bias_model
 
 from . import eBOSSConfig
 from .data import write_data
