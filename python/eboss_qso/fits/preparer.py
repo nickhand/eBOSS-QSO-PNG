@@ -184,6 +184,7 @@ class QSOFitPreparer(object):
                                                     self.hashinput['zmax'],
                                                     self.hashinput['p'])
 
+            print('using window file %s...' % window_file)
             ells = [0,2,4,6,8,10]
             compute_window(window_file, ells, output, smin=1e-2, smax=1e4, quiet=self.quiet)
         else:
