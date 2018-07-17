@@ -160,7 +160,9 @@ class QSOFitPreparer(object):
         from ..measurements.utils import make_hash
 
         # the window file
-        meta = {'zmin':self.hashinput['zmin'], 'zmax':self.hashinput['zmax']}
+        meta = {'zmin':self.hashinput['zmin'], 
+                'zmax':self.hashinput['zmax'],
+                'p':self.hashinput['p']}
         hashstr = make_hash(meta)
         filename = f"poles_{self.version}-QSO-{self.sample}_{hashstr}.dat"
         output = os.path.join(self.config.fits_window_dir, filename)
