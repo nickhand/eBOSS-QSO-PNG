@@ -8,6 +8,7 @@ def fkp_weight(nz, P0):
     """
     return 1 / (1 + nz*P0)
 
+
 def bias_weight(z, cosmo, ell=0):
     """
     Compute the bias redshift weight.
@@ -42,6 +43,7 @@ def fnl_weight(z, p=1.6):
     b = bias_model(z)
     return b - p
 
+
 def bias_model(z):
     """
     Return the bias fit as a function of redshift from Laurent et al. 2017
@@ -49,4 +51,4 @@ def bias_model(z):
     """
     alpha = 0.278
     beta = 2.393
-    return alpha * ( (1+z)**2 - 6.565 ) + beta
+    return alpha * ((1+z)**2 - 6.565) + beta
