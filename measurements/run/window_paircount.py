@@ -7,6 +7,7 @@ import argparse
 
 setup_logging()
 
+
 def select_subsample(insize, outsize):
 
     index = numpy.zeros(insize, dtype=bool)
@@ -25,39 +26,45 @@ def main(ns):
 
     # select a subsample?
     if ns.subsample is not None and randoms.csize > ns.subsample:
-        valid = select_subsample(randoms.size, int(ns.subsample//randoms.comm.size))
+        valid = select_subsample(randoms.size, int(
+            ns.subsample//randoms.comm.size))
         randoms = randoms[valid]
 
     # trim redshift range
     r = eboss.trim_redshift_range(randoms, zmin=ns.zmin, zmax=ns.zmax)
-    
+
     # and finalize
     eboss.finalize_data(r, eboss.fidcosmo, P0_FKP=ns.P0_FKP)
 
     # do the pair count
     redges = numpy.logspace(0, 4, 500)
     if ns.p == 0:
-        result = SurveyDataPairCount('2d', r, redges, eboss.fidcosmo, 
-                                        Nmu=100, ra='RA', dec='DEC', redshift='Z',
-                                        weight='FKPWeight')
+        result = SurveyDataPairCount('2d', r, redges, eboss.fidcosmo,
+                                     Nmu=100, ra='RA', dec='DEC', redshift='Z',
+                                     weight='FKPWeight')
         meta = {'p': None, 'P0_FKP': ns.P0_FKP, 'z_weighted': False}
     else:
-        r['Weight'] = r['FKPWeight'] * eboss.bias_weight(r['Z'], eboss.ezmock_cosmo)
-        
+        r['Weight'] = r['FKPWeight'] * \
+            eboss.bias_weight(r['Z'], eboss.ezmock_cosmo, ell=ns.ell)
+
         second = r.copy()
-        second['Weight'] = second['FKPWeight'] * eboss.fnl_weight(second['Z'], p=ns.p)
+        second['Weight'] = second['FKPWeight'] * \
+            eboss.fnl_weight(second['Z'], p=ns.p)
         result = SurveyDataPairCount('2d', r, redges, eboss.fidcosmo,
-                                     second=second, Nmu=100, ra='RA', dec='DEC', 
+                                     second=second, Nmu=100, ra='RA', dec='DEC',
                                      redshift='Z', weight='Weight')
-        meta = {'p': ns.p, 'P0_FKP': ns.P0_FKP, 'z_weighted' : True}
+        meta = {'p': ns.p, 'P0_FKP': ns.P0_FKP,
+                'z_weighted': True, 'ell': ns.ell}
 
     # save the csize
     result.attrs['N'] = r.csize
 
     # and save!
-    kws = {'subsample':ns.subsample, 'zmin':ns.zmin, 'zmax':ns.zmax, 'redges_str':'logspace(0,4,500)'}
+    kws = {'subsample': ns.subsample, 'zmin': ns.zmin,
+           'zmax': ns.zmax, 'redges_str': 'logspace(0,4,500)'}
     kws.update(meta)
     eboss.save_RR_paircount(result, ns.sample, ns.version, **kws)
+
 
 if __name__ == '__main__':
 
@@ -68,10 +75,12 @@ if __name__ == '__main__':
     group = parser.add_argument_group('required arguments')
 
     h = 'the sample, either North or South'
-    group.add_argument('--sample', type=str, choices=['N', 'S'], help=h, required=True)
+    group.add_argument('--sample', type=str,
+                       choices=['N', 'S'], help=h, required=True)
 
     h = 'the version to load'
-    group.add_argument('--version', type=str, choices=eboss.DATA_VERSIONS, help=h, required=True)
+    group.add_argument('--version', type=str,
+                       choices=eboss.DATA_VERSIONS, help=h, required=True)
 
     h = 'the minimum redshift to include'
     group.add_argument('--zmin', type=float, help=h, required=True)
@@ -88,6 +97,10 @@ if __name__ == '__main__':
     h = 'the value of p to use'
     group.add_argument('--p', type=float, help=h,
                        choices=[0., 1., 1.6], required=True)
+
+    h = 'whether to use ell=0 or ell=2 weights'
+    group.add_argument('--ell', type=int, help=h,
+                       choices=[0, 2], required=True)
 
     # and go!
     main(parser.parse_args())
