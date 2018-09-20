@@ -24,6 +24,51 @@ def fix_result_paths():
                 ff.write(new_content)
 
 
+def load_ezmock_driver(box_num, version, sample, krange, params, z_weighted, p=None):
+    """
+    Load a set of ezmock fit results.
+
+    Returns a structued numpy array holding best-fit values for all free
+    parameters all mocks.
+    """
+    from pyRSD.rsdfit.results import LBFGSResults
+    from pyRSD.rsdfit import FittingDriver
+    from pyRSD.rsdfit.parameters import ParameterSet
+    from collections import defaultdict
+
+    assert sample in ['N', 'S']
+    assert version in ['v1.8e-no', 'v1.8e-fph', 'v1.8e-reg']
+
+    d = os.path.join(os.environ['EBOSS_DIR'], 'fits',
+                     'results', 'mocks', 'ezmock', version)
+    d = os.path.join(d, krange, params, '0.8-2.2')
+    assert os.path.isdir(d), "'%s' directory not found" % d
+
+    if p is None or p == 1.6:
+        p = [None, 1.6]
+    else:
+        p = [p]
+
+    matches = glob(os.path.join(d, f'QSO-{sample}-{box_num:04d}-*'))
+    match = None
+    for f in matches:
+        hashkeys = get_hashkeys(f, None)
+        if hashkeys['p'] in p and hashkeys['z-weighted'] == z_weighted:
+            match = f
+
+    if match is None:
+        raise ValueError((f"no matches found: version={version}, sample={sample}, "
+                          f"krange={krange}, params={params}, z_weighted={z_weighted}, p={p}"))
+
+    # load the driver
+    driver = FittingDriver.from_directory(match)
+    r = sorted(glob(os.path.join(match, '*.npz')),
+                   key=os.path.getmtime, reverse=True)
+    assert len(r) > 0, "no npz results found in directory '%s'" % os.path.normpath(match)
+    driver.results = r[0]
+    
+    return driver 
+
 def load_ezmock_results(version, sample, krange, params, z_weighted, p=None):
     """
     Load a set of ezmock fit results.
