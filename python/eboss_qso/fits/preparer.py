@@ -1,41 +1,51 @@
 import os
-import numpy
+import numpy as np
 from nbodykit.lab import ConvolvedFFTPower
 import tempfile
 
-from ..measurements.results import info_from_filename
-from ..measurements.utils import find_window_measurement
-from ..measurements import get_hashkeys
+from ..measurements.utils import find_window_measurement, make_hash
+from ..measurements import get_hashkeys, load_data_spectra, load_ezmock_spectra
 from ..measurements.weights import bias_model
 
 from . import eBOSSConfig
-from .data import write_data
 from .window import compute_window
 from .covariance import compute_analytic_covariance, compute_ezmock_covariance
-
-def get_spectra_type(filename):
-    """
-    Return the spectrum type, i.e., 'data', 'ezmock', etc
-    """
-    if 'data' in filename:
-        return 'data'
-    elif 'mocks' in filename:
-        home_dir = os.environ['EBOSS_DIR']
-        spectra_dir = os.path.join(home_dir, 'measurements', 'spectra', 'mocks')
-        return os.path.relpath(filename, spectra_dir).split(os.path.sep)[0]
-    else:
-        raise ValueError("do not understand file name '%s'" %filename)
 
 
 class QSOFitPreparer(object):
     """
     Class to prepare a QSO power spectrum fit.
     """
-    def __init__(self, spectra_file, stats, kmin=0.0001, kmax=0.4, cov_type='analytic',
-                    overwrite=False, error_rescale=1.0, quiet=False, use_temp_files=False):
 
-        self.spectra_file = os.path.abspath(spectra_file)
-        self.stats = stats
+    def __init__(self, kind,
+                 version,
+                 sample,
+                 ells,
+                 z_eff,
+                 p=None,
+                 kmin=0.0001,
+                 kmax=0.4,
+                 cov_type='analytic',
+                 overwrite=False,
+                 error_rescale=1.0,
+                 quiet=False,
+                 use_temp_files=False,
+                 box=None):
+
+        assert kind in ['data', 'ezmock']
+        assert sample in ['N', 'S']
+        assert len(z_eff) == len(ells)
+        if kind == 'ezmock':
+            assert box is not None
+
+        self.kind = kind
+        self.version = version
+        self.sample = sample
+        self.ells = ells
+        self.z_eff = z_eff
+        self.box = box
+        self.p = p
+
         self.kmin = kmin
         self.kmax = kmax
         self.overwrite = overwrite
@@ -44,88 +54,38 @@ class QSOFitPreparer(object):
         self.use_temp_files = use_temp_files
         self.cov_type = cov_type
 
-        # dictionary of info from the filename
-        self.kind = get_spectra_type(self.spectra_file)
-        info = info_from_filename(self.kind, os.path.basename(self.spectra_file))
+        # make the hash string
+        cols = ['kind', 'version', 'sample', 'ells', 'z_eff', 'p']
+        attrs = {k: getattr(self, k) for k in cols}
+        self.hashstr = make_hash(attrs)
 
-        # make sure we have all of the keys
-        assert 'version' in info
-        assert 'hashstr' in info
-        assert 'sample' in info and info['sample'] in 'NS'
+        # which function do we need to load measurements
+        if self.kind == 'data':
+            self.loader = load_data_spectra
+        else:
+            self.loader = load_ezmock_spectra
 
-        # copy over file info
-        for k in info:
-            setattr(self, k, info[k])
+        # get the loader kwargs
+        self.loader_kws = {k: getattr(self, k)
+                           for k in ['version', 'sample', 'p']}
+        if self.box is not None:
+            self.loader_kws['box'] = self.box
 
-        # check statistics
-        self.ells = []
-        for stat in self.stats:
-            if stat == 'P0_sysfree':
-                self.ells.append([0,2])
-            else:
-                self.ells.append(int(stat[-1]))
-
-        # the input for the hash string
-        self.hashinput = get_hashkeys(self.spectra_file, 'ConvolvedFFTPower')
-        assert all(k in self.hashinput for k in ['zmin', 'zmax'])
+        # data attrs from the spectra file
+        self.attrs = self.loader(ell=self.ells[0], **self.loader_kws).attrs
 
         # the configuration
         self.config = eBOSSConfig(self.sample, self.version, self.kind)
 
         # determine the statistic names
         tag = 'ngc' if self.config.sample == 'N' else 'sgc'
-        self.stat_names = ['pole_' + tag + '_%s' % stat.split('_')[0][1] for stat in stats]
-
-        # load z_eff and nbar_eff
-        res = ConvolvedFFTPower.load(self.spectra_file)
-        self.z_eff = res.attrs.get('z_eff', None)
-        self.nbar_eff = res.attrs.get('nbar_eff', None)
-
-        if self.z_eff is None:
-            raise ValueError("need 'z_eff' in 'attrs' of spectra result")
-        if self.nbar_eff is None:
-            raise ValueError("need 'nbar_eff' in 'attrs' of spectra result")
+        self.stat_names = ['pole_' + tag + '_%d' % ell for ell in ells]
+        self.stats = ['P%d' % ell for ell in ells]
 
         # and run
         self.write_data()
         self.write_window()
         self.write_covariance()
-
-    @classmethod
-    def initialize(cls):
-        import argparse
-
-        descr = 'prepare a QSO power spectrum fit'
-        parser = argparse.ArgumentParser(description=descr)
-
-        h = 'the power spectrum file we wish to fit'
-        parser.add_argument('-f', '--spectra_file', type=str, help=h, required=True)
-
-        h = 'the minimum k value to include'
-        parser.add_argument('--kmin', type=float, default=0.0001, help=h)
-
-        h = 'the maximum k value to include'
-        parser.add_argument('--kmax', type=float, default=0.4, help=h)
-
-        h = 'the statistics to include'
-        stats = ['P0', 'P2', 'P0_sysfree']
-        parser.add_argument('--stats', nargs='*', type=str, choices=stats, default=['P0', 'P2'], help=h)
-
-        h = 'whether to overwrite existing files'
-        parser.add_argument('--overwrite', action='store_true', help=h)
-
-        h = 'whether to use temporary files'
-        parser.add_argument('--use-temp-files', action='store_true', help=h)
-
-        h = 'rescale the errors by this amount'
-        parser.add_argument('--error-rescale', type=float, default=1.0, help=h)
-
-        h = 'the type of covariance to use'
-        parser.add_argument('--cov', dest='cov_type', choices=['analytic', 'mock'],
-                                default='analytic', help=h)
-
-        ns = parser.parse_args()
-        return cls(**vars(ns))
 
     def write_data(self):
         """
@@ -134,9 +94,8 @@ class QSOFitPreparer(object):
         # the output data file
         stats = '+'.join(self.stats)
         filename = f"poles_{self.version}-QSO-{self.sample}"
-        box = getattr(self, 'box', None)
-        if box is not None:
-            filename += '-' + box
+        if self.box is not None:
+            filename += '-%04d' % self.box
         filename += f"_{stats}_{self.hashstr}.dat"
         output = os.path.join(self.config.fits_data_dir, filename)
 
@@ -146,23 +105,66 @@ class QSOFitPreparer(object):
 
         # make the data file
         if not os.path.exists(output) or self.overwrite:
-            write_data(self.spectra_file, self.stats, self.stat_names, output,
-                        kmin=self.kmin, kmax=self.kmax, quiet=self.quiet)
+            self._write_data(output)
         else:
             if not self.quiet:
                 print('skipping data preparation...')
         self.data_file = output
 
+    def _write_data(self, output):
+        """
+        Internal function to write out the multipole data to 
+        a plaintext file.
+
+        Parameters
+        ----------
+        output : str
+            the output file name
+        """
+        from pyRSD.rsdfit.data import PowerMeasurements
+
+        power = []
+        for ell in self.ells:
+            # get the ConvolvedFFTPower object
+            r = self.loader(ell=ell, subtract_shot_noise=True,
+                            **self.loader_kws)
+
+            # trim to the correct k range
+            valid = (r.poles['k'] >= self.kmin) & (r.poles['k'] <= self.kmax)
+            poles = r.poles.data[valid]
+
+            # add the power array
+            power.append(poles['power_%s' % ell].real)
+
+        # convert to array
+        power = np.vstack(power).T
+
+        # make the data array
+        dtype = [('k', 'f8'), ('power', 'f8')]
+        data = np.zeros_like(power, dtype=dtype)
+
+        # store k and P(k)
+        data['power'] = power[:]
+        data['k'] = np.repeat(poles['k'][:, None], data.shape[1], axis=1)
+
+        # initialize the power measurements object
+        measurements = PowerMeasurements.from_array(self.stat_names, data)
+
+        # write to file
+        if not self.quiet:
+            print(f'saving {output}...')
+        measurements.to_plaintext(output)
+
     def write_window(self):
         """
         Write the necessary window file.
         """
-        from ..measurements.utils import make_hash
+        # get zmin/zmax
+        zmin = self.attrs['zmin']
+        zmax = self.attrs['zmax']
 
         # the window file
-        meta = {'zmin':self.hashinput['zmin'], 
-                'zmax':self.hashinput['zmax'],
-                'p':self.hashinput['p']}
+        meta = {'zmin': zmin, 'zmax': zmax, 'p': self.p}
         hashstr = make_hash(meta)
         filename = f"poles_{self.version}-QSO-{self.sample}_{hashstr}.dat"
         output = os.path.join(self.config.fits_window_dir, filename)
@@ -180,15 +182,14 @@ class QSOFitPreparer(object):
             elif self.kind == 'data':
                 version = self.version
             else:
-                raise ValueError("do not understand 'kind' = '%s'" %self.kind)
+                raise ValueError("do not understand 'kind' = '%s'" % self.kind)
             window_file = find_window_measurement(version, self.sample,
-                                                    self.hashinput['zmin'],
-                                                    self.hashinput['zmax'],
-                                                    self.hashinput['p'])
+                                                  zmin, zmax, self.p)
 
             print('using window file %s...' % window_file)
-            ells = [0,2,4,6,8,10]
-            compute_window(window_file, ells, output, smin=1e-2, smax=1e4, quiet=self.quiet)
+            ells = [0, 2, 4, 6, 8, 10]
+            compute_window(window_file, ells, output, smin=1e-2,
+                           smax=1e4, quiet=self.quiet)
         else:
             if not self.quiet:
                 print('skipping window preparation...')
@@ -202,8 +203,7 @@ class QSOFitPreparer(object):
         stats = '+'.join(self.stats)
         filename = f"poles_{self.version}-QSO-{self.sample}-{self.cov_type}"
         if self.cov_type == 'analytic':
-            box = getattr(self, 'box', None)
-            if box is not None and box == 'mean':
+            if self.box is not None and self.box == 'mean':
                 filename += '-mean'
         filename += f"_{stats}_{self.hashstr}.dat"
         output = os.path.join(self.config.fits_covariance_dir, filename)
@@ -216,31 +216,37 @@ class QSOFitPreparer(object):
         if not os.path.exists(output) or self.overwrite:
 
             if self.cov_type == 'analytic':
-                from pyRSD.rsd import QuasarSpectrum
+                raise ValueError("analytic covariance not currently supported")
+                # from pyRSD.rsd import QuasarSpectrum
 
-                P0_FKP = self.hashinput.get('P0_FKP', None)
-                if P0_FKP is None: P0_FKP = 0.
+                # P0_FKP = self.attrs.get('P0_FKP', None)
+                # if P0_FKP is None:
+                #     P0_FKP = 0.
 
-                # load the model
-                model = QuasarSpectrum(z=self.z_eff, params=config.cosmo)
+                # # load the model
+                # model = QuasarSpectrum(z=self.z_eff, params=config.cosmo)
 
-                # compute
-                C = compute_analytic_covariance(self.config, self.stats, model,
-                                                self.hashinput['zmin'], self.hashinput['zmax'],
-                                                P0_FKP, kmin=self.kmin, kmax=self.kmax, dk=0.005)
+                # # compute
+                # C = compute_analytic_covariance(self.config, self.stats, model,
+                #                                 self.attrs['zmin'], self.attrs['zmax'],
+                #                                 P0_FKP, kmin=self.kmin, kmax=self.kmax, dk=0.005)
 
-                C *= self.error_rescale
+                # C *= self.error_rescale
 
-                # and save
-                if not self.quiet:
-                    print("saving %s..." %output)
-                C.attrs.clear()
-                C.to_plaintext(output)
+                # # and save
+                # if not self.quiet:
+                #     print("saving %s..." % output)
+                # C.attrs.clear()
+                # C.to_plaintext(output)
 
             else:
                 # compute the covariance from the mocks
-                C = compute_ezmock_covariance('v1.8e-fph', self.sample, self.stats,
-                                                kmin=self.kmin, kmax=self.kmax, p=self.hashinput['p'])
+                C = compute_ezmock_covariance('v1.8e-fph',
+                                              self.sample,
+                                              self.ells,
+                                              kmin=self.kmin,
+                                              kmax=self.kmax,
+                                              p=self.p)
 
                 # rescale
                 C *= self.error_rescale

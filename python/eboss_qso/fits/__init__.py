@@ -3,12 +3,14 @@ import numpy
 from scipy.interpolate import InterpolatedUnivariateSpline as spline
 import itertools
 
+
 def parametrize(params):
     """
     Execute a function for each of the input parameters.
     """
     keys = sorted(params.keys())
     params = list(itertools.product(*[params[k] for k in keys]))
+
     def wrapped(func):
         def func_wrapper(**kwargs):
             for p in params:
@@ -18,15 +20,17 @@ def parametrize(params):
         return func_wrapper
     return wrapped
 
+
 def get_mock_version(kind, version0):
     if kind == 'ezmock':
         version = version0[:4]
     elif kind == 'data':
         version = version0
     else:
-        raise ValueError("do not understand 'kind' = '%s'" %kind)
+        raise ValueError("do not understand 'kind' = '%s'" % kind)
 
     return version
+
 
 class eBOSSConfig(object):
     """
@@ -38,7 +42,10 @@ class eBOSSConfig(object):
         the eBOSS sample we are fitting
     version : str
         the version we are fitting
+    kind : 'data', 'ezmock'
+        the kind of measurement we are fitting
     """
+
     def __init__(self, sample, version, kind):
 
         assert sample in ['N', 'S']
@@ -66,7 +73,7 @@ class eBOSSConfig(object):
         """
         f = self._get_nbar_file()
         nbar = numpy.loadtxt(f, skiprows=3)
-        return spline(nbar[:,0], nbar[:,3])
+        return spline(nbar[:, 0], nbar[:, 3])
 
     @property
     def home_dir(self):
@@ -129,7 +136,8 @@ class eBOSSConfig(object):
             #params = {'H0': 67.6, 'Neff': 3.046, 'Ob0': 0.04814257203879415,'Om0': 0.31,'Tcmb0': 2.7255,'m_nu': 0.0,'n_s': 0.97,'sigma8': 0.80}
             cosmo = Planck15
         elif self.kind == 'ezmock':
-            cosmo = Cosmology(flat=True, **{'H0': 67.77, 'Neff': 3.046, 'Ob0': 0.048206, 'Om0': 0.307115, 'Tcmb0': 2.7255, 'm_nu': 0.0, 'n_s': 0.9611,'sigma8': 0.8225})
+            cosmo = Cosmology(flat=True, **{'H0': 67.77, 'Neff': 3.046, 'Ob0': 0.048206,
+                                            'Om0': 0.307115, 'Tcmb0': 2.7255, 'm_nu': 0.0, 'n_s': 0.9611, 'sigma8': 0.8225})
         else:
             raise ValueError("cannot compute cosmology in eBOSSConfig")
         return cosmo
@@ -137,7 +145,7 @@ class eBOSSConfig(object):
 
 from .runner import RSDFitRunner
 from .results import load_ezmock_driver, \
-                    load_ezmock_results, \
-                    load_data_results, \
-                    load_joint_data_results
+    load_ezmock_results, \
+    load_data_results, \
+    load_joint_data_results
 from .nersc import NERSCManager

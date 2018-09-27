@@ -5,8 +5,9 @@ import numpy
 from scipy.special import legendre
 from scipy.integrate import trapz
 
+
 def _compute_covariance(config, zmin, zmax, kmin, kmax, dk, ells, model,
-                            P0_FKP=0., Nmu=100, Nz=50, Nk=10):
+                        P0_FKP=0., Nmu=100, Nz=50, Nk=10):
     """
     The internal function to compute the covariance
     """
@@ -44,8 +45,8 @@ def _compute_covariance(config, zmin, zmax, kmin, kmax, dk, ells, model,
     zcen = 0.5*(zbins[:-1] + zbins[1:])
 
     # the comoving volume element
-    Da = cosmo.Da_z(zcen) * cosmo.h() # in Mpc/h
-    dV = 4*numpy.pi*(1+zcen)**2 * Da**2  / cosmo.H_z(zcen) * cosmo.h()
+    Da = cosmo.Da_z(zcen) * cosmo.h()  # in Mpc/h
+    dV = 4*numpy.pi*(1+zcen)**2 * Da**2 / cosmo.H_z(zcen) * cosmo.h()
     dV *= constants.c.to(units.km/units.second).value
     dV *= numpy.diff(zbins)
 
@@ -53,7 +54,7 @@ def _compute_covariance(config, zmin, zmax, kmin, kmax, dk, ells, model,
     nbar_ = nbar(zcen)
 
     # weights
-    w = 1. / (1 + nbar_*P0_FKP) # FKP weights
+    w = 1. / (1 + nbar_*P0_FKP)  # FKP weights
 
     # properly calibrate fsky
     W = ((nbar_*w)**2 * dV).sum()
@@ -61,7 +62,7 @@ def _compute_covariance(config, zmin, zmax, kmin, kmax, dk, ells, model,
     W *= fsky
 
     # k-shell volume
-    Vk  = 4*numpy.pi/3. * (kedges[1:]**3 - kedges[:-1]**3)
+    Vk = 4*numpy.pi/3. * (kedges[1:]**3 - kedges[:-1]**3)
 
     # initialize the return array
     cov = numpy.zeros((N2, N1)*2)
@@ -74,20 +75,20 @@ def _compute_covariance(config, zmin, zmax, kmin, kmax, dk, ells, model,
         Pkmu = []
         for zi in zcen:
             evolve(model, zi)
-            Pkmu.append(model.power(kcen,mus_).values)
+            Pkmu.append(model.power(kcen, mus_).values)
         Pkmu = numpy.asarray(Pkmu)
-        Pkmu = numpy.moveaxis(Pkmu,0,-1)
+        Pkmu = numpy.moveaxis(Pkmu, 0, -1)
     else:
-        Pkmu = model.power(kcen,mus_).values
-        Pkmu = Pkmu[...,None]
+        Pkmu = model.power(kcen, mus_).values
+        Pkmu = Pkmu[..., None]
 
     # P(k,mu)^2 * L_ell * L_ellprime
-    weights = leg[:,None]*leg[None,:]
+    weights = leg[:, None]*leg[None, :]
     power = (Pkmu + 1./nbar_)**2
-    tobin = weights[...,None] * power[None,...]
+    tobin = weights[..., None] * power[None, ...]
 
     # do the sum over redshift first
-    x = ( (w*nbar_)**4 * dV * tobin).sum(axis=-1) / W**2
+    x = ((w*nbar_)**4 * dV * tobin).sum(axis=-1) / W**2
 
     # the normalization
     norm = 4*(2*numpy.pi)**4 / (Vk**2)
@@ -101,15 +102,16 @@ def _compute_covariance(config, zmin, zmax, kmin, kmax, dk, ells, model,
         for j in range(i, N2):
 
             # do the mu integral (mean is okay b/c of [0,1] domain)
-            t = numpy.nanmean(x[i,j,:], axis=-1)
+            t = numpy.nanmean(x[i, j, :], axis=-1)
 
             # do the k averaging
             x_split = numpy.split(t, N_chunks)
-            t = numpy.array([trapz(xx * kk**2, x=kk) for xx,kk in zip(x_split, kcen_split)])
+            t = numpy.array([trapz(xx * kk**2, x=kk)
+                             for xx, kk in zip(x_split, kcen_split)])
 
-            cov[i,:,j,:] =  norm * numpy.diag(t)
+            cov[i, :, j, :] = norm * numpy.diag(t)
             if i != j:
-                cov[j,:,i,:] = cov[i,:,j,:]
+                cov[j, :, i, :] = cov[i, :, j, :]
 
     # reshape squared power and modes
     cov = cov.reshape((N1*N2,)*2)
@@ -117,13 +119,14 @@ def _compute_covariance(config, zmin, zmax, kmin, kmax, dk, ells, model,
 
     # the coordinate arrays
     k_coord = numpy.concatenate([kout for i in range(len(ells))])
-    ell_coord = numpy.concatenate([numpy.ones(len(kout), dtype=int)*ell for ell in ells])
+    ell_coord = numpy.concatenate(
+        [numpy.ones(len(kout), dtype=int)*ell for ell in ells])
 
     return PoleCovarianceMatrix(cov, k_coord, ell_coord, verify=False)
 
 
 def compute_analytic_covariance(config, stats, model, zmin, zmax, P0_FKP,
-                                    kmin=0., kmax=0.7, dk=0.005, rescale=1.0):
+                                kmin=0., kmax=0.7, dk=0.005, rescale=1.0):
     """
     Compute the multipole covariance matrix
 
@@ -154,7 +157,8 @@ def compute_analytic_covariance(config, stats, model, zmin, zmax, P0_FKP,
         ells = [int(stat[-1]) for stat in stats]
 
     # get C
-    C = _compute_covariance(config, zmin, zmax, kmin, kmax, dk, ells, model, P0_FKP=P0_FKP)
+    C = _compute_covariance(config, zmin, zmax, kmin,
+                            kmax, dk, ells, model, P0_FKP=P0_FKP)
 
     # covariance for P0 + 2./5*P2
     if 'P0_sysfree' in stats:
@@ -168,23 +172,27 @@ def compute_analytic_covariance(config, stats, model, zmin, zmax, P0_FKP,
 
     return C
 
-def compute_ezmock_covariance(version, sample, stats, kmin=0., kmax=0.7, p=None):
+
+def compute_ezmock_covariance(version, sample, ells, kmin=0., kmax=0.7, p=None):
     """
     Compute the covariance from the EZ mocks.
     """
     from eboss_qso.measurements.results import load_ezmock_spectra
 
     # load the mocks
-    mocks = load_ezmock_spectra(version, sample, p=p,
-                                subtract_shot_noise=True, average=False)
+    Pell = []
+    for ell in ells:
+        mocks = load_ezmock_spectra(version, sample, p=p,  # ell=ell,
+                                    subtract_shot_noise=True, average=False)
+        Pell.append(mocks['power_%d' % ell].real)
 
-    ells = [int(stat[-1]) for stat in stats]
-    Pell = numpy.concatenate([mocks['power_%d' %ell].real for ell in ells], axis=-1)
+    Pell = numpy.concatenate(Pell, axis=-1)
     cov = numpy.cov(Pell, rowvar=False)
 
     k = mocks['k'].mean(axis=0)
     k_coord = numpy.concatenate([k for i in range(len(ells))])
-    ell_coord = numpy.concatenate([numpy.ones(len(k), dtype=int)*ell for ell in ells])
+    ell_coord = numpy.concatenate(
+        [numpy.ones(len(k), dtype=int)*ell for ell in ells])
 
     # create and slice to correct range
     C = PoleCovarianceMatrix(cov, k_coord, ell_coord, verify=False)

@@ -5,6 +5,7 @@ import os
 import numpy
 from .weights import fnl_weight, bias_weight
 
+
 def find_window_measurement(version, sample, zmin, zmax, p):
     """
     Try to find and return a matching window function file.
@@ -44,6 +45,7 @@ def find_window_measurement(version, sample, zmin, zmax, p):
 
     raise ValueError(f"no window file match found for pattern '{pattern}'")
 
+
 def nbar_from_randoms(sample, version, d, r, cosmo):
 
     from nbodykit.lab import RedshiftHistogram
@@ -51,12 +53,14 @@ def nbar_from_randoms(sample, version, d, r, cosmo):
     from scipy.interpolate import InterpolatedUnivariateSpline
 
     c = eBOSSConfig(sample, version, 'data')
-    zhist = RedshiftHistogram(r, c.fsky, cosmo, redshift='Z', weight='INV_COMP')
+    zhist = RedshiftHistogram(
+        r, c.fsky, cosmo, redshift='Z', weight='INV_COMP')
 
     alpha = d['Weight'].sum() / r.csize
     return InterpolatedUnivariateSpline(zhist.bin_centers, zhist.nbar*alpha)
 
-def compute_effective_quantities(r, cosmo, p=None, P0=3e4):
+
+def compute_effective_quantities(r, cosmo, p=None, P0=3e4, ell=0):
     """
     Compute effective redshift and number density quantities.
     """
@@ -67,10 +71,10 @@ def compute_effective_quantities(r, cosmo, p=None, P0=3e4):
     w_fkp = 1. / (1 + r['NZ']*P0)
     if p is not None:
         w1 = fnl_weight(r['Z'], p=p)
-        w2 = bias_weight(r['Z'], cosmo)
+        w2 = bias_weight(r['Z'], cosmo, ell=ell)
     else:
         w1 = w2 = 1.0
-    
+
     # effective redshift
     A = (r['Z'] * r['NZ'] * w_fkp**2 * w1 * w2).sum().compute()
     norm = (r['NZ'] * w_fkp**2 * w1 * w2).sum().compute()
@@ -83,27 +87,25 @@ def compute_effective_quantities(r, cosmo, p=None, P0=3e4):
     return z_eff, nbar_eff
 
 
-
-
-
 def compute_effective_redshift(cat):
     """
     Compute the effective redshift of a CatalogSource.
     """
     # the total weight
-    total_weight =  cat['Weight']*cat['FKPWeight']
+    total_weight = cat['Weight']*cat['FKPWeight']
 
     # effective redshift
     zeff = (total_weight*cat['Z']).sum() / total_weight.sum()
 
     return cat.compute(zeff)
 
+
 def compute_effective_nbar(cat):
     """
     Compute the effective number density of a CatalogSource.
     """
     # the total weight
-    total_weight =  cat['Weight']*cat['FKPWeight']
+    total_weight = cat['Weight']*cat['FKPWeight']
 
     # effective nbar
     nbar = (total_weight*cat['NZ']).sum() / total_weight.sum()
@@ -120,6 +122,7 @@ def redshift_range_type(s):
     except:
         raise TypeError("redshift range must be zmin,zmax")
 
+
 def trim_redshift_range(s, zmin=None, zmax=None):
     """
     Trim the redshift range of a CatalogSource.
@@ -132,10 +135,13 @@ def trim_redshift_range(s, zmin=None, zmax=None):
         maximum redshift to include (exclusive)
     """
     # trim the redshift range
-    if zmin is None: zmin = 0.
-    if zmax is None: zmax = 10.0
+    if zmin is None:
+        zmin = 0.
+    if zmax is None:
+        zmax = 10.0
 
-    return s[(s['Z'] > zmin)&(s['Z'] < zmax)]
+    return s[(s['Z'] > zmin) & (s['Z'] < zmax)]
+
 
 def make_hash(attrs, usekeys=None, N=10):
     """
@@ -154,10 +160,11 @@ def make_hash(attrs, usekeys=None, N=10):
     if usekeys is None:
         d = attrs
     else:
-        d = {k:attrs[k] for k in usekeys}
+        d = {k: attrs[k] for k in usekeys}
 
     s = json.dumps(d, sort_keys=True, cls=JSONEncoder).encode()
     return hashlib.sha1(s).hexdigest()[:N]
+
 
 def get_hashkeys(filename, cls):
     """
@@ -188,7 +195,8 @@ def get_hashkeys(filename, cls):
         spectra_file = d.get('spectra_file')
         nersc_dir = "/global/cscratch1/sd/nhand/eBOSS"
         if nersc_dir in spectra_file:
-            spectra_file = spectra_file.replace(nersc_dir, os.environ['EBOSS_DIR'])
+            spectra_file = spectra_file.replace(
+                nersc_dir, os.environ['EBOSS_DIR'])
         spectra_keys = get_hashkeys(spectra_file, 'ConvolvedFFTPower')
         spectra_keys.pop("p", None)
         d.update(spectra_keys)
@@ -201,8 +209,9 @@ def get_hashkeys(filename, cls):
         assert 'hashkeys' in r.attrs, "result filename does not have 'hashkeys' attribute"
 
         # the dict
-        d = {k:r.attrs[k] for k in r.attrs['hashkeys']}
+        d = {k: r.attrs[k] for k in r.attrs['hashkeys']}
     return d
+
 
 def echo_hash():
     """
@@ -225,10 +234,9 @@ def echo_hash():
     parser.add_argument('--zmax', type=float, help=h)
 
     h = 'only show entries with this z-weighted values'
-    parser.add_argument('--z-weighted', choices=[0,1], type=int, help=h)
+    parser.add_argument('--z-weighted', choices=[0, 1], type=int, help=h)
 
     ns, unknown = parser.parse_known_args()
-
 
     for filename in ns.filenames:
         d = get_hashkeys(filename, ns.cls)
@@ -244,4 +252,4 @@ def echo_hash():
         # print
         print(f"{filename}" + '\n' + '-'*40)
         for k in sorted(d.keys()):
-            print("%-10s = %s" %(k, str(d[k])))
+            print("%-10s = %s" % (k, str(d[k])))

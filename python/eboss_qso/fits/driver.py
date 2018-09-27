@@ -8,7 +8,9 @@ from pyRSD.rsdfit.data import PoleCovarianceMatrix
 import tempfile
 import errno
 import shutil
+import numpy as np
 from mpi4py import MPI
+
 
 def mkdir_p(path):
     try:
@@ -19,37 +21,31 @@ def mkdir_p(path):
         else:
             raise
 
+
 class QSOFitDriver(object):
     """
     Class to drive a QSO power spectrum fit.
-
-    Parameters
-    ----------
-    rsdfit_args : list
-        list of arguments to pass to ``rsdfit`` command, i.e., "mcmc", etc
-    spectra_file : str
-        the data power spectrum file
-    vary : list of str
-        list of parameter names we want to vary in the fit, i.e., ``f``
-    stats : list of str
-        list of the names of the statistics we want to fit
-    p : float
-        the value of the fnl parameter ``p``
-    kmin : float, optional
-        the minimum ``k`` value to include in the fit
-    kmax : float, optional
-        the maximum  ``k`` value to include in the fit
-    overwrite : bool, optional
-        if ``True`` overwrite the input fit files
-    error_rescale : float
-        multiply the covariance matrix by this value
-    comm : MPI communicator
-        the MPI communicator
     """
-    def __init__(self, rsdfit_args, spectra_file, vary, stats, p=None,
-                    kmin=0.0001, kmax=0.4, cov_type='analytic', error_rescale=1.0,
-                    overwrite=False, output_only=False,
-                    comm=None, use_temp_files=False, tag=None, zeff=None):
+
+    def __init__(self, rsdfit_args,
+                 kind,
+                 version,
+                 sample,
+                 ells,
+                 z_eff,
+                 vary,
+                 theory_p,
+                 data_p=None,
+                 kmin=0.0001,
+                 kmax=0.4,
+                 cov_type='analytic',
+                 error_rescale=1.0,
+                 overwrite=False,
+                 output_only=False,
+                 comm=None,
+                 use_temp_files=False,
+                 tag=None,
+                 box=None):
 
         quiet = False
         if output_only:
@@ -65,32 +61,40 @@ class QSOFitDriver(object):
         self.tag = tag
         self.rsdfit_args = rsdfit_args
         self.vary = vary
-        self.stats = stats
-        self.kmin = kmin
-        self.kmax = kmax
-        self.use_temp_files = use_temp_files
 
         # prepare the fit
         assert kmin >= 0.0001
         assert kmax <= 0.4
-        self.preparer = QSOFitPreparer(spectra_file, stats, cov_type=cov_type,
-                                        error_rescale=error_rescale,
-                                        kmin=0.0001, kmax=0.4, overwrite=overwrite,
-                                        quiet=quiet, use_temp_files=use_temp_files)
-        self.config = self.preparer.config
+        self.prep = QSOFitPreparer(kind,
+                                   version,
+                                   sample,
+                                   ells,
+                                   p=data_p,
+                                   z_eff=z_eff,
+                                   cov_type=cov_type,
+                                   error_rescale=error_rescale,
+                                   kmin=0.0001,
+                                   kmax=0.4,
+                                   overwrite=overwrite,
+                                   quiet=quiet,
+                                   use_temp_files=use_temp_files,
+                                   box=box)
+        self.config = self.prep.config
 
-        # get the p value from the preparer
-        self.p = self.preparer.hashinput['p']
-        if p is not None:
-            self.p = p
-        
-        if self.p is None:
-            raise ValueError("please specify a value for 'p' to use")
-        print("using p = %.1f" % self.p)
+        # check the p
+        self.p = theory_p
+        if self.prep.p is not None:
+            if self.prep.p != self.p:
+                args = (self.prep.p, self.p)
+                raise ValueError("data p = %.1f, theory p = %.1f" % args)
+
+        # log the p
+        args = (str(self.prep.p), str(self.p))
+        print("data p = %s, theory p = %s" % args)
 
         # store zmin/zmax
-        self.zmin = self.preparer.hashinput['zmin']
-        self.zmax = self.preparer.hashinput['zmax']
+        self.zmin = self.prep.attrs['zmin']
+        self.zmax = self.prep.attrs['zmax']
 
         if output_only:
             print(self.output_dir)
@@ -99,25 +103,25 @@ class QSOFitDriver(object):
         # make the directory output
         mkdir_p(self.output_dir)
 
-
         # keywords we are going to add to parameter file template
         kws = {}
         kws['kmin'] = 1e-6
         kws['kmax'] = 1.0
-        kws['covariance_file'] = self.preparer.covariance_file
-        kws['data_file'] = self.preparer.data_file
-        kws['window_file'] = self.preparer.window_file
-        kws['ells'] = self.preparer.ells
-        kws['stats'] = self.preparer.stat_names
-        kws['z_eff'] = self.preparer.z_eff if zeff is None else zeff
-        kws['fitting_range'] = [(kmin, kmax) for stat in stats]
+        kws['covariance_file'] = self.prep.covariance_file
+        kws['data_file'] = self.prep.data_file
+        kws['window_file'] = self.prep.window_file
+        kws['ells'] = self.prep.ells
+        kws['stats'] = self.prep.stat_names
+        kws['fitting_range'] = [(kmin, kmax) for _ in ells]
         kws['max_ellprime'] = 4
+        kws['z_eff'] = self.prep.z_eff[0]
 
-        # add the proper theory decorator
-        kws['theory_decorator'] = {}
-        for i, stat in enumerate(stats):
-            if stat == 'P0_sysfree':
-                kws['theory_decorator'][kws['stats'][i]] = "systematic_free_P0"
+        # add stat specific params
+        d = {}
+        if not np.allclose(kws['z_eff'], self.prep.z_eff):
+            for stat_name, z_eff in zip(self.prep.stat_names, self.prep.z_eff):
+                d[stat_name] = {'z': z_eff}
+        kws['stat_specific_params'] = d
 
         # how to initialize?
         if 'mcmc' in ' '.join(self.rsdfit_args):
@@ -128,12 +132,11 @@ class QSOFitDriver(object):
             kws['lbfgs_numerical_from_lnlike'] = True
 
         # re-scale mock covariance?
-        if self.preparer.kind == 'data':
+        if self.prep.kind == 'data':
             kws['covariance_Nmocks'] = 0
         else:
             C = PoleCovarianceMatrix.from_plaintext(kws['covariance_file'])
             kws['covariance_Nmocks'] = C.attrs.get('Nmock', 0)
-
 
         # render the parameter file
         params = self._render_params(**kws)
@@ -145,7 +148,7 @@ class QSOFitDriver(object):
             ff.write((params+"\n\n").encode())
 
             # write out the theory too
-            model = QuasarSpectrum(z=kws['z_eff'])
+            model = QuasarSpectrum(z=self.prep.z_eff[0])
             theorypars = model.default_params()
 
             # the pars which we are varying
@@ -161,7 +164,8 @@ class QSOFitDriver(object):
             # update redshift-dependent quantities
             for par in ['f', 'sigma8_z']:
                 value = getattr(model, par)
-                theorypars[par].update(value=value, fiducial=value, lower=0, upper=2.0)
+                theorypars[par].update(
+                    value=value, fiducial=value, lower=0, upper=2.0)
 
             for par in ['alpha_par', 'alpha_perp']:
                 theorypars[par].update(lower=0.3, upper=1.8)
@@ -185,8 +189,33 @@ class QSOFitDriver(object):
         descr = 'run a QSO power spectrum fit'
         parser = argparse.ArgumentParser(description=descr)
 
-        h = 'the power spectrum file we wish to fit'
-        parser.add_argument('-f', '--spectra_file', type=str, help=h, required=True)
+        h = 'the kind of measurement we are fitting'
+        parser.add_argument('--kind', choices=['data', 'ezmock'],
+                            type=str, required=True, help=h)
+
+        h = 'the version of the data we are fitting'
+        parser.add_argument('--version', type=str,
+                            required=True, help=h)
+
+        h = 'fit either the north or the south sample'
+        parser.add_argument('--sample', choices=['N', 'S'],
+                            type=str, required=True, help=h)
+
+        h = 'the multipoles to fit'
+        parser.add_argument('--ells', nargs="+", type=int,
+                            help=h, required=True)
+
+        h = 'the effective redshift'
+        parser.add_argument('--z_eff', type=float, nargs="+",
+                            required=True, help=h)
+
+        h = 'the p value used for the theory'
+        parser.add_argument('--theory_p', choices=[1.0, 1.6],
+                            required=True, type=float, help=h)
+
+        h = 'the p value used for the data'
+        parser.add_argument('--data_p', choices=[1.0, 1.6],
+                            default=None, type=float, help=h)
 
         h = 'the minimum k value to include'
         parser.add_argument('--kmin', type=float, default=0.0001, help=h)
@@ -195,33 +224,27 @@ class QSOFitDriver(object):
         parser.add_argument('--kmax', type=float, default=0.4, help=h)
 
         h = 'the type of covariance to use'
-        parser.add_argument('--cov', dest='cov_type', choices=['analytic', 'mock'], default='analytic', help=h)
-
-        h = 'the value of ``p`` to use when fitting'
-        parser.add_argument('-p', type=float, default=1.6, help=h)
+        parser.add_argument('--cov', dest='cov_type',
+                            choices=['analytic', 'mock'], default='analytic', help=h)
 
         h = 'tag the output directory'
         parser.add_argument('--tag', type=str, default=None, help=h)
-
-        h = 'the effective redshift'
-        parser.add_argument('--zeff', type=float, default=None, help=h)
 
         h = 'rescale the errors by this amount'
         parser.add_argument('--error-rescale', type=float, default=1.0, help=h)
 
         h = 'the parameters to vary'
-        choices = ['alpha_par', 'alpha_perp', 'f', 'sigma8_z', 'b1', 'sigma_fog', 'f_nl', 'N']
-        parser.add_argument('--vary', type=str, nargs='+', choices=choices, help=h, required=True)
-
-        h = 'the statistics to include'
-        stats = ['P0', 'P2', 'P0_sysfree']
-        parser.add_argument('--stats', nargs='*', type=str, choices=stats, default=['P0', 'P2'], help=h)
+        choices = ['alpha_par', 'alpha_perp', 'f',
+                   'sigma8_z', 'b1', 'sigma_fog', 'f_nl', 'N']
+        parser.add_argument('--vary', type=str, nargs='+',
+                            choices=choices, help=h, required=True)
 
         h = 'whether to overwrite existing files'
         parser.add_argument('--overwrite', action='store_true', help=h)
 
         h = 'whether to only print the output directory'
-        parser.add_argument('--output', dest='output_only', action='store_true', help=h)
+        parser.add_argument('--output', dest='output_only',
+                            action='store_true', help=h)
 
         h = 'whether to use temporary files'
         parser.add_argument('--use-temp-files', action='store_true', help=h)
@@ -237,9 +260,8 @@ class QSOFitDriver(object):
         # make the hash string
         meta = {}
         meta['vary'] = self.vary
-        meta['spectra_file'] = self.preparer.spectra_file
-        meta['stats'] = self.stats
-        meta['hashstr'] = self.preparer.hashstr
+        meta['stats'] = self.prep.stats
+        meta['hashstr'] = self.prep.hashstr
         if 'f_nl' in self.vary:
             meta['p'] = self.p
         else:
@@ -260,12 +282,12 @@ class QSOFitDriver(object):
             from eboss_qso.measurements.utils import make_hash
 
             usekeys = list(self.hashinfo.keys())
-            if getattr(self.preparer, 'box', None) is not None:
+            if getattr(self.prep, 'box', None) is not None:
                 usekeys.pop(usekeys.index('spectra_file'))
             hashstr = make_hash(self.hashinfo, usekeys=usekeys)
 
             # k-range
-            path ="%s-%s" %(self.kmin, self.kmax)
+            path = "%s-%s" % (self.prep.kmin, self.prep.kmax)
 
             # params path
             tmp = "basemodel"
@@ -280,21 +302,22 @@ class QSOFitDriver(object):
             path = os.path.join(path, tmp)
 
             # z bounds
-            path = os.path.join(path, "%.1f-%.1f" %(self.zmin, self.zmax))
+            path = os.path.join(path, "%.1f-%.1f" % (self.zmin, self.zmax))
 
             # the output directory name
             sample = self.config.sample
-            stats = '+'.join(self.stats)
-            box = getattr(self.preparer, 'box', None)
+            stats = '+'.join(self.prep.stats)
+            box = getattr(self.prep, 'box', None)
 
-            cov_type = self.preparer.cov_type+'-cov'
+            cov_type = self.prep.cov_type+'-cov'
             tag = f'QSO-{sample}-'
             if box is not None:
                 tag += box + '-'
             tag += f'{stats}-{cov_type}-{hashstr}'
 
             # full path
-            self._output_dir = os.path.join(self.config.fits_results_dir, path, tag)
+            self._output_dir = os.path.join(
+                self.config.fits_results_dir, path, tag)
             if self.tag is not None:
                 self._output_dir += '_' + self.tag
             return self._output_dir
@@ -327,7 +350,7 @@ class QSOFitDriver(object):
                 json.dump(self.hashinfo, ff)
 
         # remove temporary files
-        if self.use_temp_files:
+        if self.prep.use_temp_files:
 
             # read the original parameter file
             params_file = os.path.join(self.output_dir, 'params.dat')
@@ -335,8 +358,8 @@ class QSOFitDriver(object):
 
             # rename the input files
             for name in ['data_file', 'covariance_file', 'window_file']:
-                f = getattr(self.preparer, name)
-                newf = getattr(self.preparer, '_' + name)
+                f = getattr(self.prep, name)
+                newf = getattr(self.prep, '_' + name)
 
                 # rename the file
                 if os.path.exists(f):
@@ -347,34 +370,31 @@ class QSOFitDriver(object):
                 tag = None
                 if line.startswith('data.covariance ='):
                     tag = "covariance"
-                    newf = self.preparer._covariance_file
+                    newf = self.prep._covariance_file
                 elif line.startswith('data.window_file ='):
                     tag = 'window_file'
-                    newf = self.preparer._window_file
+                    newf = self.prep._window_file
                 elif line.startswith('data.data_file ='):
                     tag = 'data_file'
-                    newf = self.preparer._data_file
+                    newf = self.prep._data_file
 
                 # replace line
                 if tag is not None:
-                    newf = os.path.join('$(EBOSS_DIR)', os.path.relpath(newf, os.environ['EBOSS_DIR']))
+                    newf = os.path.join('$(EBOSS_DIR)', os.path.relpath(
+                        newf, os.environ['EBOSS_DIR']))
                     lines[i] = "data.%s = '%s'\n" % (tag, newf)
 
             # write out new parameter file
             with open(params_file, 'w') as ff:
                 ff.write("".join(lines))
 
-
-
-
-
-
     def _render_params(self, **kwargs):
         """
         Return the rendered parameter file.
         """
         # jinja environ
-        jinja_env = Environment(loader=FileSystemLoader(self.config.fits_params_dir))
+        jinja_env = Environment(
+            loader=FileSystemLoader(self.config.fits_params_dir))
         tpl = jinja_env.get_template('template.params')
         return tpl.render(**kwargs)
 
