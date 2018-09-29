@@ -74,7 +74,9 @@ def load_data_spectra(version, sample, p=None, ell=None,
     raise ValueError("no matches found!")
 
 
-def load_ezmock_spectra(version, sample, p=None, box=None, subtract_shot_noise=True, average=True):
+def load_ezmock_spectra(version, sample, p=None, box=None, 
+                            subtract_shot_noise=True, average=True,
+                            ell=None):
     """
     Load a ezmock measurement result.
     """
@@ -99,19 +101,25 @@ def load_ezmock_spectra(version, sample, p=None, box=None, subtract_shot_noise=T
     hashstr=None
     for f in matches:
         hashkeys=get_hashkeys(f, 'ConvolvedFFTPower')
+
         if hashkeys['p'] == p:
-            hashstr=os.path.splitext(f)[0][-10:]
-            break
+
+            valid = (p is None or
+                    ell is None and hashkeys['poles'] == [0, 2]
+                    or ell is not None and hashkeys['poles'] == [ell])
+            if valid:
+                hashstr = os.path.splitext(f)[0][-10:]
+                break
 
     print("using hash string %s" % hashstr)
     if hashstr is None:
         raise ValueError("no matches found!")
 
     if box is not None:
-        f=os.path.join(
+        f = os.path.join(
             d, f'poles_zevoEZmock_{version}_QSO-{sample}_{box:04d}-{hashstr}.json')
-        r=ConvolvedFFTPower.load(f)
-        if subtract_shot_noise:
+        r = ConvolvedFFTPower.load(f)
+        if 'power_0' in r.poles.variables and subtract_shot_noise:
             r.poles['power_0'].real -= r.attrs['shotnoise']
         return r
     else:
@@ -122,7 +130,8 @@ def load_ezmock_spectra(version, sample, p=None, box=None, subtract_shot_noise=T
 
         if subtract_shot_noise:
             for r in results:
-                r.poles['power_0'].real -= r.attrs['shotnoise']
+                if 'power_0' in r.poles.variables:
+                    r.poles['power_0'].real -= r.attrs['shotnoise']
 
         if not average:
             data=[r.poles.data for r in results]
@@ -247,7 +256,7 @@ def save_RR_paircount(r, sample, version, **kwargs):
 
     # make the hash
     usekeys=['redges_str', 'zmin', 'zmax', 'N', 'subsample',
-               'p', 'z_weighted', 'P0_FKP']
+               'p', 'z_weighted', 'P0_FKP', 'ell']
 
     r.attrs['hashkeys']=usekeys
     id_str=make_hash(r.attrs, usekeys=usekeys)
