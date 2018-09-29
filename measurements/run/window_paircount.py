@@ -61,7 +61,8 @@ def main(ns):
 
     # and save!
     kws = {'subsample': ns.subsample, 'zmin': ns.zmin,
-           'zmax': ns.zmax, 'redges_str': 'logspace(0,4,500)'}
+           'zmax': ns.zmax, 'redges_str': 'logspace(0,4,500)',
+           'ell': ns.ell}
     kws.update(meta)
     eboss.save_RR_paircount(result, ns.sample, ns.version, **kws)
 
