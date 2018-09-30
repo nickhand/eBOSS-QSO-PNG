@@ -44,7 +44,7 @@ def add_commands(sample, p_values, box, vary_shot_noise=True, cov='analytic',
         command += f" --data_p {data_p}"
 
     # theory arguments
-    command += f" --vary {params} -i {ITERATIONS} --cov {cov} --box {box} --tag TEST"
+    command += f" --vary {params} -i {ITERATIONS} --cov {cov} --box {box}"
     if use_temp_files:
         command += " --use-temp-files"
     if overwrite:
