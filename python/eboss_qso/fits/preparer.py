@@ -68,7 +68,6 @@ class QSOFitPreparer(object):
         # get the loader kwargs
         self.loader_kws = {k: getattr(self, k)
                            for k in ['version', 'sample', 'p']}
-        print(self.ells, self.loader_kws)
         if self.box is not None:
             self.loader_kws['box'] = self.box
 

@@ -48,7 +48,9 @@ def find_window_measurement(version, sample, zmin, zmax, p, ell):
                 elif hashinput.get('ell') == ell:
                     return f
 
-    raise ValueError(f"no window file match found for pattern '{pattern}'")
+    msg = f"no window file match found for pattern '{pattern}'; "
+    msg += f" ell={ell}, p={p}"
+    raise ValueError()
 
 
 def nbar_from_randoms(sample, version, d, r, cosmo):

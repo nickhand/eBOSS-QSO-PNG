@@ -184,7 +184,6 @@ def compute_ezmock_covariance(version, sample, ells, kmin=0., kmax=0.7, p=None):
     for ell in ells:
         mocks = load_ezmock_spectra(version, sample, p=p, ell=ell,
                                     subtract_shot_noise=True, average=False)
-        print(mocks.dtype.names)
         Pell.append(mocks['power_%d' % ell].real)
 
     Pell = numpy.concatenate(Pell, axis=-1)

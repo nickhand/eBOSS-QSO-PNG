@@ -243,6 +243,9 @@ class QSOFitDriver(object):
         parser.add_argument('--vary', type=str, nargs='+',
                             choices=choices, help=h, required=True)
 
+        h = 'the box'
+        parser.add_argument('--box', type=int, help=h)
+
         h = 'whether to overwrite existing files'
         parser.add_argument('--overwrite', action='store_true', help=h)
 
@@ -286,8 +289,6 @@ class QSOFitDriver(object):
             from eboss_qso.measurements.utils import make_hash
 
             usekeys = list(self.hashinfo.keys())
-            if getattr(self.prep, 'box', None) is not None:
-                usekeys.pop(usekeys.index('spectra_file'))
             hashstr = make_hash(self.hashinfo, usekeys=usekeys)
 
             # k-range
@@ -316,7 +317,7 @@ class QSOFitDriver(object):
             cov_type = self.prep.cov_type+'-cov'
             tag = f'QSO-{sample}-'
             if box is not None:
-                tag += box + '-'
+                tag += '%04d-' % box
             tag += f'{stats}-{cov_type}-{hashstr}'
 
             # full path
