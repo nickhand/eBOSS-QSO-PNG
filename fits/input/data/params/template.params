@@ -11,8 +11,8 @@ driver.lbfgs_use_priors = True
 driver.start_from = None
 driver.test_convergence = False
 driver.tracer_type = "quasar"
-driver.theory_decorator = {{ theory_decorator }}
 driver.lbfgs_numerical_from_lnlike = {{ lbfgs_numerical_from_lnlike }}
+driver.stat_specific_params = {{ stat_specific_params }}
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
@@ -62,4 +62,5 @@ model.use_tidal_bias = False
 model.use_vlah_biasing = True
 model.vel_disp_from_sims = False
 model.z = {{ z_eff }}
+model.redshift_params = ['f', 'sigma8_z']
 #-------------------------------------------------------------------------------

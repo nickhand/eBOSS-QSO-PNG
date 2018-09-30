@@ -13,6 +13,7 @@ driver.start_from = None
 driver.test_convergence = False
 driver.theory_decorator = None
 driver.tracer_type = 'quasar'
+driver.stat_specific_params = {'pole_ngc_0': {'z':1.75}}
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
@@ -83,5 +84,6 @@ model.use_tidal_bias = False
 model.use_vlah_biasing = True
 model.vel_disp_from_sims = False
 model.z = 1.829
+model.redshift_params = ['f', 'sigma8_z']
 #-------------------------------------------------------------------------------
 

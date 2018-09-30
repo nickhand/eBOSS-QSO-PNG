@@ -8,22 +8,24 @@ ITERATIONS = 500
 ZBINS = [(0.8, 2.2)]
 VERSION = 'v1.9f'
 
-# hash values for different p
-HASHES = [('bba5aabfa6', 1.0),
-          ('bba5aabfa6', 1.6),
-          ('8ba79d78df', 1.6),
-          ('0ef5c14a14', 1.0)
-          ]
-effective_redshifts = {'bba5aabfa6': 1.557,
-                       '0ef5c14a14': 1.728,
-                       '8ba79d78df': 1.829}
+# data and theory values for p
+p_values = [(None, 1.0),
+            (None, 1.6),
+            (1.0, 1.0),
+            (1.6, 1.6)]
 
-@parametrize({'sample':['N', 'S'], 'hashstr':HASHES})
-def add_commands(sample, hashstr, vary_shot_noise=True, cov='analytic',
-                    use_temp_files=False, overwrite=False, kmin=1e-4, kmax=0.3):
+# effective redshifts based on data p value
+effective_redshifts = {None: (1.557, 1.557),
+                       1.0: (1.728, 1.671),
+                       1.6: (1.829, 1.794)}
 
-    # unpack the tuple of hashstring
-    hashstr, p = hashstr
+
+@parametrize({'sample': ['N', 'S'], 'p_values': p_values})
+def add_commands(sample, p_values, vary_shot_noise=True, cov='analytic',
+                 use_temp_files=False, overwrite=False, kmin=1e-4, kmax=0.3):
+
+    # the p values to use
+    data_p, theory_p = p_values
 
     # determine the params we are fitting
     all_params = ['b1', 'sigma_fog', 'f_nl']
@@ -31,23 +33,28 @@ def add_commands(sample, hashstr, vary_shot_noise=True, cov='analytic',
         all_params += ['N']
     params = " ".join(all_params)
 
-    dirname = os.path.join(EBOSS_SPECTRA, 'data', VERSION)
-    filename = os.path.join(dirname, f'poles_eboss_{VERSION}-focal-QSO-{sample}-{hashstr}.json')
-
     # the effective redshift
-    zeff = effective_redshifts[hashstr]
+    z_eff = effective_redshifts[data_p]
 
-    # make the command
-    command = f"eboss-qso-fit mcmc -f {filename} --vary {params} --stats P0 P2"
-    command += f" -i {ITERATIONS} -w {NWALKERS} --kmin {kmin} --kmax {kmax} --cov {cov} --zeff {zeff} -p {p}"
+    # arguments for reading the data
+    command = "eboss-qso-fit mcmc"
+    command += f" --kind data --version {VERSION} --sample {sample} --ells 0 2"
+    command += f" --z_eff {z_eff[0]} {z_eff[1]}"
+    command += f" --theory_p {theory_p} --kmin {kmin} --kmax {kmax}"
+    if data_p is not None:
+        command += f" --data_p {data_p}"
+
+    # theory arguments
+    command += f" --vary {params} -i {ITERATIONS} -w {NWALKERS} --cov {cov} --tag TEST"
     if use_temp_files:
         command += " --use-temp-files"
     if overwrite:
         command += " --overwrite"
 
     # and register it
-    weighted = hashstr != "bba5aabfa6"
-    tag = {'sample':sample, 'p':p, 'weighted':weighted, 'zbin':ZBINS[0]}
+    weighted = data_p is not None
+    tag = {'sample': sample, 'p': theory_p,
+           'weighted': weighted, 'zbin': ZBINS[0]}
     RSDFitRunner.register(command, tag=tag)
 
 
@@ -56,7 +63,8 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
 
     parser = ArgumentParser()
-    parser.add_argument('--vary-shot-noise', choices=[0,1], type=int, required=True)
+    parser.add_argument('--vary-shot-noise',
+                        choices=[0, 1], type=int, required=True)
     parser.add_argument('--cov', choices=['mock', 'analytic'], required=True)
     parser.add_argument('--overwrite', action='store_true', default=True)
     parser.add_argument('--kmin', type=float, default=1e-4)
