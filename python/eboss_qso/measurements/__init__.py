@@ -20,15 +20,17 @@ MOCK_SUBVERSIONS = ['reg', 'no', 'fph']
 # fidcosmo = Cosmology(h=_h, Omega_b=_Ob0, Omega_cdm=_Ocdm0, m_ncdm=None, T_cmb=2.7255)
 fidcosmo = Planck15
 
-_h=0.6777
-_Ob0=0.048206
-_Ocdm0=0.307115 - _Ob0
-ezmock_cosmo = Cosmology(h=_h, Omega_b=_Ob0, Omega_cdm=_Ocdm0, m_ncdm=None, n_s=0.9611, T_cmb=2.7255).match(sigma8=0.8225)
+_h = 0.6777
+_Ob0 = 0.048206
+_Ocdm0 = 0.307115 - _Ob0
+ezmock_cosmo = Cosmology(h=_h, Omega_b=_Ob0, Omega_cdm=_Ocdm0,
+                         m_ncdm=None, n_s=0.9611, T_cmb=2.7255).match(sigma8=0.8225)
 
-_h=0.676
-_Ob0=0.022/_h**2
-_Ocdm0=0.31 - _Ob0
-qpm_cosmo = Cosmology(h=_h, Omega_b=_Ob0, Omega_cdm=_Ocdm0, m_ncdm=None, n_s=0.97, T_cmb=2.7255).match(sigma8=0.8)
+_h = 0.676
+_Ob0 = 0.022/_h**2
+_Ocdm0 = 0.31 - _Ob0
+qpm_cosmo = Cosmology(h=_h, Omega_b=_Ob0, Omega_cdm=_Ocdm0,
+                      m_ncdm=None, n_s=0.97, T_cmb=2.7255).match(sigma8=0.8)
 
 # data functions
 from .data import read_data, read_randoms, finalize_data
@@ -47,10 +49,8 @@ from .results import save_RR_paircount, save_RR_poles
 
 # utilities and weights
 from .utils import trim_redshift_range, redshift_range_type, get_hashkeys, \
-                    compute_effective_redshift, compute_effective_nbar, \
-                    find_window_measurement, compute_effective_quantities
+    compute_effective_redshift, compute_effective_nbar, \
+    find_window_measurement, compute_effective_quantities
 
-# window
-from .results import load_window_poles
 
 from .weights import fnl_weight, bias_weight, bias_model

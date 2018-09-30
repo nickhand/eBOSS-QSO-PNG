@@ -163,37 +163,43 @@ class QSOFitPreparer(object):
         zmin = self.attrs['zmin']
         zmax = self.attrs['zmax']
 
+        self.window_file = []
+        self._window_file = []
+
         # the window file
-        meta = {'zmin': zmin, 'zmax': zmax, 'p': self.p}
-        hashstr = make_hash(meta)
-        filename = f"poles_{self.version}-QSO-{self.sample}_{hashstr}.dat"
-        output = os.path.join(self.config.fits_window_dir, filename)
+        for ell in self.ells:
 
-        if self.use_temp_files:
-            self._window_file = output
-            output = tempfile.mktemp()
+            meta = {'zmin': zmin, 'zmax': zmax, 'p': self.p, 'ell': ell}
+            hashstr = make_hash(meta)
+            filename = f"poles_{self.version}-QSO-{self.sample}_{hashstr}.dat"
+            output = os.path.join(self.config.fits_window_dir, filename)
 
-        # make the window
-        if not os.path.exists(output) or self.overwrite:
+            if self.use_temp_files:
+                self._window_file.append(output)
+                output = tempfile.mktemp()
 
-            # the name of the (unformatted) window file
-            if self.kind == 'ezmock':
-                version = self.version[:4]
-            elif self.kind == 'data':
-                version = self.version
+            # make the window
+            if not os.path.exists(output) or self.overwrite:
+
+                # the name of the (unformatted) window file
+                if self.kind == 'ezmock':
+                    version = self.version[:4]
+                elif self.kind == 'data':
+                    version = self.version
+                else:
+                    raise ValueError(
+                        "do not understand 'kind' = '%s'" % self.kind)
+                window_file = find_window_measurement(version, self.sample,
+                                                      zmin, zmax, self.p, ell)
+
+                print('using window file %s...' % window_file)
+                ells = [0, 2, 4, 6, 8, 10]
+                compute_window(window_file, ells, output, smin=1e-2,
+                               smax=1e4, quiet=self.quiet)
             else:
-                raise ValueError("do not understand 'kind' = '%s'" % self.kind)
-            window_file = find_window_measurement(version, self.sample,
-                                                  zmin, zmax, self.p)
-
-            print('using window file %s...' % window_file)
-            ells = [0, 2, 4, 6, 8, 10]
-            compute_window(window_file, ells, output, smin=1e-2,
-                           smax=1e4, quiet=self.quiet)
-        else:
-            if not self.quiet:
-                print('skipping window preparation...')
-        self.window_file = output
+                if not self.quiet:
+                    print('skipping window preparation...')
+            self.window_file.append(output)
 
     def write_covariance(self):
         """

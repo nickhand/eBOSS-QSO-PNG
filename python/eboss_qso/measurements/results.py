@@ -3,40 +3,6 @@ from .utils import get_hashkeys
 from glob import glob
 import numpy
 
-
-def load_window_poles(version, sample, zmin=0.8, zmax=2.2, raw=False):
-    """
-    Load window multipoles.
-    """
-    from .utils import make_hash
-    from .utils import find_window_measurement
-
-    assert sample in ['N', 'S']
-    assert version in ['v1.8', 'v1.9f']
-
-    if raw:
-
-        from ..fits.window import to_poles
-        filename = find_window_measurement(version, sample, zmin, zmax)
-        return to_poles(filename, [0, 2, 4, 6, 8, 10])
-
-    else:
-        # the directory
-        eboss_dir = os.environ['EBOSS_DIR']
-        d = os.path.join(eboss_dir, 'fits', 'input', 'data', 'window', version)
-
-        # the hash
-        meta = {'zmin': zmin, 'zmax': zmax}
-        hashstr = make_hash(meta)
-
-        filename = f'poles_{version}-QSO-{sample}_{hashstr}.dat'
-        filename = os.path.join(d, filename)
-        if not os.path.exists(filename):
-            raise ValueError("no such file: %s" % filename)
-
-        return numpy.loadtxt(filename)
-
-
 def load_data_spectra(version, sample, p=None, ell=None,
                       subtract_shot_noise=True,
                       zmin=0.8, zmax=2.2, focal_weights=True):

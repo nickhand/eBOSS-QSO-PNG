@@ -109,12 +109,16 @@ class QSOFitDriver(object):
         kws['kmax'] = 1.0
         kws['covariance_file'] = self.prep.covariance_file
         kws['data_file'] = self.prep.data_file
-        kws['window_file'] = self.prep.window_file
         kws['ells'] = self.prep.ells
         kws['stats'] = self.prep.stat_names
         kws['fitting_range'] = [(kmin, kmax) for _ in ells]
         kws['max_ellprime'] = 4
         kws['z_eff'] = self.prep.z_eff[0]
+
+        # do the window function dict
+        kws['window_file'] = {}
+        for stat, window_file in zip(self.prep.stat_names, self.prep.window_file):
+            kws['window_file'][stat] = window_file
 
         # add stat specific params
         d = {}
@@ -361,9 +365,15 @@ class QSOFitDriver(object):
                 f = getattr(self.prep, name)
                 newf = getattr(self.prep, '_' + name)
 
+                if not isinstance(f, list):
+                    f = [f]
+                if not isinstance(newf, list):
+                    newf = [newf]
+
                 # rename the file
-                if os.path.exists(f):
-                    shutil.move(f, newf)
+                for a, b in zip(f, newf):
+                    if os.path.exists(a):
+                        shutil.move(a, b)
 
             # search and fix NERSC-specific paths
             for i, line in enumerate(lines):
@@ -380,9 +390,13 @@ class QSOFitDriver(object):
 
                 # replace line
                 if tag is not None:
-                    newf = os.path.join('$(EBOSS_DIR)', os.path.relpath(
-                        newf, os.environ['EBOSS_DIR']))
-                    lines[i] = "data.%s = '%s'\n" % (tag, newf)
+                    if not isinstance(newf, list):
+                        newf = [newf]
+
+                    for a in newf:
+                        newf = os.path.join('$(EBOSS_DIR)', os.path.relpath(
+                            a, os.environ['EBOSS_DIR']))
+                        lines[i] = lines[i].replace(a, newf)
 
             # write out new parameter file
             with open(params_file, 'w') as ff:

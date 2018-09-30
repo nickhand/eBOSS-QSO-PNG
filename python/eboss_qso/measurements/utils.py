@@ -6,7 +6,7 @@ import numpy
 from .weights import fnl_weight, bias_weight
 
 
-def find_window_measurement(version, sample, zmin, zmax, p):
+def find_window_measurement(version, sample, zmin, zmax, p, ell):
     """
     Try to find and return a matching window function file.
 
@@ -22,6 +22,8 @@ def find_window_measurement(version, sample, zmin, zmax, p):
         the maximum redshift
     p : None, 1.0, 1.6
         FKP-only is p=None
+    ell : 0, 2
+        the multipole to load
     """
     from glob import glob
 
@@ -41,7 +43,10 @@ def find_window_measurement(version, sample, zmin, zmax, p):
         y = [hashinput[k] for k in ['zmin', 'zmax']]
         if numpy.allclose(x, y):
             if hashinput.get('p', -1) == p:
-                return f
+                if p is None:
+                    return f
+                elif hashinput.get('ell') == ell:
+                    return f
 
     raise ValueError(f"no window file match found for pattern '{pattern}'")
 
