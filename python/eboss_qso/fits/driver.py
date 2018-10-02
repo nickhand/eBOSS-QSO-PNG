@@ -269,6 +269,7 @@ class QSOFitDriver(object):
         meta['vary'] = self.vary
         meta['stats'] = self.prep.stats
         meta['hashstr'] = self.prep.hashstr
+        meta['z-weighted'] = self.prep.p in [1.0, 1.6]
         if 'f_nl' in self.vary:
             meta['p'] = self.p
         else:
@@ -381,23 +382,28 @@ class QSOFitDriver(object):
                 tag = None
                 if line.startswith('data.covariance ='):
                     tag = "covariance"
-                    newf = self.prep._covariance_file
+                    newfs = self.prep._covariance_file
+                    oldfs = self.prep.covariance_file
                 elif line.startswith('data.window_file ='):
                     tag = 'window_file'
-                    newf = self.prep._window_file
+                    newfs = self.prep._window_file
+                    oldfs = self.prep.window_file
                 elif line.startswith('data.data_file ='):
                     tag = 'data_file'
-                    newf = self.prep._data_file
+                    newfs = self.prep._data_file
+                    oldfs = self.prep.data_file
 
                 # replace line
                 if tag is not None:
-                    if not isinstance(newf, list):
-                        newf = [newf]
+                    if not isinstance(newfs, list):
+                        newfs = [newfs]
+                    if not isinstance(oldfs, list):
+                        oldfs = [oldfs]
 
-                    for a in newf:
-                        newf = os.path.join('$(EBOSS_DIR)', os.path.relpath(
+                    for j, (a, b) in enumerate(zip(newfs, oldfs)):
+                        a = os.path.join('$(EBOSS_DIR)', os.path.relpath(
                             a, os.environ['EBOSS_DIR']))
-                        lines[i] = lines[i].replace(a, newf)
+                        lines[i] = lines[i].replace(b, a)
 
             # write out new parameter file
             with open(params_file, 'w') as ff:
