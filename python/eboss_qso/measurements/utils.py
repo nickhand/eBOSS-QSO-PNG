@@ -198,15 +198,16 @@ def get_hashkeys(filename, cls):
         with open(filename, 'r') as ff:
             d.update(json.load(ff))
 
-        # # echo hash info for the spectra file too
-        # spectra_file = d.get('spectra_file')
-        # nersc_dir = "/global/cscratch1/sd/nhand/eBOSS"
-        # if nersc_dir in spectra_file:
-        #     spectra_file = spectra_file.replace(
-        #         nersc_dir, os.environ['EBOSS_DIR'])
-        # spectra_keys = get_hashkeys(spectra_file, 'ConvolvedFFTPower')
-        # spectra_keys.pop("p", None)
-        # d.update(spectra_keys)
+        # echo hash info for the spectra file too
+        spectra_file = d.get('spectra_file', None)
+        if spectra_file is not None:
+            nersc_dir = "/global/cscratch1/sd/nhand/eBOSS"
+            if nersc_dir in spectra_file:
+                spectra_file = spectra_file.replace(
+                    nersc_dir, os.environ['EBOSS_DIR'])
+            spectra_keys = get_hashkeys(spectra_file, 'ConvolvedFFTPower')
+            spectra_keys.pop("p", None)
+            d.update(spectra_keys)
     else:
         # get the result class
         cls = getattr(lab, cls)
