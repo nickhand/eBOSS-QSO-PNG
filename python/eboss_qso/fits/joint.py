@@ -3,10 +3,13 @@ from eboss_qso.fits import load_data_results, load_ezmock_results
 import numpy
 import collections
 import emcee
+import functools
 from pyRSD.rsdfit.parameters import ParameterSet
 from pyRSD.rsdfit.solvers.emcee_solver import ChainManager
 from pyRSD.rsdfit.results import EmceeResults
 from pyRSD.rsdfit.util import rsd_logging
+from pyRSD.rsdfit.solvers import lbfgs
+
 
 def run_joint_mcmc_fit(kind, iterations, walkers, output, load_kwargs, joint_params=['f_nl']):
     """
@@ -50,7 +53,7 @@ def run_joint_mcmc_fit(kind, iterations, walkers, output, load_kwargs, joint_par
 
     # the initial state
     p0 = []
-    free_names = [] # track names
+    free_names = []  # track names
 
     # add params that are fit jointly
     for param in joint_params:
@@ -63,7 +66,7 @@ def run_joint_mcmc_fit(kind, iterations, walkers, output, load_kwargs, joint_par
 
     for tag in ['ngc', 'sgc']:
         tag_ = tag[0].upper()
-        d = drivers[tag_] # the driver
+        d = drivers[tag_]  # the driver
 
         # add all free names
         for i, name in enumerate(d.theory.free_names):
@@ -81,15 +84,18 @@ def run_joint_mcmc_fit(kind, iterations, walkers, output, load_kwargs, joint_par
             p0.append(par.value)
             theory[name+'_'+tag] = par
 
-
     # the initial state
     p0 = numpy.array(p0)
+    scales = numpy.array([theory[k].scale for k in free_names])
+    locs = numpy.array([theory[k].loc for k in free_names])
 
     # the arrays of free parameters
-    theta1 = numpy.array([drivers['N'].theory.fit_params[name].value for name in drivers['N'].theory.free_names])
-    theta2 = numpy.array([drivers['S'].theory.fit_params[name].value for name in drivers['S'].theory.free_names])
+    theta1 = numpy.array(
+        [drivers['N'].theory.fit_params[name].value for name in drivers['N'].theory.free_names])
+    theta2 = numpy.array(
+        [drivers['S'].theory.fit_params[name].value for name in drivers['S'].theory.free_names])
 
-    def objective(x):
+    def mcmc_objective(x):
 
         # get separate values
         theta1[:] = x[slices['N']]
@@ -98,11 +104,60 @@ def run_joint_mcmc_fit(kind, iterations, walkers, output, load_kwargs, joint_par
         # return
         return drivers['N'].lnprob(theta1) + drivers['S'].lnprob(theta2)
 
+    def nlopt_objective(x):
+
+        toret = 0
+        x = x*scales + locs
+        for tag in ['N', 'S']:
+            d = drivers[tag]
+            toret += d.minus_lnlike(x[slices[tag]], use_priors=True)
+
+        return toret
+
+    def nlopt_grad(x, **kwargs):
+
+        toret = 0
+        x = x*scales + locs
+        grad = numpy.zeros(len(p0))
+        for tag in ['N', 'S']:
+            d = drivers[tag]
+            g = d.grad_minus_lnlike(x[slices[tag]], **kwargs)
+            for i, sl in enumerate(slices[tag]):
+                grad[sl] += g[i]
+
+        return grad * scales
+
+    # the gradient
+    grad_kws = {}
+    grad_kws['epsilon'] = 0.0001
+    grad_kws['pool'] = None
+    grad_kws['numerical'] = False
+    grad_kws['numerical_from_lnlike'] = True
+    fprime = functools.partial(nlopt_grad, **grad_kws)
+
+    # scale the original values
+    p0_scaled = (p0 - locs) / scales
+
+    def unscaler(x):
+        return x*scales + locs
+
+    # run
+    minimizer = lbfgs.LBFGS(nlopt_objective, fprime,
+                            p0_scaled, unscaler=unscaler)
+    options = {'factr': 100000.0, 'gtol': 1e-05,
+               'max_iter': 1000, 'test_convergence': False}
+    result = minimizer.run_nlopt(**options)
+
+    # the best fit values
+    d = minimizer.data
+    final_p0 = d['curr_state'].X
+    p0 = final_p0*scales + locs
 
     # initialize the sampler
     ndim = len(p0)
-    p0 = numpy.array([p0 + 1e-3*numpy.random.randn(ndim) for i in range(walkers)])
-    sampler = emcee.EnsembleSampler(walkers, ndim, objective)
+    p0 = numpy.array([p0 + 1e-3*numpy.random.randn(ndim)
+                      for i in range(walkers)])
+    sampler = emcee.EnsembleSampler(walkers, ndim, mcmc_objective)
 
     # iterator interface allows us to tap ctrl+c and know where we are
     niters = iterations
@@ -123,7 +178,7 @@ def run_joint_mcmc_fit(kind, iterations, walkers, output, load_kwargs, joint_par
     for name in theory.free_names:
         order.append(free_names.index(name))
     try:
-        sampler.chain = sampler.chain[...,order]
+        sampler.chain = sampler.chain[..., order]
     except:
         if hasattr(sampler, '_chain'):
             sampler._chain = sampler.chain[..., order]
