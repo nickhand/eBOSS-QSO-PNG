@@ -60,7 +60,7 @@ def load_ezmock_driver(box_num, version, sample, krange, params, z_weighted, p=N
 
     if match is None:
         raise ValueError((f"no matches found: version={version}, sample={sample}, "
-                          f"krange={krange}, params={params}, z_weighted={z_weighted}, p={p}"))
+                          f"box={box_num}, krange={krange}, params={params}, z_weighted={z_weighted}, p={p}"))
 
     # load the driver
     driver = FittingDriver.from_directory(match)
