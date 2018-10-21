@@ -79,7 +79,8 @@ def load_ezmock_spectra(version, sample, p=None, box=None,
                 break
 
     if hashstr is None:
-        raise ValueError("no matches found!")
+        raise ValueError((f"no matches found: version={version}, sample={sample}, "
+                          f"box={box}, p={p}, ell={ell}"))
     print("using hash string %s" % hashstr)
 
     if box is not None:
