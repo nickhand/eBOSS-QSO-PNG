@@ -55,7 +55,7 @@ class QSOFitPreparer(object):
         self.cov_type = cov_type
 
         # make the hash string
-        cols = ['kind', 'version', 'sample', 'ells', 'z_eff', 'p']
+        cols = ['kind', 'version', 'sample', 'ells', 'z_eff', 'p', 'kmin', 'kmax']
         attrs = {k: getattr(self, k) for k in cols}
         self.hashstr = make_hash(attrs)
 
