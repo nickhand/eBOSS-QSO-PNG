@@ -18,6 +18,7 @@ def main(ns):
         randoms = eboss.read_ezmock_randoms(ns.sample, ns.version)
         randoms_nz0 = randoms['NZ']
         eboss.finalize_ezmock(randoms, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
+        W_randoms = tm.comm.allreduce(randoms.compute(randoms['Weight'].sum()))
 
         # add effective redshift and nbar from randoms
         z_eff = eboss.compute_effective_redshift(randoms)
@@ -31,7 +32,8 @@ def main(ns):
             eboss.finalize_ezmock(data, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
 
             # re-normalize randoms NZ properly
-            randoms['NZ'] = randoms_nz0 * (data.csize / randoms.csize)
+            W_data = tm.comm.allreduce(data.compute(data['Weight'].sum()))
+            randoms['NZ'] = randoms_nz0 * (W_data / W_randoms)
             eboss.finalize_ezmock(
                 randoms, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
 
