@@ -37,7 +37,7 @@ from .data import read_data, read_randoms, finalize_data
 from .results import save_data_spectra, load_data_spectra
 
 # ezmock functions
-from .ezmock import read_ezmock_data, read_ezmock_randoms, finalize_ezmock
+from .ezmock import read_ezmock_data, read_ezmock_randoms, read_new_ezmock_randoms, finalize_ezmock
 from .results import save_ezmock_spectra, load_ezmock_spectra
 
 # qpm function

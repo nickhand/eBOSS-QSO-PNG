@@ -3,6 +3,7 @@ from . import data_dir, MOCK_VERSIONS, MOCK_SUBVERSIONS
 import os
 from nbodykit.lab import CSVCatalog
 
+
 def read_ezmock_data(box, sample, version, subversion):
     """
     Read an eBOSS QSO EZ mock data file.
@@ -25,7 +26,35 @@ def read_ezmock_data(box, sample, version, subversion):
 
     # get the file path
     filename = f'zevoEZmock_QSO_{version}_veto_{sample}_{box:04d}_{subversion}.dat'
-    path = os.path.join(data_dir, 'mocks', 'ezmock', '-'.join([version,subversion]), filename)
+    path = os.path.join(data_dir, 'mocks', 'ezmock',
+                        '-'.join([version, subversion]), filename)
+
+    # load the source
+    names = ['RA', 'DEC', 'Z', 'WEIGHT_FKP', 'COMP', 'NZ', 'WEIGHT_COMP']
+    return CSVCatalog(path, names=names)
+
+
+def read_new_ezmock_randoms(sample, version, subversion):
+    """
+    Read an eBOSS QSO EZ mock data file.
+
+    Parameters
+    ----------
+    sample : 'N' or 'S'
+        the sample to load
+    version : str
+        the string specifying which version to load
+    subversion : str
+        the EZmock sub version to load, i.e., one of 'reg', 'no', 'fph'
+    """
+    assert version in MOCK_VERSIONS
+    assert subversion in MOCK_SUBVERSIONS
+
+    sample = 'ngc' if sample == 'N' else 'sgc'
+
+    # get the file path
+    filename = f'randx100_QSO_{version}_veto_{sample}_{subversion}.dat'
+    path = os.path.join(data_dir, 'mocks', 'ezmock', 'new_randoms', filename)
 
     # load the source
     names = ['RA', 'DEC', 'Z', 'WEIGHT_FKP', 'COMP', 'NZ', 'WEIGHT_COMP']
@@ -81,7 +110,8 @@ def finalize_ezmock(s, cosmo, P0_FKP=None):
     from nbodykit.transform import SkyToCartesian
 
     # add the Position column
-    s['Position'] = SkyToCartesian(s['RA'], s['DEC'], s['Z'], cosmo, degrees=True)
+    s['Position'] = SkyToCartesian(
+        s['RA'], s['DEC'], s['Z'], cosmo, degrees=True)
 
     # add systematic weights
     if 'WEIGHT_COMP' in s:
