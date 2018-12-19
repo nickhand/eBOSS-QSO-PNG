@@ -167,7 +167,7 @@ def make_hash(attrs, usekeys=None, N=10):
     if usekeys is None:
         d = attrs
     else:
-        d = {k: attrs[k] for k in usekeys}
+        d = {k: attrs.get(k, None) for k in usekeys}
 
     s = json.dumps(d, sort_keys=True, cls=JSONEncoder).encode()
     return hashlib.sha1(s).hexdigest()[:N]
