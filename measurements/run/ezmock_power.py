@@ -17,9 +17,7 @@ def main(ns):
         # load the randoms
         randoms = eboss.read_new_ezmock_randoms(
             ns.sample, ns.version, ns.subversion)
-        randoms_nz0 = randoms['NZ']
         eboss.finalize_ezmock(randoms, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
-        W_randoms = tm.comm.allreduce(randoms.compute(randoms['Weight'].sum()))
 
         for box_num in tm.iterate(range(ns.start, ns.stop, ns.step)):
 
@@ -27,12 +25,6 @@ def main(ns):
             data = eboss.read_ezmock_data(
                 box_num, ns.sample, ns.version, ns.subversion)
             eboss.finalize_ezmock(data, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
-
-            # re-normalize randoms NZ properly
-            W_data = tm.comm.allreduce(data.compute(data['Weight'].sum()))
-            randoms['NZ'] = randoms_nz0 * (W_data / W_randoms)
-            eboss.finalize_ezmock(
-                randoms, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
 
             # combine data and randoms into the FKP source
             fkp = FKPCatalog(data=data, randoms=randoms, BoxPad=0.1)
