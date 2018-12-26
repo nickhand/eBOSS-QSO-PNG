@@ -27,7 +27,7 @@ def main(ns):
             eboss.finalize_ezmock(data, eboss.ezmock_cosmo, P0_FKP=ns.P0_FKP)
 
             # combine data and randoms into the FKP source
-            fkp = FKPCatalog(data=data, randoms=randoms, BoxPad=0.1)
+            fkp = FKPCatalog(data=data, randoms=randoms, BoxPad=0.5)
 
             # mesh kwargs
             mesh_kwargs = {'Nmesh': 1024, 'interlaced': True,
