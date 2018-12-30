@@ -211,13 +211,16 @@ def get_hashkeys(filename, cls):
     else:
         # get the result class
         cls = getattr(lab, cls)
-        r = cls.load(filename, format="pre000305")
+        try:
+            r = cls.load(filename, format="pre000305")
+        except:
+            r = cls.load(filename)
 
         # need hashkeys
         assert 'hashkeys' in r.attrs, "result filename does not have 'hashkeys' attribute"
 
         # the dict
-        d = {k: r.attrs[k] for k in r.attrs['hashkeys']}
+        d = {k: r.attrs.get(k, None) for k in r.attrs['hashkeys']}
     return d
 
 

@@ -33,7 +33,11 @@ def load_data_spectra(version, sample, p=None, ell=None,
                      ell is None and hashkeys['poles'] == [0, 2]
                      or ell is not None and hashkeys['poles'] == [ell])
             if valid:
-                r = ConvolvedFFTPower.load(f, format="pre000305")
+                try:
+                    r = ConvolvedFFTPower.load(f, format="pre000305")
+                except:
+                    r = ConvolvedFFTPower.load(f)
+
                 if subtract_shot_noise and 'power_0' in r.poles.variables:
                     r.poles['power_0'].real -= r.attrs['shotnoise']
                 return r
@@ -86,7 +90,10 @@ def load_ezmock_spectra(version, sample, p=None, box=None,
     if box is not None:
         f = os.path.join(
             d, f'poles_zevoEZmock_{version}_QSO-{sample}_{box:04d}-{hashstr}.json')
-        r = ConvolvedFFTPower.load(f, format="pre000305")
+        try:
+            r = ConvolvedFFTPower.load(f, format="pre000305")
+        except:
+            r = ConvolvedFFTPower.load(f)
         if 'power_0' in r.poles.variables and subtract_shot_noise:
             r.poles['power_0'].real -= r.attrs['shotnoise']
         return r
@@ -94,8 +101,14 @@ def load_ezmock_spectra(version, sample, p=None, box=None,
         box_number = "[0-9]"*4
         files = glob(os.path.join(
             d, f'poles_zevoEZmock_{version}_QSO-{sample}_{box_number}-{hashstr}.json'))
-        results = [ConvolvedFFTPower.load(
-            f, format="pre000305") for f in files]
+
+        results = []
+        for f in files:
+            try:
+                r = ConvolvedFFTPower.load(f, format="pre000305")
+            except:
+                r = ConvolvedFFTPower.load(f)
+            results.append(r)
 
         if subtract_shot_noise:
             for r in results:
@@ -151,14 +164,23 @@ def load_qpm_spectra(version, sample, p=None, box=None, average=True):
     if box is not None:
         f = os.path.join(
             d, f'poles_qpm_{version}_QSO-{sample}_{box:04d}-{hashstr}.json')
-        r = ConvolvedFFTPower.load(f, format="pre000305")
+        try:
+            r = ConvolvedFFTPower.load(f, format="pre000305")
+        except:
+            r = ConvolvedFFTPower.load(f)
         r.poles['power_0'].real -= r.attrs['shotnoise']
         return r
     else:
         files = glob(os.path.join(
             d, f'poles_qpm_{version}_QSO-{sample}_*-{hashstr}.json'))
-        results = [ConvolvedFFTPower.load(
-            f, format="pre000305") for f in files]
+
+        results = []
+        for f in files:
+            try:
+                r = ConvolvedFFTPower.load(f, format="pre000305")
+            except:
+                r = ConvolvedFFTPower.load(f)
+            results.append(r)
 
         for r in results:
             r.poles['power_0'].real -= r.attrs['shotnoise']
