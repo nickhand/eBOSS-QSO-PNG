@@ -11,6 +11,10 @@ def main(ns):
     add_commands = getattr(mod, 'add_commands')
     RSDFitRunner = getattr(mod, 'RSDFitRunner')
 
+    if not len(ns.files):
+        assert ns.start is not None
+        assert ns.stop is not None
+
     # run with 1 core per task
     with TaskManager(cpus_per_task=1, use_all_cpus=True) as tm:
 
@@ -44,8 +48,8 @@ if __name__ == '__main__':
     NERSCManager.add_argument('filename', type=str, help=h)
     NERSCManager.add_argument('testno', type=int, help=h)
 
-    NERSCManager.add_argument('--start', type=int, required=True)
-    NERSCManager.add_argument('--stop', type=int, required=True)
+    NERSCManager.add_argument('--start', type=int)
+    NERSCManager.add_argument('--stop', type=int)
     NERSCManager.add_argument('--step', type=int, default=1)
 
     NERSCManager.add_argument('--files', nargs="*", type=int, default=[])
