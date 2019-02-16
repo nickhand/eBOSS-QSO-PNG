@@ -17,8 +17,13 @@ def main(ns):
         # whether we are varying shot noise
         vary_shot_noise = False if ns.fix_shot_noise else True
 
+        if len(ns.files):
+            files = ns.files
+        else:
+            files = range(ns.start, ns.stop, ns.step)
+
         # iterate through the boxes in parallel
-        for box in tm.iterate(range(ns.start, ns.stop, ns.step)):
+        for box in tm.iterate(files):
 
             # clear old commands and update the list of commands for this box
             RSDFitRunner.commands.clear()
@@ -42,6 +47,8 @@ if __name__ == '__main__':
     NERSCManager.add_argument('--start', type=int, required=True)
     NERSCManager.add_argument('--stop', type=int, required=True)
     NERSCManager.add_argument('--step', type=int, default=1)
+
+    NERSCManager.add_argument('--files', nargs="*", type=int, default=[])
 
     # other config
     NERSCManager.add_argument('--cov', choices=['mock', 'analytic'], required=True)
