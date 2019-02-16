@@ -1,0 +1,88 @@
+#-------------------------------------------------------------------------------
+# driver_params
+#-------------------------------------------------------------------------------
+driver.burnin = 0
+driver.epsilon = 0.02
+driver.init_from = 'fiducial'
+driver.init_scatter = 0
+driver.lbfgs_epsilon = 0.0001
+driver.lbfgs_numerical_from_lnlike = True
+driver.lbfgs_options = {'factr': 100000.0, 'gtol': 1e-05, 'max_iter': 1000}
+driver.lbfgs_use_priors = True
+driver.start_from = None
+driver.stat_specific_params = {}
+driver.test_convergence = False
+driver.tracer_type = 'quasar'
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# data params
+#-------------------------------------------------------------------------------
+data.covariance = '$(EBOSS_DIR)/fits/input/mocks/ezmock/covariance/v1.8e-fph/poles_v1.8e-fph-QSO-S-mock_P0+P2_19d87c6164.dat'
+data.covariance_Nmocks = 1000
+data.covariance_rescaling = 1.0
+data.data_file = '$(EBOSS_DIR)/fits/input/mocks/ezmock/spectra/v1.8e-fph/poles_v1.8e-fph-QSO-S-0201_P0+P2_19d87c6164.dat'
+data.ells = [0, 2]
+data.fitting_range = [(0.0001, 0.3), (0.0001, 0.3)]
+data.grid_file = None
+data.max_ellprime = 4
+data.mode = 'poles'
+data.mu_bounds = None
+data.statistics = ['pole_sgc_0', 'pole_sgc_2']
+data.window_file = {'pole_sgc_0': '$(EBOSS_DIR)/fits/input/mocks/ezmock/window/v1.8e-fph/poles_v1.8e-fph-QSO-S_fe36f325a2.dat', 'pole_sgc_2': '$(EBOSS_DIR)/fits/input/mocks/ezmock/window/v1.8e-fph/poles_v1.8e-fph-QSO-S_290a5031db.dat'}
+data.window_kmax = 10.0
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# theory params
+#-------------------------------------------------------------------------------
+theory.F_AP = {'name': 'F_AP', 'value': 1.0, 'vary': False, 'expr': 'alpha_par/alpha_perp', 'analytic': False}
+theory.N = {'name': 'N', 'value': 0.0, 'vary': True, 'fiducial': 0.0, 'prior_name': 'uniform', 'lower': -5000, 'upper': 5000, 'analytic': False}
+theory.alpha = {'name': 'alpha', 'value': 1.0, 'vary': False, 'expr': '(alpha_perp**2 * alpha_par)**(1./3)', 'analytic': False}
+theory.alpha_drag = {'name': 'alpha_drag', 'value': 1.0, 'vary': False, 'fiducial': 1.0, 'analytic': False}
+theory.alpha_par = {'name': 'alpha_par', 'value': 1.0, 'vary': False, 'fiducial': 1.0, 'prior_name': 'uniform', 'lower': 0.3, 'upper': 1.8, 'analytic': False}
+theory.alpha_perp = {'name': 'alpha_perp', 'value': 1.0, 'vary': False, 'fiducial': 1.0, 'prior_name': 'uniform', 'lower': 0.3, 'upper': 1.8, 'analytic': False}
+theory.b1 = {'name': 'b1', 'value': 2.0, 'vary': True, 'fiducial': 2.0, 'prior_name': 'uniform', 'lower': 0.1, 'upper': 6.0, 'analytic': False}
+theory.b1sigma8 = {'name': 'b1sigma8', 'value': 0.796626420879818, 'vary': False, 'expr': 'b1*sigma8_z', 'analytic': False}
+theory.epsilon = {'name': 'epsilon', 'value': 0.0, 'vary': False, 'expr': '(alpha_perp/alpha_par)**(-1./3) - 1.0', 'analytic': False}
+theory.f = {'name': 'f', 'value': 0.9307647364007041, 'vary': False, 'fiducial': 0.9307647364007041, 'prior_name': 'uniform', 'lower': 0, 'upper': 2.0, 'analytic': False}
+theory.f_nl = {'name': 'f_nl', 'value': 0.0, 'vary': True, 'fiducial': 0.0, 'prior_name': 'uniform', 'lower': -500.0, 'upper': 500.0, 'analytic': False}
+theory.fsigma8 = {'name': 'fsigma8', 'value': 0.37073589032002013, 'vary': False, 'expr': 'f*sigma8_z', 'analytic': False}
+theory.p = {'name': 'p', 'value': 1.0, 'vary': False, 'fiducial': 1.0, 'analytic': False}
+theory.sigma8_z = {'name': 'sigma8_z', 'value': 0.398313210439909, 'vary': False, 'fiducial': 0.398313210439909, 'prior_name': 'uniform', 'lower': 0, 'upper': 2.0, 'analytic': False}
+theory.sigma_fog = {'name': 'sigma_fog', 'value': 4.0, 'vary': True, 'fiducial': 4.0, 'prior_name': 'uniform', 'lower': 0.0, 'upper': 20.0, 'analytic': False}
+#-------------------------------------------------------------------------------
+
+
+
+#-------------------------------------------------------------------------------
+# model params
+#-------------------------------------------------------------------------------
+model.Nk = 200
+model.Pdv_model_type = 'jennings'
+model.correct_mu2 = False
+model.correct_mu4 = False
+model.fog_model = 'lorentzian'
+model.include_2loop = False
+model.interpolate = True
+model.k0_low = 0.005
+model.kmax = 1.0
+model.kmin = 1e-06
+model.linear_power_file = None
+model.max_mu = 4
+model.params = {'flat': True, 'H0': 67.77, 'Neff': 3.046, 'Ob0': 0.048206, 'Om0': 0.307115, 'Tcmb0': 2.7255, 'm_nu': 0.0, 'n_s': 0.9611, 'sigma8': 0.8225}
+model.redshift_params = ['f', 'sigma8_z']
+model.transfer_fit = 'CLASS'
+model.use_P00_model = True
+model.use_P01_model = True
+model.use_P11_model = True
+model.use_Pdv_model = True
+model.use_Phm_model = True
+model.use_Pvv_model = True
+model.use_mean_bias = False
+model.use_tidal_bias = False
+model.use_vlah_biasing = True
+model.vel_disp_from_sims = False
+model.z = 1.557
+#-------------------------------------------------------------------------------
+

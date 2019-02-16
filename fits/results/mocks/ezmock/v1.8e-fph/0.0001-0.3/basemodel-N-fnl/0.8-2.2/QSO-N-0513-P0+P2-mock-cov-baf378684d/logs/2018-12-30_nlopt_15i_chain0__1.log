@@ -1,0 +1,42 @@
+rank #0: 2018-12-30 16:39:21,856 rsdfit.fitting_driver INFO     rank 45 on nid00554     Calling the 'nlopt' solve function
+rank #0: 2018-12-30 16:39:21,857 rsdfit.lbfgs_fitter INFO     running LBFGS for 500 iterations and then stopping
+rank #0: 2018-12-30 16:39:21,858 rsdfit.lbfgs_fitter INFO     running LBFGS minimizer with priors
+rank #0: 2018-12-30 16:39:21,859 root         INFO     Iter           N          b1        f_nl   sigma_fog   F(X)     
+rank #0: 2018-12-30 16:39:21,859 rsdfit.lbfgs_fitter INFO     computing gradient using numerical derivative of lnlike()
+rank #0: 2018-12-30 16:39:23,053 LBFGS        INFO     options = {'factr': 100000.0, 'gtol': 1e-05, 'max_iter': 500, 'test_convergence': False}
+rank #0: 2018-12-30 16:39:23,055 LBFGS        PARAM    0000          0.000000          2.000000          0.000000          4.000000        124.873024
+rank #0: 2018-12-30 16:39:24,427 LBFGS        PARAM    0001          1.464849          2.096493          2.183514          3.992447        106.269909
+rank #0: 2018-12-30 16:39:25,680 LBFGS        PARAM    0002       -194.572051          2.365904         11.504657          4.104306         82.406887
+rank #0: 2018-12-30 16:39:26,903 LBFGS        PARAM    0003       -329.339612          2.377118         13.625126          4.214890         76.567454
+rank #0: 2018-12-30 16:39:28,126 LBFGS        PARAM    0004       -520.154518          2.407991         18.028459          4.365521         73.803602
+rank #0: 2018-12-30 16:39:29,364 LBFGS        PARAM    0005       -514.194569          2.401888         18.899094          4.355824         73.772625
+rank #0: 2018-12-30 16:39:30,580 LBFGS        PARAM    0006       -508.180901          2.394799         21.739114          4.336621         73.726120
+rank #0: 2018-12-30 16:39:31,808 LBFGS        PARAM    0007       -506.991050          2.390216         26.532923          4.313711         73.687064
+rank #0: 2018-12-30 16:39:33,017 LBFGS        PARAM    0008       -510.399493          2.392818         26.930929          4.314529         73.683296
+rank #0: 2018-12-30 16:39:34,232 LBFGS        PARAM    0009       -510.776878          2.393093         26.858149          4.315132         73.683275
+rank #0: 2018-12-30 16:39:35,460 LBFGS        PARAM    0010       -510.794461          2.393082         26.864770          4.315011         73.683274
+rank #0: 2018-12-30 16:39:36,670 LBFGS        PARAM    0011       -510.843210          2.393078         26.864931          4.314768         73.683274
+rank #0: 2018-12-30 16:39:37,909 LBFGS        PARAM    0012       -510.867987          2.393083         26.861692          4.314675         73.683274
+rank #0: 2018-12-30 16:39:39,119 LBFGS        PARAM    0013       -510.868284          2.393083         26.861612          4.314675         73.683274
+rank #0: 2018-12-30 16:40:09,206 LBFGS        PARAM    0014       -510.868285          2.393083         26.861611          4.314675         73.683274
+rank #0: 2018-12-30 16:40:09,208 LBFGS        INFO     LBFGS iteration 14: the descent direction does not have a sufficient projection (cos(theta)=-9.17e-01, theta=156.4488) into the gradient; using steepest descent at this step!
+rank #0: 2018-12-30 16:40:10,586 LBFGS        PARAM    0015       -510.868286          2.393083         26.861611          4.314675         73.683274
+rank #0: 2018-12-30 16:41:04,089 LBFGS        INFO     Linesearch failed in both LBFGS and gradient directions
+rank #0: 2018-12-30 16:41:04,090 LBFGS        PARAM    0015       -510.868286          2.393083         26.861611          4.314675         73.683274
+rank #0: 2018-12-30 16:41:04,090 rsdfit.lbfgs_fitter WARNING  ...LBFGS optimization finished. Time elapsed: 0:01:41.04
+rank #0: 2018-12-30 16:41:04,091 rsdfit.lbfgs_fitter ERROR    nonlinear fit with method L-BFGS-B failed: Linesearch failed in both LBFGS and gradient directions
+rank #0: 2018-12-30 16:41:04,092 rsdfit.fitting_driver INFO     rank 45 on nid00554     ...fitting complete
+rank #0: 2018-12-30 16:41:04,095 rsdfit.fitting_driver INFO     rank 45 on nid00554     Saving the results to `/global/cscratch1/sd/nhand/eBOSS/fits/results/mocks/ezmock/v1.8e-fph/0.0001-0.3/basemodel-N-fnl/0.8-2.2/QSO-N-0513-P0+P2-mock-cov-baf378684d/2018-12-30_nlopt_15i_chain0__1.npz`
+rank #0: 2018-12-30 16:41:04,671 pyRSD.analysis.lbfgs_results INFO     
+minimum chi2 = 73.6832738511
+
+Free parameters [ mean ]
+_______________
+N              : -510.868285663
+b1             : 2.39308274329
+f_nl           : 26.861611393
+sigma_fog      : 4.31467456966
+
+Constrained parameters [ mean ]
+_________________________
+b1sigma8       : 0.897131562461

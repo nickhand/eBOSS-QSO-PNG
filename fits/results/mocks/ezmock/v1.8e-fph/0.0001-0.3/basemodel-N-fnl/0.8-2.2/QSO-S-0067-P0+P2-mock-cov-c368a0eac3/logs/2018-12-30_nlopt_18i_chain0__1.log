@@ -1,0 +1,45 @@
+rank #0: 2018-12-30 19:33:54,857 rsdfit.fitting_driver INFO     rank 59 on nid00629     Calling the 'nlopt' solve function
+rank #0: 2018-12-30 19:33:54,858 rsdfit.lbfgs_fitter INFO     running LBFGS for 500 iterations and then stopping
+rank #0: 2018-12-30 19:33:54,858 rsdfit.lbfgs_fitter INFO     running LBFGS minimizer with priors
+rank #0: 2018-12-30 19:33:54,858 root         INFO     Iter           N          b1        f_nl   sigma_fog   F(X)     
+rank #0: 2018-12-30 19:33:54,859 rsdfit.lbfgs_fitter INFO     computing gradient using numerical derivative of lnlike()
+rank #0: 2018-12-30 19:33:56,045 LBFGS        INFO     options = {'factr': 100000.0, 'gtol': 1e-05, 'max_iter': 500, 'test_convergence': False}
+rank #0: 2018-12-30 19:33:56,046 LBFGS        PARAM    0000          0.000000          2.000000          0.000000          4.000000        109.004924
+rank #0: 2018-12-30 19:33:57,445 LBFGS        PARAM    0001         67.057330          2.103985          2.059749          3.957105         95.494634
+rank #0: 2018-12-30 19:33:58,680 LBFGS        PARAM    0002         42.661714          2.319296          8.044272          3.908409         86.371989
+rank #0: 2018-12-30 19:33:59,917 LBFGS        PARAM    0003         21.409111          2.299484          8.243236          3.947239         85.965141
+rank #0: 2018-12-30 19:34:01,175 LBFGS        PARAM    0004        -13.539773          2.301331          9.458655          3.991489         85.643912
+rank #0: 2018-12-30 19:34:02,550 LBFGS        PARAM    0005        -22.758295          2.297112          9.570462          4.001828         85.628602
+rank #0: 2018-12-30 19:34:03,929 LBFGS        PARAM    0006        -73.756822          2.328138         14.394674          4.150598         85.299775
+rank #0: 2018-12-30 19:34:03,930 LBFGS        INFO     LBFGS iteration 6: the descent direction does not have a sufficient projection (cos(theta)=-1.31e-02, theta=90.7523) into the gradient; using steepest descent at this step!
+rank #0: 2018-12-30 19:34:05,179 LBFGS        PARAM    0007       -106.986258          2.339883         14.217273          4.092524         85.201148
+rank #0: 2018-12-30 19:34:06,416 LBFGS        PARAM    0008       -204.864049          2.344442         12.312396          3.903665         85.141701
+rank #0: 2018-12-30 19:34:07,672 LBFGS        PARAM    0009       -191.733252          2.353408         11.981101          3.857167         85.059058
+rank #0: 2018-12-30 19:34:08,899 LBFGS        PARAM    0010       -182.755229          2.350272         11.634638          3.841450         85.042852
+rank #0: 2018-12-30 19:34:10,121 LBFGS        PARAM    0011       -186.680747          2.346427         10.687006          3.768173         85.029661
+rank #0: 2018-12-30 19:34:11,666 LBFGS        PARAM    0012       -185.239569          2.345487         10.839468          3.772159         85.029499
+rank #0: 2018-12-30 19:34:12,874 LBFGS        PARAM    0013       -185.496565          2.345469         10.873925          3.771549         85.029485
+rank #0: 2018-12-30 19:34:14,081 LBFGS        PARAM    0014       -185.807661          2.345380         11.006525          3.770087         85.029460
+rank #0: 2018-12-30 19:34:15,282 LBFGS        PARAM    0015       -185.616835          2.345339         11.046114          3.770008         85.029458
+rank #0: 2018-12-30 19:34:16,472 LBFGS        PARAM    0016       -185.623933          2.345342         11.045484          3.770002         85.029458
+rank #0: 2018-12-30 19:34:17,674 LBFGS        PARAM    0017       -185.624067          2.345342         11.045498          3.770002         85.029458
+rank #0: 2018-12-30 19:34:18,857 LBFGS        PARAM    0018       -185.624066          2.345342         11.045499          3.770002         85.029458
+rank #0: 2018-12-30 19:35:13,019 LBFGS        INFO     Linesearch failed in both LBFGS and gradient directions
+rank #0: 2018-12-30 19:35:13,020 LBFGS        PARAM    0018       -185.624066          2.345342         11.045499          3.770002         85.029458
+rank #0: 2018-12-30 19:35:13,020 rsdfit.lbfgs_fitter WARNING  ...LBFGS optimization finished. Time elapsed: 0:01:16.97
+rank #0: 2018-12-30 19:35:13,020 rsdfit.lbfgs_fitter ERROR    nonlinear fit with method L-BFGS-B failed: Linesearch failed in both LBFGS and gradient directions
+rank #0: 2018-12-30 19:35:13,021 rsdfit.fitting_driver INFO     rank 59 on nid00629     ...fitting complete
+rank #0: 2018-12-30 19:35:13,024 rsdfit.fitting_driver INFO     rank 59 on nid00629     Saving the results to `/global/cscratch1/sd/nhand/eBOSS/fits/results/mocks/ezmock/v1.8e-fph/0.0001-0.3/basemodel-N-fnl/0.8-2.2/QSO-S-0067-P0+P2-mock-cov-c368a0eac3/2018-12-30_nlopt_18i_chain0__1.npz`
+rank #0: 2018-12-30 19:35:13,074 pyRSD.analysis.lbfgs_results INFO     
+minimum chi2 = 85.0294579124
+
+Free parameters [ mean ]
+_______________
+N              : -185.624065608
+b1             : 2.34534203458
+f_nl           : 11.0454990272
+sigma_fog      : 3.77000191102
+
+Constrained parameters [ mean ]
+_________________________
+b1sigma8       : 0.87923427215
