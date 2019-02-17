@@ -18,10 +18,10 @@ driver.tracer_type = 'quasar'
 #-------------------------------------------------------------------------------
 # data params
 #-------------------------------------------------------------------------------
-data.covariance = '/global/cscratch1/sd/nhand/tmp/tmpaww75v1s'
+data.covariance = '$(EBOSS_DIR)/fits/input/mocks/ezmock/covariance/v1.8e-fph/poles_v1.8e-fph-QSO-S-mock_P0+P2_c2a110df7b.dat'
 data.covariance_Nmocks = 1000
 data.covariance_rescaling = 1.0
-data.data_file = '/global/cscratch1/sd/nhand/tmp/tmp734z1vpl'
+data.data_file = '$(EBOSS_DIR)/fits/input/mocks/ezmock/spectra/v1.8e-fph/poles_v1.8e-fph-QSO-S-0987_P0+P2_c2a110df7b.dat'
 data.ells = [0, 2]
 data.fitting_range = [(0.0001, 0.3), (0.0001, 0.3)]
 data.grid_file = None
@@ -29,7 +29,7 @@ data.max_ellprime = 4
 data.mode = 'poles'
 data.mu_bounds = None
 data.statistics = ['pole_sgc_0', 'pole_sgc_2']
-data.window_file = {'pole_sgc_0': '/global/cscratch1/sd/nhand/tmp/tmpuviy6uvh', 'pole_sgc_2': '/global/cscratch1/sd/nhand/tmp/tmpmqyle3mm'}
+data.window_file = {'pole_sgc_0': '$(EBOSS_DIR)/fits/input/mocks/ezmock/window/v1.8e-fph/poles_v1.8e-fph-QSO-S_043ec4eddd.dat', 'pole_sgc_2': '$(EBOSS_DIR)/fits/input/mocks/ezmock/window/v1.8e-fph/poles_v1.8e-fph-QSO-S_c1af9984a7.dat'}
 data.window_kmax = 10.0
 #-------------------------------------------------------------------------------
 

@@ -67,7 +67,7 @@ def load_ezmock_driver(box_num, version, sample, krange, params, z_weighted, p=N
     r = sorted(glob(os.path.join(match, '*.npz')),
                key=os.path.getmtime, reverse=True)
     if len(r) == 0:
-        print("warning: no npz results found in directory '%s'" % os.path.normpath(match))
+        raise ValueError("warning: no npz results found in directory '%s'" % os.path.normpath(match))
     driver.results = r[0]
 
     return driver
@@ -121,7 +121,7 @@ def load_ezmock_results(version, sample, krange, params, z_weighted, p=None):
         r = sorted(glob(os.path.join(f, '*.npz')),
                    key=os.path.getmtime, reverse=True)
         if len(r) == 0:
-            print("warning: no npz results found in directory '%s'" % os.path.normpath(match))
+            raise ValueError("warning: no npz results found in directory '%s'" % os.path.normpath(f))
 
         th = ParameterSet.from_file(
             os.path.join(f, 'params.dat'), tags='theory')

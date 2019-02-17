@@ -1,0 +1,40 @@
+rank #0: 2019-02-16 13:54:06,999 rsdfit.fitting_driver INFO     rank 61 on nid00542     Calling the 'nlopt' solve function
+rank #0: 2019-02-16 13:54:07,000 rsdfit.lbfgs_fitter INFO     running LBFGS for 500 iterations and then stopping
+rank #0: 2019-02-16 13:54:07,000 rsdfit.lbfgs_fitter INFO     running LBFGS minimizer with priors
+rank #0: 2019-02-16 13:54:07,001 root         INFO     Iter           N          b1        f_nl   sigma_fog   F(X)     
+rank #0: 2019-02-16 13:54:07,001 rsdfit.lbfgs_fitter INFO     computing gradient using numerical derivative of lnlike()
+rank #0: 2019-02-16 13:54:08,126 LBFGS        INFO     options = {'factr': 100000.0, 'gtol': 1e-05, 'max_iter': 500, 'test_convergence': False}
+rank #0: 2019-02-16 13:54:08,126 LBFGS        PARAM    0000          0.000000          2.000000          0.000000          4.000000        112.740916
+rank #0: 2019-02-16 13:54:09,414 LBFGS        PARAM    0001        -21.259912          2.090107          1.775887          4.008651         97.670370
+rank #0: 2019-02-16 13:54:10,566 LBFGS        PARAM    0002       -284.032222          2.337526          8.189174          4.181361         75.720522
+rank #0: 2019-02-16 13:54:11,709 LBFGS        PARAM    0003       -449.586496          2.357968          8.512875          4.323234         70.012297
+rank #0: 2019-02-16 13:54:12,854 LBFGS        PARAM    0004       -566.981058          2.369129          7.443277          4.435337         68.703738
+rank #0: 2019-02-16 13:54:14,004 LBFGS        PARAM    0005       -567.662223          2.370619          6.479379          4.444057         68.674427
+rank #0: 2019-02-16 13:54:15,149 LBFGS        PARAM    0006       -561.617629          2.397425        -18.953476          4.600539         68.293426
+rank #0: 2019-02-16 13:54:16,292 LBFGS        PARAM    0007       -569.043729          2.400344        -21.768020          4.567799         68.288721
+rank #0: 2019-02-16 13:54:17,435 LBFGS        PARAM    0008       -566.582333          2.400271        -21.583186          4.577589         68.288390
+rank #0: 2019-02-16 13:54:18,579 LBFGS        PARAM    0009       -566.125882          2.400331        -21.653630          4.579170         68.288378
+rank #0: 2019-02-16 13:54:19,723 LBFGS        PARAM    0010       -566.119208          2.400341        -21.663410          4.579198         68.288378
+rank #0: 2019-02-16 13:54:20,863 LBFGS        PARAM    0011       -566.120397          2.400342        -21.663927          4.579195         68.288378
+rank #0: 2019-02-16 13:54:22,007 LBFGS        PARAM    0012       -566.120450          2.400342        -21.663934          4.579195         68.288378
+rank #0: 2019-02-16 13:54:23,150 LBFGS        PARAM    0013       -566.120458          2.400342        -21.663934          4.579195         68.288378
+rank #0: 2019-02-16 13:54:23,151 LBFGS        INFO     LBFGS iteration 13: the descent direction does not have a sufficient projection (cos(theta)=-3.42e-01, theta=109.9915) into the gradient; using steepest descent at this step!
+rank #0: 2019-02-16 13:54:47,010 LBFGS        INFO     Linesearch failed in both LBFGS and gradient directions
+rank #0: 2019-02-16 13:54:47,011 LBFGS        PARAM    0013       -566.120458          2.400342        -21.663934          4.579195         68.288378
+rank #0: 2019-02-16 13:54:47,011 rsdfit.lbfgs_fitter WARNING  ...LBFGS optimization finished. Time elapsed: 0:00:38.89
+rank #0: 2019-02-16 13:54:47,012 rsdfit.lbfgs_fitter ERROR    nonlinear fit with method L-BFGS-B failed: Linesearch failed in both LBFGS and gradient directions
+rank #0: 2019-02-16 13:54:47,013 rsdfit.fitting_driver INFO     rank 61 on nid00542     ...fitting complete
+rank #0: 2019-02-16 13:54:47,016 rsdfit.fitting_driver INFO     rank 61 on nid00542     Saving the results to `/global/cscratch1/sd/nhand/eBOSS/fits/results/mocks/ezmock/v1.8e-fph/0.005-0.3/basemodel-N-fnl/0.8-2.2/QSO-N-0216-P0+P2-mock-cov-df4d289b36/2019-02-16_nlopt_13i_chain0__1.npz`
+rank #0: 2019-02-16 13:54:47,023 pyRSD.analysis.lbfgs_results INFO     
+minimum chi2 = 68.28837824071688
+
+Free parameters [ mean ]
+_______________
+N              : -566.1204577849022
+b1             : 2.4003417444701065
+f_nl           : -21.663933619461943
+sigma_fog      : 4.579194541503361
+
+Constrained parameters [ mean ]
+_________________________
+b1sigma8       : 0.899852855357435
