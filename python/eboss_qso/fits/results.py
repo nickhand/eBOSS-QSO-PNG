@@ -67,7 +67,8 @@ def load_ezmock_driver(box_num, version, sample, krange, params, z_weighted, p=N
     r = sorted(glob(os.path.join(match, '*.npz')),
                key=os.path.getmtime, reverse=True)
     if len(r) == 0:
-        raise ValueError("warning: no npz results found in directory '%s'" % os.path.normpath(match))
+        raise ValueError(
+            "warning: no npz results found in directory '%s'" % os.path.normpath(match))
     driver.results = r[0]
 
     return driver
@@ -121,7 +122,8 @@ def load_ezmock_results(version, sample, krange, params, z_weighted, p=None):
         r = sorted(glob(os.path.join(f, '*.npz')),
                    key=os.path.getmtime, reverse=True)
         if len(r) == 0:
-            raise ValueError("warning: no npz results found in directory '%s'" % os.path.normpath(f))
+            raise ValueError(
+                "warning: no npz results found in directory '%s'" % os.path.normpath(f))
 
         th = ParameterSet.from_file(
             os.path.join(f, 'params.dat'), tags='theory')
@@ -150,7 +152,7 @@ def load_ezmock_results(version, sample, krange, params, z_weighted, p=None):
     return out
 
 
-def load_joint_data_results(kmin, z_weighted, p):
+def load_joint_data_results(kmin, z_weighted, p, ells=[0, 2]):
     """
     Load a set of data joint NGC + SGC fit results.
     """
@@ -165,6 +167,9 @@ def load_joint_data_results(kmin, z_weighted, p):
     kws['zrange'] = '0.8-2.2'
     kws['z_weighted'] = z_weighted
     kws['p'] = p
+
+    if ells == [0]:
+        kws['ells'] = ells
 
     hashstr = make_hash(kws)
 
@@ -188,7 +193,7 @@ def load_joint_data_results(kmin, z_weighted, p):
     return EmceeResults.from_npz(r[0])
 
 
-def load_data_results(version, sample, krange, params, zrange, z_weighted, p=None):
+def load_data_results(version, sample, krange, params, zrange, z_weighted, ells=[0, 2], p=None):
     """
     Load a set of data fit results.
 
@@ -212,9 +217,10 @@ def load_data_results(version, sample, krange, params, zrange, z_weighted, p=Non
 
     matches = glob(os.path.join(d, f'QSO-{sample}-*'))
     match = None
+    stats = ['P%d' % ell for ell in ells]
     for f in matches:
         hashkeys = get_hashkeys(f, None)
-        if hashkeys['p'] in p and hashkeys['z-weighted'] == z_weighted:
+        if hashkeys['p'] in p and hashkeys['z-weighted'] == z_weighted and hashkeys['stats'] == stats:
             match = f
 
     if match is None:
